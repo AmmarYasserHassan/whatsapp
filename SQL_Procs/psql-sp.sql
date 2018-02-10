@@ -16,7 +16,7 @@ $$ LANGUAGE plpgsql;
 
 -- Procedure to add a new user
 CREATE OR REPLACE FUNCTION insert_user(mobile_number VARCHAR(20), display_name VARCHAR(100), 
-    display_picture TEXT, user_status TEXT, verification_code UUID)
+    display_picture TEXT, user_status TEXT, verification_code VARCHAR(10))
 RETURNS void AS $$
 BEGIN
   INSERT INTO users
