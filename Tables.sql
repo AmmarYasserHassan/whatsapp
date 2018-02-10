@@ -1,5 +1,5 @@
--- create database
-CREATE DATABASE IF NOT EXISTS whatsapp;
+-- make sure that you have created a db called whatsapp -if it is not created already-
+-- using command CREATE DATABASE whatsapp;
 
 -- use created database
 \connect whatsapp;
