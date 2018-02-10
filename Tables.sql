@@ -2,24 +2,24 @@
 CREATE DATABASE IF NOT EXISTS whatsapp;
 
 -- use created database
-USE whatsapp;
+\connect whatsapp;
 
 -- Users table
 CREATE TABLE IF NOT EXISTS USERS (
  id SERIAL NOT NULL,
- mobile_number VARCHAR(20),
+ mobile_number VARCHAR(20) UNIQUE,
  display_name VARCHAR(100) NOT NULL,
  display_picture TEXT,
  user_status TEXT NOT NULL DEFAULT 'Available',
  verified BOOLEAN NOT NULL DEFAULT FALSE,
- verification_code UUID,
+ verification_code VARCHAR(10),
  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
  PRIMARY KEY (mobile_number)
 );
 
 -- chats table
 CREATE TABLE IF NOT EXISTS CHATS (
- id SERIAL,
+ id SERIAL NOT NULL,
  mobile_number VARCHAR(20) NOT NULL,
  is_archived BOOLEAN NOT NULL DEFAULT FALSE,
  is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS CHATS (
 
 -- group chats table
 CREATE TABLE IF NOT EXISTS GROUP_CHATS (
- id SERIAL,
+ id SERIAL NOT NULL,
  group_name VARCHAR(100) NOT NULL,
  display_picture TEXT,
  created_by VARCHAR(20) NOT NULL,
@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS GROUP_CHATS (
 
 -- group chats members table
 CREATE TABLE IF NOT EXISTS GROUP_CHAT_MEMBERS (
- id SERIAL,
+ id SERIAL NOT NULL,
  group_chat_id INT NOT NULL,
  mobile_number VARCHAR(20) NOT NULL,
  is_archived BOOLEAN NOT NULL DEFAULT FALSE,
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS GROUP_CHAT_MEMBERS (
 
 -- blocked users table
 CREATE TABLE IF NOT EXISTS BLOCKED (
- id SERIAL,
+ id SERIAL NOT NULL,
  blocker_mobile_number VARCHAR(20) NOT NULL,
  blocked_mobile_number VARCHAR(20) NOT NULL,
  PRIMARY KEY (id),
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS BLOCKED (
 
 -- reported users table
  CREATE TABLE IF NOT EXISTS REPORTED (
- id SERIAL,
+ id SERIAL NOT NULL,
  reporter_mobile_number VARCHAR(20) NOT NULL,
  reported_mobile_number VARCHAR(20) NOT NULL,
  PRIMARY KEY (id),
