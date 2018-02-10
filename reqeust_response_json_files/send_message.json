@@ -1,0 +1,14 @@
+{
+    "request": {
+        "chat_id": "",
+        "sender_number": "",
+        "chat_type": {"text","voice_note","photo","gif","video","contact","location","document","tagged","reply"},
+        "geographic_location": "",
+        "data":"",
+        "payload": "added when a text sent with media"
+    },
+
+    "response": {
+        "success_message": ""
+    }
+}

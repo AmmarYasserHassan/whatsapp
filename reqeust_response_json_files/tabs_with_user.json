@@ -1,0 +1,11 @@
+{
+    "request": {
+        "sender_id": "",
+        "chat_id": ""
+    },
+
+    "response": {
+        "media": {},
+        "groups_common": {}
+    }
+}
