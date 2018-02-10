@@ -1,0 +1,10 @@
+{
+    "request": {
+        "chat_id": "",
+        "mobile_number": ""
+    },
+
+    "response": {
+        "success_message": ""
+    }
+}

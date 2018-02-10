@@ -1,0 +1,10 @@
+{
+    "request": {
+        "mobile_number": "",
+        "data" : ""
+    },
+
+    "response": {
+        "success_message": ""
+    }
+}

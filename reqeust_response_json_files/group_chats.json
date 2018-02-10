@@ -1,0 +1,15 @@
+{
+    "create_request": {
+        "name": ""
+    },
+
+    "update_request": {
+        "new_name": "",
+        "memebers": {},
+        "admins": {}
+    },
+
+    "delete_request": {
+        "group_id": ""
+    }
+}
