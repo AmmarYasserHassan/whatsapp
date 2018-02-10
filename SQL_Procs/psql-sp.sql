@@ -40,6 +40,48 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Procedure to update the user's name given that the mobile number
+CREATE OR REPLACE FUNCTION update_user_name(user_number VARCHAR(20), display_name)
+RETURNS void AS $$
+BEGIN
+  UPDATE users SET
+    (display_name)
+   =
+    (display_name)
+   WHERE
+     mobile_number LIKE user_number 
+       
+END;
+$$ LANGUAGE plpgsql;
+
+-- Procedure to update the user's display_picture given that the mobile number
+CREATE OR REPLACE FUNCTION update_user_picture(user_number VARCHAR(20), display_picture)
+RETURNS void AS $$
+BEGIN
+  UPDATE users SET
+    (display_picture)
+   =
+    (display_picture)
+   WHERE
+     mobile_number LIKE user_number 
+       
+END;
+$$ LANGUAGE plpgsql;
+
+-- Procedure to update the user's user_status given that the mobile number
+CREATE OR REPLACE FUNCTION update_user_status(user_number VARCHAR(20), user_status)
+RETURNS void AS $$
+BEGIN
+  UPDATE users SET
+    (user_status)
+   =
+    (user_status)
+   WHERE
+     mobile_number LIKE user_number 
+       
+END;
+$$ LANGUAGE plpgsql;
+
 -- Procedure to verify a user given that the mobile number
 CREATE OR REPLACE FUNCTION verify_user(user_number VARCHAR(20))
 RETURNS void AS $$
@@ -53,3 +95,19 @@ BEGIN
        
 END;
 $$ LANGUAGE plpgsql;
+
+-- Procedure to get the previous chats of user given that user_number
+CREATE OR REPLACE FUNCTION get_chats(user_number VARCHAR(20)) 
+RETURNS refcursor AS $$
+  DECLARE
+    ref refcursor;
+  BEGIN
+    OPEN ref FOR 
+      SELECT * FROM chats 
+      WHERE 
+        mobile_number 
+          LIKE 
+        user_number;
+    RETURN ref;
+  END;
+  $$ LANGUAGE plpgsql;
