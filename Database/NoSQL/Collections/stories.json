@@ -1,0 +1,10 @@
+{
+  "owner_mobile_number": "Required, Forgein key",
+  "data": {
+    "type": "image or video",
+    "link": "actual link for media"
+  },
+  "duration": "calculated",
+  "experation_date": "mongo timestamp",
+  "viewed_by": "Array of users"
+}
