@@ -1,0 +1,12 @@
+{
+  "chat_id": "Required,Integer, forgein key from chats sql table",
+  "sender_mobile_number":"Required,String, forgein key from chats sql table",
+  "message_type": "Required,{text,voice_note,photo,gif,video,contact,location,document,tagged,reply} --> the type array could contain more than one entry",
+  "data": "Required,String or link in case of media",
+  "payload": "Optional, String in case of media this is the added text",
+  "timestamp": "Required,mongo timestamp",
+  "geographical_location": "Optional,String, long and lati",
+  "status": "Required, String ,{sent, delivered, seen}",
+  "replying_to_message": "Optional, Message,in case this message is a reply, this is the message we are replying to"
+
+}

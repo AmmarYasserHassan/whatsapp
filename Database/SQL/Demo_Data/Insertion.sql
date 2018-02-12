@@ -10,7 +10,7 @@ VALUES (
 	'https://images-na.ssl-images-amazon.com/images/M/MV5BMjQyODg5Njc4N15BMl5BanBnXkFtZTgwMzExMjE3NzE@._V1_UY268_CR1,0,182,268_AL_.jpg',
 	'I didn''t change, I just grew up. You should try it once.',
 	DEFAULT,
-	'6637753c-0e8b-11e8-ba89-0ed5f89f718b',
+	'112298',
 	DEFAULT
 );
 
@@ -23,7 +23,7 @@ VALUES (
 	'https://images-na.ssl-images-amazon.com/images/M/MV5BYzc4ODgyZmYtMGFkZC00NGQyLWJiMDItMmFmNjJiZjcxYzVmXkEyXkFqcGdeQXVyNDYyMDk5MTU@._V1_UX182_CR0,0,182,268_AL_.jpg',
 	'I love buying new things but I hate spending money',
 	DEFAULT,
-	'66377884-0e8b-11e8-ba89-0ed5f89f718b',
+	'231578',
 	DEFAULT
 );
 
@@ -36,7 +36,7 @@ VALUES (
 	'https://images-na.ssl-images-amazon.com/images/M/MV5BYzc4ODgyZmYtMGFkZC00NGQyLWJiMDItMmFmNjJiZjcxYzVmXkEyXkFqcGdeQXVyNDYyMDk5MTU@._V1_UX182_CR0,0,182,268_AL_.jpg',
 	'Life is too short. Don''t waste it reading my WhatsApp status',
 	DEFAULT,
-	'66377ac8-0e8b-11e8-ba89-0ed5f89f718b',
+	'520945',
 	DEFAULT
 );
 
@@ -49,7 +49,7 @@ VALUES (
 	'https://images-na.ssl-images-amazon.com/images/M/MV5BYzc4ODgyZmYtMGFkZC00NGQyLWJiMDItMmFmNjJiZjcxYzVmXkEyXkFqcGdeQXVyNDYyMDk5MTU@._V1_UX182_CR0,0,182,268_AL_.jpg',
 	'I''m so good at sleeping, I can do it with my eyes CLOSED',
 	DEFAULT,
-	'66377ce4-0e8b-11e8-ba89-0ed5f89f718b',
+	'462590',
 	DEFAULT
 );
 
