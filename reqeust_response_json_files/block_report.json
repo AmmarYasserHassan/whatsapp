@@ -1,0 +1,22 @@
+{
+
+    "block_request": {
+        "blocker": "",
+        "blocked": ""
+    },
+
+    "block_response": {
+        "success_message": ""
+    },
+
+    "report_request": {
+
+        "reporter": "",
+        "reported": ""
+    },
+
+    "report_response": {
+        "success_message": ""
+    }
+
+}
