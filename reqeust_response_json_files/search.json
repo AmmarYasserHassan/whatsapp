@@ -1,0 +1,12 @@
+{
+
+    "request": {
+        "mobile_number": ""
+    },
+
+    "response": {
+        "number_you_chatted_with": "",
+        "last_n_messages_for_these_chats": ""
+    }
+
+}

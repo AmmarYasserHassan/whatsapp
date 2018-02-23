@@ -1,0 +1,12 @@
+{
+
+    "request": {
+        "display_picture": "",
+        "display_name": "",
+        "status": ""
+    },
+
+    "response": {
+        "success_message": ""
+    }
+}
