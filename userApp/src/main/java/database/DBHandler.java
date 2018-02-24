@@ -1,6 +1,7 @@
 package database;
 
 import commands.BlockCommand;
+import commands.ReportCommand;
 import commands.UnBlockCommand;
 
 public class DBHandler {
@@ -24,6 +25,10 @@ public class DBHandler {
         (new BlockCommand(dbConnection, blockerNumber, blockedNumber)).execute();
     }
 
+    public void report(String reporterNumber, String reportedNumber){
+        (new ReportCommand(dbConnection, reporterNumber, reportedNumber)).execute();
+    }
+
     public void unblock(String blockerNumber, String blockedNumber){
         (new UnBlockCommand(dbConnection, blockerNumber, blockedNumber)).execute();
     }
@@ -32,6 +37,7 @@ public class DBHandler {
         DBHandler handler = new DBHandler();
         handler.block("01000000003", "01000000001");
         handler.unblock("01000000003", "01000000001");
+        handler.report("01000000002", "01000000004");
     }
 
 }
