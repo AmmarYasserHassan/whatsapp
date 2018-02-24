@@ -28,18 +28,19 @@ public class BlockCommand extends BaseCommand{
         try {
             // Execute the sql statement
             Statement statement = dbConnection.getConn().createStatement();
-            String sqlString = "SELECT * FROM block_user(" + "\""+blockerNumber+"\"" + ", " + "\""+blockedNumber+"\"" + ");";
-            ResultSet resultSet = statement.executeQuery(sqlString);
+
+            // INSERT INTO blocked VALUES (blocker_mobile_number, blocked_mobile_number);
+            String sqlString = "INSERT INTO BLOCKED VALUES (DEFAULT, " + "'"+blockerNumber+"'" + ", " + "'"+blockedNumber+"'" + ");";
+            statement.executeUpdate(sqlString);
 
             // Close the connection
             statement.close();
-            resultSet.close();
             dbConnection.disconnect();
-            return resultSet;
         }
         catch (SQLException e) {
             e.printStackTrace();
-            return null;
         }
+
+        return null;
     }
 }

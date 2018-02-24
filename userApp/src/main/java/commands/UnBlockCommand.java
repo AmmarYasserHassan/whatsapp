@@ -28,19 +28,21 @@ public class UnBlockCommand extends BaseCommand {
         try {
             // Execute the sql statement
             Statement statement = dbConnection.getConn().createStatement();
-            String sqlString = "SELECT * FROM unblock_user(" + "\""+blockerNumber+"\"" + ", " + "\""+blockedNumber+"\"" + ");";
-            ResultSet resultSet = statement.executeQuery(sqlString);
+
+            // INSERT INTO blocked VALUES (blocker_mobile_number, blocked_mobile_number);
+            String sqlString = "DELETE FROM blocked WHERE blocker_mobile_number LIKE " + "'"+blockerNumber+"'" +
+                               "AND blocked_mobile_number LIKE " + "'"+blockedNumber+"'";
+            statement.executeUpdate(sqlString);
 
             // Close the connection
             statement.close();
-            resultSet.close();
             dbConnection.disconnect();
-            return resultSet;
         }
         catch (SQLException e) {
             e.printStackTrace();
-            return null;
         }
+
+        return null;
     }
 
 }

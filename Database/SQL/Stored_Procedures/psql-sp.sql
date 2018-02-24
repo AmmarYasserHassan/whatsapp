@@ -36,7 +36,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Procedure to update all the user data at once given that the mobile number
-CREATE OR REPLACE FUNCTION update_user(user_number VARCHAR(20), display_name , display_picture, user_status)
+CREATE OR REPLACE FUNCTION update_user(user_number VARCHAR(20), display_name VARCHAR(100), 
+    display_picture TEXT, user_status TEXT)
 RETURNS void AS $$
 BEGIN
   UPDATE users SET
@@ -50,7 +51,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Procedure to update the user's name given that the mobile number
-CREATE OR REPLACE FUNCTION update_user_name(user_number VARCHAR(20), display_name)
+CREATE OR REPLACE FUNCTION update_user_name(user_number VARCHAR(20), display_name VARCHAR(100))
 RETURNS void AS $$
 BEGIN
   UPDATE users SET
@@ -64,7 +65,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Procedure to update the user's display_picture given that the mobile number
-CREATE OR REPLACE FUNCTION update_user_picture(user_number VARCHAR(20), display_picture)
+CREATE OR REPLACE FUNCTION update_user_picture(user_number VARCHAR(20), display_picture TEXT)
 RETURNS void AS $$
 BEGIN
   UPDATE users SET
@@ -78,7 +79,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Procedure to update the user's user_status given that the mobile number
-CREATE OR REPLACE FUNCTION update_user_status(user_number VARCHAR(20), user_status)
+CREATE OR REPLACE FUNCTION update_user_status(user_number VARCHAR(20), user_status TEXT)
 RETURNS void AS $$
 BEGIN
   UPDATE users SET
