@@ -1,13 +1,17 @@
 package commands;
 
 
+import database.DBHandler;
+
 public abstract class BaseCommand {
 
     /**
      * BaseCommand constructor
      */
-    public BaseCommand() {
+    DBHandler handler;
 
+    public BaseCommand(DBHandler handler) {
+        this.handler = handler;
     }
 
     /**
