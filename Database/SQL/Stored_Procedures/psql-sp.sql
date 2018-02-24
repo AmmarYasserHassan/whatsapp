@@ -14,6 +14,15 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Procedure to unblock a user
+CREATE OR REPLACE FUNCTION unblock_user(blocker VARCHAR(70), blocked VARCHAR(70))
+RETURNS void AS $$
+BEGIN
+  DELETE FROM blocked 
+  WHERE blocker_mobile_number LIKE blocker AND blocked_mobile_number LIKE blocked
+END;
+$$ LANGUAGE plpgsql;
+
 -- Procedure to add a new user
 CREATE OR REPLACE FUNCTION insert_user(mobile_number VARCHAR(20), display_name VARCHAR(100), 
     display_picture TEXT, user_status TEXT, verification_code VARCHAR(10))
