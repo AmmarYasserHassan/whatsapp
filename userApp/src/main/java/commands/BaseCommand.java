@@ -1,13 +1,16 @@
 package commands;
 
+import database.PostgresConnection;
+import java.sql.ResultSet;
 
 public abstract class BaseCommand {
+    PostgresConnection dbConnection;
 
     /**
      * BaseCommand constructor
      */
-    public BaseCommand() {
-
+    public BaseCommand(PostgresConnection dbConnection) {
+        this.dbConnection = dbConnection;
     }
 
     /**
@@ -15,5 +18,5 @@ public abstract class BaseCommand {
      *
      * @return output of the command
      */
-    public abstract String execute();
+    public abstract ResultSet execute();
 }
