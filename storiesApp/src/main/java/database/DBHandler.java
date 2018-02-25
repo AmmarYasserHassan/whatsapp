@@ -1,6 +1,7 @@
 package database;
 
 
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import models.Story;
@@ -45,9 +46,11 @@ public class DBHandler {
      */
 
     public Story getStory(String id){
-
-
         Document document = (Document) stories.find(eq("_id", new ObjectId(id))).first();
+        return createStory(document);
+    }
+
+    public Story createStory(Document document){
 
         Story story = null;
 
@@ -73,18 +76,43 @@ public class DBHandler {
 
     public ArrayList<Story> getAllStroies(String ownerMobileNumber){
 
+        ArrayList<Story> friendStories = null;
         try {
+            friendStories = new ArrayList<Story>();
+
             Statement statement = sqldb.createStatement();
             String sql = "SELECT * FROM FRIENDS WHERE first_number ="+ownerMobileNumber+"OR second_number ="+ownerMobileNumber;
 
             ResultSet rs = statement.executeQuery(sql);
+            ArrayList<String> friends = new ArrayList<String>();
+            
+            while(rs.next()){
+                String firstNum = rs.getString("first_number");
+                String secondNum = rs.getString("second_number");
+                if(firstNum.equals(ownerMobileNumber)){
+                    friends.add(secondNum);
+                } else {
+                    if(secondNum.equals(ownerMobileNumber))
+                        friends.add(firstNum);
+                }
+            }
+
+            for (int i=0; i< friends.size();i++){
+                String friend = friends.get(i);
+                FindIterable<Document> foundStories = stories.find(eq("owner_mobile_number", friend ));
+                for(Document d: foundStories){
+                    Story s = createStory(d);
+                    friendStories.add(s);
+                }
+
+            }
 
         } catch (SQLException e) {
             System.err.println(e.getMessage());
         }
 
 
-        return null;
+        return friendStories;
     }
 
 
