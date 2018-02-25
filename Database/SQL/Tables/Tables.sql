@@ -72,3 +72,14 @@ CREATE TABLE IF NOT EXISTS BLOCKED (
  FOREIGN KEY (reporter_mobile_number) REFERENCES USERS (mobile_number),
  FOREIGN KEY (reported_mobile_number) REFERENCES USERS (mobile_number)
 );
+
+-- privacy settings table
+CREATE TABLE IF NOT EXISTS PRIVACYSETTINGS(
+ id SERIAL NOT NULL,
+ mobile_number VARCHAR(20) NOT NULL,
+ last_seen  name varchar(10) NOT NULL CHECK (name IN('Everyone', 'My Contacts', 'Nobody')) DEFAULT 'Everyone',
+ profile_photo_visibility  name varchar(10) NOT NULL CHECK (name IN('Everyone', 'My Contacts', 'Nobody')) DEFAULT 'Everyone',
+ status  name varchar(10) NOT NULL CHECK (name IN('My Contacts','My Contacts Except...', 'Only Share With...')) DEFAULT 'My Contacts',
+ PRIMARY KEY (id),
+ FOREIGN KEY (mobile_number ) REFERENCES USERS (mobile_number)
+);

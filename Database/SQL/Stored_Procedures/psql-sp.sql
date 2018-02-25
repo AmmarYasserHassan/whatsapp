@@ -97,7 +97,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Procedure to get the previous chats of user given that user_number
-CREATE OR REPLACE FUNCTION get_chats(user_number VARCHAR(20)) 
+CREATE OR REPLACE FUNCTION get_chats(user_number VARCHAR(20))
 RETURNS refcursor AS $$
   DECLARE
     ref refcursor;
@@ -111,3 +111,31 @@ RETURNS refcursor AS $$
     RETURN ref;
   END;
   $$ LANGUAGE plpgsql;
+
+-- procedure to update profile_photo_visibility
+CREATE  OR REPLACE FUNCTION update_profile_photo_visibility(user_number VARCHAR(20),profile_photo_visibility)
+RETURNS void AS $$
+BEGIN
+  UPDATE PRIVACYSETTINGS SET
+    (profile_photo_visibility)
+   =
+    (profile_photo_visibility)
+   WHERE
+     mobile_number LIKE user_number
+
+END;
+$$ LANGUAGE plpgsql;
+
+-- procedure to update last seen privacy settings
+CREATE  OR REPLACE FUNCTION update_last_seen_visibility(user_number VARCHAR(20),last_seen_visibility)
+RETURNS void AS $$
+BEGIN
+  UPDATE PRIVACYSETTINGS SET
+    (last_seen)
+   =
+    (last_seen_visibility)
+   WHERE
+     mobile_number LIKE user_number
+
+END;
+$$ LANGUAGE plpgsql;
