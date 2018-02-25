@@ -19,7 +19,7 @@ CREATE OR REPLACE FUNCTION unblock_user(blocker VARCHAR(70), blocked VARCHAR(70)
 RETURNS void AS $$
 BEGIN
   DELETE FROM blocked 
-  WHERE blocker_mobile_number LIKE blocker AND blocked_mobile_number LIKE blocked
+  WHERE blocker_mobile_number LIKE blocker AND blocked_mobile_number LIKE blocked;
 END;
 $$ LANGUAGE plpgsql;
 
