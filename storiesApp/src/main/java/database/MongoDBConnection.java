@@ -8,51 +8,50 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class DBConnection {
+
+public class MongoDBConnection {
 
     /**
-     * DBConnection constructor
+     * MongoDBConnection constructor
      */
     private MongoDatabase mongodb;
     private MongoClient mongoClient;
     private  String mongoHost;
     private String mongoPort;
-    private String dbName;
+    private String mongodbName;
 
-    public DBConnection(){
-        Properties properties = new Properties();
-        try {
-            InputStream in = new FileInputStream("src/main/resources/config/application.properties");
-            properties.load(in);
 
-            mongoHost = properties.getProperty("mongodb_host");
-            mongoPort = properties.getProperty("mongodb_port");
-            dbName = properties.getProperty("mongodb_name");
-        } catch (java.io.IOException e) {
-            System.out.println(e.getMessage());
-        }
+    public MongoDBConnection(String mongoHost, String mongoPort, String mongodbName){
+        this.mongodbName = mongodbName;
+        this.mongoHost = mongoHost;
+        this.mongoPort = mongoPort;
     }
 
     /**
      * Connect to the database
      *
-     * @return DBConnection
+     * @return MongoDBConnection
      */
-    public DBConnection connect(){
+    public MongoDBConnection connect(){
 
         if (mongoClient == null && mongoPort != null && mongoHost !=null) {
             mongoClient = new MongoClient(new MongoClientURI("mongodb://" + mongoHost + ":" + mongoPort));
-            this.mongodb = mongoClient.getDatabase(dbName);
+            this.mongodb = mongoClient.getDatabase(mongodbName);
         }
+
         return this;
     }
 
     /**
      * Disconnect from the database
      */
-    public void disconnct(){
-        if(mongoClient!=null)
+    public void disconnect(){
+
+        if(mongoClient != null) {
             mongoClient.close();
+            mongoClient = null;
+        }
+
     }
 
     public MongoDatabase getMongodb() {

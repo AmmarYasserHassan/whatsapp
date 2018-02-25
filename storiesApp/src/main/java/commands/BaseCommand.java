@@ -2,6 +2,9 @@ package commands;
 
 
 import database.DBHandler;
+import models.Story;
+
+import java.util.ArrayList;
 
 public abstract class BaseCommand {
 
@@ -19,5 +22,5 @@ public abstract class BaseCommand {
      *
      * @return output of the command
      */
-    public abstract String execute();
+    public abstract Object execute();
 }

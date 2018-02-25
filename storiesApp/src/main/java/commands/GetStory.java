@@ -3,17 +3,19 @@ package commands;
 import database.DBHandler;
 import models.Story;
 
+import java.util.ArrayList;
+
 public class GetStory extends BaseCommand {
 
-    private int id;
+    private String id;
 
-    public GetStory(DBHandler handler, int id) {
+    public GetStory(DBHandler handler, String id) {
         super(handler);
         this.id = id;
     }
 
-    public String execute() {
+    public Story execute() {
         Story s = this.handler.getStory(id);
-        return null;
+        return s;
     }
 }
