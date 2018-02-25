@@ -1,6 +1,8 @@
 package commands;
 
 
+import java.sql.ResultSet;
+
 public abstract class BaseCommand {
 
     /**
@@ -15,5 +17,5 @@ public abstract class BaseCommand {
      *
      * @return output of the command
      */
-    public abstract String execute();
+    public abstract ResultSet execute();
 }
