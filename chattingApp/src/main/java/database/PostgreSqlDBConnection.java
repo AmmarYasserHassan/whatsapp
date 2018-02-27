@@ -22,9 +22,9 @@ public class PostgreSqlDBConnection {
     public PostgreSqlDBConnection() {
 		connection = null;
 		basicURL = "localhost:5432";
-		databaseName = "DBName";
-		username = "Username";
-		password = "Password";
+		databaseName = "postgres";
+		username = "postgres";
+		password = "abosalah";
 	}
 
 	/**
