@@ -11,7 +11,7 @@ public class PostgresConnection {
     /**
      * PostgresConnection constructor
      */
-    public PostgresConnection(String jdbcUrl, String username, String password) {
+    public PostgresConnection(String jdbcUrl, String username, String password){
         this.jdbcUrl = jdbcUrl;
         this.username = username;
         this.password = password;
@@ -19,7 +19,6 @@ public class PostgresConnection {
 
     /**
      * Getter and setters
-     *
      * @return
      */
     public Connection getConn() {
@@ -57,10 +56,11 @@ public class PostgresConnection {
     /**
      * Connect to the database
      */
-    public void connect() {
+    public void connect(){
         try {
             conn = DriverManager.getConnection(jdbcUrl, username, password);
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -68,11 +68,12 @@ public class PostgresConnection {
     /**
      * Disconnect from the database
      */
-    public void disconnect() {
+    public void disconnect(){
         if (conn != null) {
             try {
                 conn.close();
-            } catch (SQLException e) {
+            }
+            catch (SQLException e) {
                 e.printStackTrace();
             }
         }

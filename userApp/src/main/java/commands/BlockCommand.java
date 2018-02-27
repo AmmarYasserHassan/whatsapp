@@ -1,46 +1,30 @@
 package commands;
 
-import database.PostgresConnection;
+import database.DBHandler;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
-public class BlockCommand extends BaseCommand{
+public class BlockCommand{
+    DBHandler dbHandler;
     String blockerNumber, blockedNumber;
 
     /**
      * Constructor
-     * @param dbConnection
+     * @param dbHandler
      * @param blockerNumber
      * @param blockedNumber
      */
-    public BlockCommand(PostgresConnection dbConnection, String blockerNumber, String blockedNumber){
-        super(dbConnection);
+    public BlockCommand(DBHandler dbHandler, String blockerNumber, String blockedNumber){
+        this.dbHandler = dbHandler;
         this.blockerNumber = blockerNumber;
         this.blockedNumber = blockedNumber;
     }
 
     /**
-     * Execute the block sql query
+     * Execute the block command
      * @return
      */
     public ResultSet execute() {
-        try {
-            // Execute the sql statement
-            Statement statement = dbConnection.getConn().createStatement();
-
-            // INSERT INTO blocked VALUES (blocker_mobile_number, blocked_mobile_number);
-            String sqlString = "INSERT INTO BLOCKED VALUES (DEFAULT, " + "'"+blockerNumber+"'" + ", " + "'"+blockedNumber+"'" + ");";
-            statement.executeUpdate(sqlString);
-
-            // Close the connection
-            statement.close();
-            dbConnection.disconnect();
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return this.dbHandler.blockUser(blockerNumber, blockedNumber);
     }
 }

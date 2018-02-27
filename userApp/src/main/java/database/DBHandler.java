@@ -1,43 +1,122 @@
 package database;
 
-import commands.BlockCommand;
-import commands.ReportCommand;
-import commands.UnBlockCommand;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class DBHandler {
-    PostgresConnection dbConnection;
+    PostgresConnection postgresConnection;
 
     /**
      * DbHandler constructor
      */
-    public DBHandler(){
-        // DB info
-        String jdbcUrl = "jdbc:postgresql://localhost:5432/whatsapp";
-        String username = "postgres";
-        String password = "Gladiator2222";
-
-        // Connect to db
-        dbConnection = new PostgresConnection(jdbcUrl, username, password);
-        dbConnection.connect();
+    public DBHandler(PostgresConnection postgresConnection) {
+        this.postgresConnection = postgresConnection;
     }
 
-    public void block(String blockerNumber, String blockedNumber){
-        (new BlockCommand(dbConnection, blockerNumber, blockedNumber)).execute();
+    /**
+     * Update user name query
+     *
+     * @param userNumber
+     * @param displayName
+     * @return ResultSet containing the new user details
+     * @throws SQLException
+     */
+    public ResultSet updateUserName(String userNumber, String displayName) throws SQLException {
+        try {
+            // Execute the sql statement
+            Statement statement = this.postgresConnection.getConn().createStatement();
+
+            String update_name = "SELECT update_user_name(" + "'" + userNumber + "'" + ", " + "'" + displayName + "'" + ");";
+            ResultSet resultSet = statement.executeQuery(update_name);
+
+            // Close the connection
+            statement.close();
+            resultSet.close();
+            postgresConnection.disconnect();
+            return resultSet;
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+
+        }
     }
 
-    public void report(String reporterNumber, String reportedNumber){
-        (new ReportCommand(dbConnection, reporterNumber, reportedNumber)).execute();
+    /**
+     * Update user status
+     *
+     * @param userNumber
+     * @param updatedStatus
+     * @return ResultSet query output
+     */
+    public ResultSet updateUserStatus(String userNumber, String updatedStatus) {
+
+        try {
+            // Execute the sql statement
+            Statement statement = this.postgresConnection.getConn().createStatement();
+
+            String updated_status = "SELECT update_user_status(" + "'" + userNumber + "'" + ", " + "'" + updatedStatus + "'" + ");";
+            ResultSet resultSet = statement.executeQuery(updated_status);
+
+            // Close the connection
+            statement.close();
+            resultSet.close();
+            postgresConnection.disconnect();
+            return resultSet;
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+        return null;
     }
 
-    public void unblock(String blockerNumber, String blockedNumber){
-        (new UnBlockCommand(dbConnection, blockerNumber, blockedNumber)).execute();
+    /**
+     * Block a user
+     * @param blockerNumber
+     * @param blockedNumber
+     */
+    public ResultSet blockUser(String blockerNumber, String blockedNumber){
+        try {
+            // Execute the sql statement
+            Statement statement = postgresConnection.getConn().createStatement();
+            String sqlString = "INSERT INTO BLOCKED VALUES (DEFAULT, " + "'"+blockerNumber+"'" + ", " + "'"+blockedNumber+"'" + ");";
+            statement.executeUpdate(sqlString);
+
+            // Close the connection
+            statement.close();
+            postgresConnection.disconnect();
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
-    public static void main(String [] args){
-        DBHandler handler = new DBHandler();
-        handler.block("01000000003", "01000000001");
-        handler.unblock("01000000003", "01000000001");
-        handler.report("01000000002", "01000000004");
+    /**
+     * Unblock a user
+     * @param blockerNumber
+     * @param blockedNumber
+     */
+    public ResultSet unBlockUser(String blockerNumber, String blockedNumber){
+        try {
+            // Execute the sql statement
+            Statement statement = postgresConnection.getConn().createStatement();
+            String sqlString = "DELETE FROM blocked WHERE blocker_mobile_number LIKE " + "'"+blockerNumber+"'" +
+                               "AND blocked_mobile_number LIKE " + "'"+blockedNumber+"'";
+            statement.executeUpdate(sqlString);
+
+            // Close the connection
+            statement.close();
+            postgresConnection.disconnect();
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
 }
