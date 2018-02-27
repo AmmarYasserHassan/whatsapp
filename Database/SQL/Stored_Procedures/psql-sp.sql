@@ -19,11 +19,7 @@ CREATE OR REPLACE FUNCTION unblock_user(blocker VARCHAR(70), blocked VARCHAR(70)
 RETURNS void AS $$
 BEGIN
   DELETE FROM blocked 
-<<<<<<< HEAD
-  WHERE blocker_mobile_number LIKE blocker AND blocked_mobile_number LIKE blocked
-=======
   WHERE blocker_mobile_number LIKE blocker AND blocked_mobile_number LIKE blocked;
->>>>>>> 1c3fa23fb9aa19fa65b303a3e78f05ea691ad317
 END;
 $$ LANGUAGE plpgsql;
 
@@ -40,14 +36,9 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Procedure to update all the user data at once given that the mobile number
-<<<<<<< HEAD
-CREATE OR REPLACE FUNCTION update_user(user_number VARCHAR(20), display_name VARCHAR(100), 
-    display_picture TEXT, user_status TEXT)
-=======
 DROP FUNCTION update_user(character varying,character varying,text,text);
 CREATE OR REPLACE FUNCTION update_user(user_number VARCHAR(20), display_name_new VARCHAR(100), 
     display_picture_new TEXT, user_status_new TEXT)
->>>>>>> 1c3fa23fb9aa19fa65b303a3e78f05ea691ad317
 RETURNS void AS $$
 BEGIN
   UPDATE users SET
@@ -61,12 +52,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Procedure to update the user's name given that the mobile number
-<<<<<<< HEAD
-CREATE OR REPLACE FUNCTION update_user_name(user_number VARCHAR(20), display_name VARCHAR(100))
-=======
 DROP FUNCTION update_user_name(character varying,character varying);
 CREATE OR REPLACE FUNCTION update_user_name(user_number VARCHAR(20), display_name_new VARCHAR(100))
->>>>>>> 1c3fa23fb9aa19fa65b303a3e78f05ea691ad317
 RETURNS void AS $$
 BEGIN
   UPDATE users SET
@@ -80,12 +67,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Procedure to update the user's display_picture given that the mobile number
-<<<<<<< HEAD
-CREATE OR REPLACE FUNCTION update_user_picture(user_number VARCHAR(20), display_picture TEXT)
-=======
 DROP FUNCTION update_user_picture(character varying,text);
 CREATE OR REPLACE FUNCTION update_user_picture(user_number VARCHAR(20), display_picture_new TEXT)
->>>>>>> 1c3fa23fb9aa19fa65b303a3e78f05ea691ad317
 RETURNS void AS $$
 BEGIN
   UPDATE users SET
@@ -99,12 +82,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Procedure to update the user's user_status given that the mobile number
-<<<<<<< HEAD
-CREATE OR REPLACE FUNCTION update_user_status(user_number VARCHAR(20), user_status TEXT)
-=======
 DROP FUNCTION update_user_status(character varying,text);
 CREATE OR REPLACE FUNCTION update_user_status(user_number VARCHAR(20), user_status_new TEXT)
->>>>>>> 1c3fa23fb9aa19fa65b303a3e78f05ea691ad317
 RETURNS void AS $$
 BEGIN
   UPDATE users SET

@@ -119,4 +119,28 @@ public class DBHandler {
         return null;
     }
 
+    /**
+     * Report a user
+     * @param reporterNumber
+     * @param reportedNumber
+     * @return
+     */
+    public ResultSet reportUser(String reporterNumber, String reportedNumber){
+        try {
+            // Execute the sql statement
+            Statement statement = postgresConnection.getConn().createStatement();
+            String sqlString = "INSERT INTO REPORTED VALUES (DEFAULT, " + "'"+reporterNumber+"'" + ", " + "'"+reportedNumber+"'" + ");";
+            statement.executeUpdate(sqlString);
+
+            // Close the connection
+            statement.close();
+            postgresConnection.disconnect();
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
 }
