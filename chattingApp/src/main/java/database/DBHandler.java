@@ -7,11 +7,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
+import com.mongodb.*;
 import com.mongodb.util.JSON;
 
 public class DBHandler {
@@ -40,39 +36,64 @@ public class DBHandler {
     }
 
     
-    //TODO return type.
-    public static void insertMongoDocument(String jsonDocument, String collectionName)
+    public static boolean insertMongoDocument(String jsonDocument, String collectionName)
     {
         DBCollection collection = mongoDB.getCollection(collectionName);
         DBObject dbObject = (DBObject)JSON.parse(jsonDocument);
-        collection.insert(dbObject);
+        try {
+			collection.insert(dbObject);
+		}
+		//Couldn't insert document for any reason
+		catch(MongoException mongoException)
+		{
+			return false;
+		}
+        return true;
+    }
+
+    public static boolean insertAllMongoDocuments(ArrayList<String> jsonDocuments, String collectionName)
+    {
+        DBCollection collection = mongoDB.getCollection(collectionName);
+        ArrayList<DBObject> dbObjects =  new ArrayList<DBObject>();
+        for(String document:jsonDocuments)
+        dbObjects.add((DBObject)JSON.parse(document));
+
+		try {
+			collection.insert(dbObjects);
+		}
+		//Couldn't insert document for any reason
+		catch(MongoException mongoException)
+		{
+			return false;
+		}
+		return true;
 
     }
+
     
-    
-//    //TODO return type.
-//    public static void insertAllMongoDocuments(ArrayList<String> jsonDocument, String collectionName)
-//    {
-//        DBCollection collection = mongoDB.getCollection(collectionName);
-//        DBObject dbObject = (DBObject)JSON.parse(jsonDocument);
-//        collection.insert(dbObject);
-//
-//    }
-//    
-    
-    public static DBObject findMongoDocument(String jsonDocument, String collectionName)
+    public static DBObject findMongoDocument(String jsonDocument, String collectionName) throws MongoException
     {
     	 DBCollection collection = mongoDB.getCollection(collectionName);
          DBObject dbObject = (DBObject)JSON.parse(jsonDocument);
          DBObject mongoDocument = collection.findOne(dbObject);
-       return mongoDocument;
+
+         if(mongoDocument==null)
+         	throw new MongoException("Document does not exit");
+
+         return mongoDocument;
+
+
     }
-    public static ArrayList<DBObject> findAllMongoDocuments(String jsonDocument, String collectionName)
+    public static ArrayList<DBObject> findAllMongoDocuments(String jsonDocument, String collectionName) throws MongoException
     {
     	//ArrayList<DBOject>
     	 DBCollection collection = mongoDB.getCollection(collectionName);
          DBObject dbObject = (DBObject)JSON.parse(jsonDocument);
          DBCursor mongoDocuments = collection.find(dbObject);
+
+		 if(mongoDocuments.size()==0)
+			throw new MongoException("Document does not exit");
+
          return (ArrayList<DBObject>) mongoDocuments.toArray();
     }
     
@@ -91,10 +112,15 @@ public class DBHandler {
 //		    }
 //		    System.out.println("");
 //		}
-//    	findMongoDocument("{'name' : 'tutorialspoint' }", "mycollection");
-//        createMongoDocument("{'name' : 'tutorialspoint' }", "mycollection");
+   System.out.println(findAllMongoDocuments("{}", "mycollection"));
+		//insertMongoDocument("{'name' : 'tutorialspoint' }", "mycollection");
 //        System.out.println("Collection myCollection selected successfully   " + collection.findOne());
-    	insertMongoDocument("[ {'name': 'Kiran', 'age': '20'}, {'name': 'John'} ]", "mycollection");
+    	//insertMongoDocument("{'name': 'kiran', 'age': '20'}", "mycollection");
+//		ArrayList<String> docs = new ArrayList<String>();
+//		docs.add("{'name': 'misho1'}");
+//		docs.add("{'name': 'misho2'}");
+//		docs.add("{'name': 'misho3'}");
+	//	insertAllMongoDocuments(docs,"mycollection");
         
 	}
 }
