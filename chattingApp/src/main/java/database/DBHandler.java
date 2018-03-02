@@ -51,6 +51,26 @@ public class DBHandler {
         return true;
     }
 
+//	public static boolean updateMongoDocument(String attributesToFindDocumentWith,String attributesToUpdateDocumentWith, String collectionName)
+//	{
+//		DBCollection collection = mongoDB.getCollection(collectionName);
+//		DBObject dbObjectToFind = (DBObject)JSON.parse(attributesToFindDocumentWith);
+//
+//		try{
+//
+//		}
+//		catch
+//		try {
+//			collection.update(attributesToFindDocumentWith,attributesToFindDocumentWith);
+//		}
+//		//Couldn't insert document for any reason
+//		catch(MongoException mongoException)
+//		{
+//			return false;
+//		}
+//		return true;
+//	}
+
     public static boolean insertAllMongoDocuments(ArrayList<String> jsonDocuments, String collectionName)
     {
         DBCollection collection = mongoDB.getCollection(collectionName);
@@ -70,7 +90,7 @@ public class DBHandler {
 
     }
 
-    
+
     public static DBObject findMongoDocument(String jsonDocument, String collectionName) throws MongoException
     {
     	 DBCollection collection = mongoDB.getCollection(collectionName);
@@ -98,7 +118,6 @@ public class DBHandler {
     }
     
     
-    //TODO mongo handlers
     public static void main(String[] args) throws SQLException {
     	
 //    	ResultSet resultSet = executeSQLQuery("SELECT * FROM playground");
