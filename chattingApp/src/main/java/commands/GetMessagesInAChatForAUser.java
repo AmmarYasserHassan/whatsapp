@@ -15,12 +15,7 @@ public class GetMessagesInAChatForAUser {
      *
      * @param dbHandler
      * @param userNumber
-     */
-
-    /**
-     * Update User name constructor
-     * @param dbHandler
-     * @param userNumber
+     * @param chatId
      */
     public GetMessagesInAChatForAUser(DBHandler dbHandler, String userNumber,int chatId) {
         super();
