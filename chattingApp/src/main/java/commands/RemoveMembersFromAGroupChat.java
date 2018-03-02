@@ -40,7 +40,7 @@ public class RemoveMembersFromAGroupChat {
     public ResultSet execute() throws SQLException {
 
 
-        String remove_member_to_a_group_chat = "SELECT remove_members_to_a_group_chat(" + "'" + adminUserNumber + "'" + ", " + "'" + groupChatId + "'"+", " + "'" + numberOfMemberToBeRemoved + "'" + ");";
+        String remove_member_to_a_group_chat = "SELECT remove_members_from_a_group_chat(" + "'" + adminUserNumber + "'" + ", " + "'" + groupChatId + "'"+", " + "'" + numberOfMemberToBeRemoved + "'" + ");";
         return this.dbHandler.executeSQLQuery(remove_member_to_a_group_chat);
     }
 }
