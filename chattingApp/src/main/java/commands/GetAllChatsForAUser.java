@@ -16,11 +16,6 @@ public class GetAllChatsForAUser {
          * @param userNumber
          */
 
-        /**
-         * Update User name constructor
-         * @param dbHandler
-         * @param userNumber
-         */
         public GetAllChatsForAUser(DBHandler dbHandler, String userNumber) {
             super();
             this.dbHandler = dbHandler;
