@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class AddMembersToAGroupChat {
+public class AddMembersToAGroupChatCommand {
 
     DBHandler dbHandler;
     String adminUserNumber;
@@ -23,7 +23,7 @@ public class AddMembersToAGroupChat {
      *
      */
 
-    public AddMembersToAGroupChat(DBHandler dbHandler, String adminUserNumber, String numberOfMemberToBeAdded, int groupChatId) {
+    public AddMembersToAGroupChatCommand(DBHandler dbHandler, String adminUserNumber, String numberOfMemberToBeAdded, int groupChatId) {
         this.dbHandler = dbHandler;
         this.adminUserNumber = adminUserNumber;
         this.numberOfMemberToBeAdded = numberOfMemberToBeAdded;

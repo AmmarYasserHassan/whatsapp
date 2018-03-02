@@ -5,7 +5,7 @@ import database.DBHandler;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class GetMessagesInAChatForAUser {
+public class GetMessagesInAChatForAUserCommand {
     DBHandler dbHandler;
     String userNumber;
     int chatId;
@@ -17,7 +17,7 @@ public class GetMessagesInAChatForAUser {
      * @param userNumber
      * @param chatId
      */
-    public GetMessagesInAChatForAUser(DBHandler dbHandler, String userNumber,int chatId) {
+    public GetMessagesInAChatForAUserCommand(DBHandler dbHandler, String userNumber, int chatId) {
         super();
         this.dbHandler = dbHandler;
         this.userNumber = userNumber;

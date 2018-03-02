@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class RemoveMembersFromAGroupChat {
+public class RemoveMembersFromAGroupChatCommand {
 
     DBHandler dbHandler;
     String adminUserNumber;
@@ -23,7 +23,7 @@ public class RemoveMembersFromAGroupChat {
      *
      */
 
-    public RemoveMembersFromAGroupChat(DBHandler dbHandler, String adminUserNumber, String numberOfMemberToBeRemoved, int groupChatId) {
+    public RemoveMembersFromAGroupChatCommand(DBHandler dbHandler, String adminUserNumber, String numberOfMemberToBeRemoved, int groupChatId) {
         this.dbHandler = dbHandler;
         this.adminUserNumber = adminUserNumber;
         this.numberOfMemberToBeRemoved = numberOfMemberToBeRemoved;
@@ -31,8 +31,8 @@ public class RemoveMembersFromAGroupChat {
     }
 
     /**
-     * Execute the add members to a group chat command
-     * Check first that this adminUsernumber is an admin of this group chat and removed the members
+     * Execute the remove members from a group chat command
+     * Check first that this adminUsernumber is an admin of this group chat and remove the members
      *
      * @return Result Set
      * @throws SQLException
