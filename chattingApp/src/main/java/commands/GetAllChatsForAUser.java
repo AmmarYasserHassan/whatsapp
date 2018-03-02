@@ -4,7 +4,7 @@ import database.DBHandler;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class GetAllChats {
+public class GetAllChatsForAUser {
 
         DBHandler dbHandler;
         String userNumber;
@@ -21,7 +21,7 @@ public class GetAllChats {
          * @param dbHandler
          * @param userNumber
          */
-        public GetAllChats(DBHandler dbHandler, String userNumber) {
+        public GetAllChatsForAUser(DBHandler dbHandler, String userNumber) {
             super();
             this.dbHandler = dbHandler;
             this.userNumber = userNumber;
@@ -39,4 +39,4 @@ public class GetAllChats {
             return this.dbHandler.executeSQLQuery(get_chats);
         }
     }
-}
+
