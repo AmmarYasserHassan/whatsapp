@@ -5,7 +5,9 @@ import database.DBHandler;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class GetMessagesInAChatForAUserCommand {
+import org.json.JSONObject;
+
+public class GetMessagesInAChatForAUserCommand implements Command{
     DBHandler dbHandler;
     String userNumber;
     int chatId;
@@ -32,7 +34,7 @@ public class GetMessagesInAChatForAUserCommand {
      * @return Result Set
      * @throws SQLException
      */
-    public ResultSet execute() throws SQLException {
+    public JSONObject execute() {
 
 
         String get_messages_in_a_chat = "SELECT get_messages_in_a_chat(" + "'" + userNumber + "'" + ", " + "'" + chatId + "'" + ");";

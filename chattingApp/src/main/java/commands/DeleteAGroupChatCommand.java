@@ -7,7 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class DeleteAGroupChatCommand {
+import org.json.JSONObject;
+
+public class DeleteAGroupChatCommand implements Command{
 
     DBHandler dbHandler;
     String adminUserNumber;
@@ -35,7 +37,7 @@ public class DeleteAGroupChatCommand {
      * @return Result Set
      * @throws SQLException
      */
-    public ResultSet execute() throws SQLException {
+    public JSONObject execute() {
 
 
         String delete_a_group_chat = "SELECT delete_a_group_chat(" + "'" + adminUserNumber + "'" + ", " + "'" + groupChatId + ");";

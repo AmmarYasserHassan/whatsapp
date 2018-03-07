@@ -7,7 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class AddAdminsToAGroupChatCommand {
+import org.json.JSONObject;
+
+public class AddAdminsToAGroupChatCommand implements Command{
 
     DBHandler dbHandler;
     String adminUserNumber;
@@ -38,7 +40,7 @@ public class AddAdminsToAGroupChatCommand {
      * @return Result Set
      * @throws SQLException
      */
-    public ResultSet execute() throws SQLException {
+    public JSONObject execute() {
 
 
         String add_admin_to_a_group_chat = "SELECT add_admins_to_a_group_chat(" + "'" + adminUserNumber + "'" + ", " + "'" + groupChatId + "'"+", " + "'" + numberOfMemberToBeMadeAdmin + "'" + ");";

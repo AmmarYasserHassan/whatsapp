@@ -4,7 +4,9 @@ import database.DBHandler;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class GetAllChatsForAUserCommand {
+import org.json.JSONObject;
+
+public class GetAllChatsForAUserCommand implements Command{
 
         DBHandler dbHandler;
         String userNumber;
@@ -29,7 +31,7 @@ public class GetAllChatsForAUserCommand {
          * @return Result Set
          * @throws SQLException
          */
-        public ResultSet execute() throws SQLException {
+        public JSONObject execute() {
             String get_chats = "SELECT get_chats(" + "'" + userNumber + "'"+ ");";
             return this.dbHandler.executeSQLQuery(get_chats);
         }

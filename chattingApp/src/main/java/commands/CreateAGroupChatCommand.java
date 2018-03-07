@@ -7,7 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class CreateAGroupChatCommand {
+import org.json.JSONObject;
+
+public class CreateAGroupChatCommand implements Command{
     DBHandler dbHandler;
     String userNumber;
     String groupChatName;
@@ -40,7 +42,7 @@ public class CreateAGroupChatCommand {
      * @return Result Set
      * @throws SQLException
      */
-    public ResultSet execute() throws SQLException {
+    public JSONObject execute() {
         String create_group_chat= "SELECT create_gorup_chat(" + "'" + groupChatName + "'" + ", " + "'" + groupDisplayPicture + "'"+ ", " + "'" + userNumber + "'" + ");";
 
         return this.dbHandler.executeSQLQuery(create_group_chat);

@@ -24,7 +24,7 @@ public class PostgreSqlDBConnection {
 		basicURL = "localhost:5432";
 		databaseName = "postgres";
 		username = "postgres";
-		password = "abosalah";
+		password = "kimo3433";
 	}
 
 	/**
@@ -38,7 +38,7 @@ public class PostgreSqlDBConnection {
         try {
 			connection = DriverManager.getConnection(postgresqlJdbcUrl, username, password);
         } catch (SQLException e) {
-			System.err.println("Cannot connect to PostgreSql Database !");
+			System.err.println("Cannot connect to PostgreSql Database !: "+e.getMessage());
 		}
         return connection;
     }
@@ -55,7 +55,7 @@ public class PostgreSqlDBConnection {
 				connection = null;
 				return true;
 			} catch (SQLException e) {
-				System.err.println("Cannot disconnect from PostgreSql Database !");
+				System.err.println("Cannot disconnect from PostgreSql Database !: "+e.getMessage());
 				return false;
 			}
     	}else{

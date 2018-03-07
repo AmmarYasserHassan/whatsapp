@@ -7,7 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class ArchiveChatCommand {
+import org.json.JSONObject;
+
+public class ArchiveChatCommand implements Command{
 
     DBHandler dbHandler;
     String userNumber;
@@ -37,7 +39,7 @@ public class ArchiveChatCommand {
      * @return Result Set
      * @throws SQLException
      */
-    public ResultSet execute() throws SQLException {
+    public JSONObject execute() {
         String archive_chat;
         if (isGroupChat)
             archive_chat= "SELECT archive_group_chat(" + "'" + userNumber + "'" + ", " + "'" + chatId + "'"+ ");";
