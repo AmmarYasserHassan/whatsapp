@@ -16,7 +16,7 @@ public class Main {
 //        String mongodbName = "whatsapp";
 //
 //        MongoDBConnection db = new MongoDBConnection(mongoHost, mongoPort, mongodbName);
-//        DBHandler dbHandler = new DBHandler(db.connect());
+//        DBHandler dbHandler = new DBHandler();
 //
 //        byte[] imageBytes = IOUtils.toByteArray(new FileInputStream("C:\\Users\\welcome\\Desktop\\mediaServer\\download.jpg"));
 //        String base64 = Base64.getEncoder().encodeToString(imageBytes);
