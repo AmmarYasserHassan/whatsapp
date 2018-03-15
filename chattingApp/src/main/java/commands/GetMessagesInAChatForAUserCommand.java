@@ -13,6 +13,7 @@ public class GetMessagesInAChatForAUserCommand implements Command, Runnable {
     DBHandler dbHandler;
     String userNumber;
     int chatId;
+    boolean isGroupChat;
 
     /**
      * Constructor
@@ -25,20 +26,26 @@ public class GetMessagesInAChatForAUserCommand implements Command, Runnable {
         this.dbHandler = dbHandler;
         this.userNumber = request.get("userNumber").getAsString();
         this.chatId = request.get("chatId").getAsInt();
+        this.isGroupChat = request.get("isGroupChat").getAsBoolean();
     }
 
 
     /**
-     * Execute the get messages in a chat command
-     * Check first that this usernumber is a participator in this chat and get the messages
-     *
-     * @return Result Set
-     * @throws SQLException
+     * Execute the get messages in a chat or group chat command
+     * @return JSONObject, if error == false then data is returned successsfully, if error == true then further info in error_message
      */
     public JSONObject execute() {
 
-        String get_messages_in_a_chat = "SELECT get_messages_in_a_chat(" + "'" + userNumber + "'" + ", " + "'" + chatId + "'" + ");";
-        return this.dbHandler.executeSQLQuery(get_messages_in_a_chat);
+        String jsonDocument = "\"{'chat_id':" + chatId+ " }\"";
+        String collectionName;
+        if(isGroupChat)
+            collectionName = "group_chats";
+        else
+            collectionName = "chats";
+
+        return this.dbHandler.findAllMongoDocuments(jsonDocument,collectionName);
+
+
     }
 
     public void run() {
