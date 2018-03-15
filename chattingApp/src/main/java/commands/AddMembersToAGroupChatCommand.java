@@ -1,5 +1,6 @@
 package commands;
 
+import com.google.gson.JsonObject;
 import database.DBHandler;
 
 import java.sql.ResultSet;
@@ -7,8 +8,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import org.json.JSONObject;
+import sender.MqttSender;
 
-public class AddMembersToAGroupChatCommand implements Command{
+public class AddMembersToAGroupChatCommand implements Command, Runnable {
 
     DBHandler dbHandler;
     String adminUserNumber;
@@ -19,17 +21,14 @@ public class AddMembersToAGroupChatCommand implements Command{
      * Constructor
      *
      * @param dbHandler
-     * @param adminUserNumber
-     * @param numberOfMemberToBeAdded
-     * @param groupChatId
-     *
+     * @param request
      */
-
-    public AddMembersToAGroupChatCommand(DBHandler dbHandler, String adminUserNumber, String numberOfMemberToBeAdded, int groupChatId) {
+// String adminUserNumber, String numberOfMemberToBeAdded, int groupChatId
+    public AddMembersToAGroupChatCommand(DBHandler dbHandler, JsonObject request) {
         this.dbHandler = dbHandler;
-        this.adminUserNumber = adminUserNumber;
-        this.numberOfMemberToBeAdded = numberOfMemberToBeAdded;
-        this.groupChatId = groupChatId;
+        this.adminUserNumber = request.get("adminUserNumber").getAsString();
+        this.numberOfMemberToBeAdded = request.get("numberOfMemberToBeAdded").getAsString();
+        this.groupChatId = request.get("groupChatId").getAsInt();
     }
 
     /**
@@ -39,10 +38,19 @@ public class AddMembersToAGroupChatCommand implements Command{
      * @return Result Set
      * @throws SQLException
      */
-    public JSONObject execute(){
-
-
-        String add_member_to_a_group_chat = "SELECT add_members_to_a_group_chat(" + "'" + adminUserNumber + "'" + ", " + "'" + groupChatId + "'"+", " + "'" + numberOfMemberToBeAdded + "'" + ");";
+    public JSONObject execute() {
+        String add_member_to_a_group_chat = "SELECT add_members_to_a_group_chat(" + "'" + adminUserNumber + "'" + ", " + "'" + groupChatId + "'" + ", " + "'" + numberOfMemberToBeAdded + "'" + ");";
         return this.dbHandler.executeSQLQuery(add_member_to_a_group_chat);
+    }
+
+    public void run() {
+        JSONObject res = this.execute();
+        try {
+            MqttSender sender = new MqttSender();
+            sender.send(res);
+            sender.close();
+        }catch (Exception e){
+
+        }
     }
 }

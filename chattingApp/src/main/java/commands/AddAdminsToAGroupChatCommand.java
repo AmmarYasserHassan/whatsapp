@@ -2,14 +2,15 @@ package commands;
 
 
 import database.DBHandler;
-
+import com.google.gson.JsonObject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
+
 
 import org.json.JSONObject;
+import sender.MqttSender;
 
-public class AddAdminsToAGroupChatCommand implements Command{
+public class AddAdminsToAGroupChatCommand implements Command, Runnable {
 
     DBHandler dbHandler;
     String adminUserNumber;
@@ -20,17 +21,14 @@ public class AddAdminsToAGroupChatCommand implements Command{
      * Constructor
      *
      * @param dbHandler
-     * @param adminUserNumber
-     * @param numberOfMemberToBeMadeAdmin
-     * @param groupChatId
-     *
+     * @param request
      */
 
-    public AddAdminsToAGroupChatCommand(DBHandler dbHandler, String adminUserNumber, String numberOfMemberToBeMadeAdmin, int groupChatId) {
+    public AddAdminsToAGroupChatCommand(DBHandler dbHandler, JsonObject request) {
         this.dbHandler = dbHandler;
-        this.adminUserNumber = adminUserNumber;
-        this.numberOfMemberToBeMadeAdmin = numberOfMemberToBeMadeAdmin;
-        this.groupChatId = groupChatId;
+        this.adminUserNumber = request.get("adminUserNumber").getAsString();
+        this.numberOfMemberToBeMadeAdmin = request.get("numberOfMemberToBeMadeAdmin").getAsString();
+        this.groupChatId = request.get("groupChatId").getAsInt();
     }
 
     /**
@@ -41,9 +39,18 @@ public class AddAdminsToAGroupChatCommand implements Command{
      * @throws SQLException
      */
     public JSONObject execute() {
-
-
-        String add_admin_to_a_group_chat = "SELECT add_admins_to_a_group_chat(" + "'" + adminUserNumber + "'" + ", " + "'" + groupChatId + "'"+", " + "'" + numberOfMemberToBeMadeAdmin + "'" + ");";
+        String add_admin_to_a_group_chat = "SELECT add_admins_to_a_group_chat(" + "'" + adminUserNumber + "'" + ", " + "'" + groupChatId + "'" + ", " + "'" + numberOfMemberToBeMadeAdmin + "'" + ");";
         return this.dbHandler.executeSQLQuery(add_admin_to_a_group_chat);
+    }
+
+    public void run() {
+        JSONObject res = this.execute();
+        try {
+            MqttSender sender = new MqttSender();
+            sender.send(res);
+            sender.close();
+        }catch (Exception e){
+
+        }
     }
 }

@@ -6,8 +6,6 @@ import com.google.gson.JsonParser;
 import invoker.Invoker;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.concurrent.TimeoutException;
 
 public class MqttClient {
 
@@ -19,7 +17,7 @@ public class MqttClient {
     private Connection connection;
     private Invoker invoker;
 
-    public MqttClient() throws IOException, TimeoutException {
+    public MqttClient() throws Exception {
         invoker = new Invoker();
 
         factory = new ConnectionFactory();
@@ -36,9 +34,8 @@ public class MqttClient {
                     throws IOException {
                 String requestRaw = new String(body);
                 JsonObject request = new JsonParser().parse(requestRaw).getAsJsonObject();
-                HashMap<String, String> args = new HashMap<String, String>();
                 try {
-                    invoker.invoke(request.get("commandName").getAsString(), args);
+                    invoker.invoke(request.get("commandName").getAsString(), request);
                 } catch (Exception e) {
 
                 }
@@ -46,5 +43,10 @@ public class MqttClient {
         };
 
         channel.basicConsume(QUEUE_NAME, true, consumerChattingApp);
+    }
+
+    public static void main(String[] args) throws Exception {
+        MqttClient client = new MqttClient();
+        System.out.println("Chatting app started successfully ");
     }
 }
