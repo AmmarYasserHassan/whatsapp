@@ -1,146 +1,171 @@
 package database;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import com.mongodb.*;
+import com.mongodb.util.JSON;
 
 public class DBHandler {
-    PostgresConnection postgresConnection;
 
-    /**
-     * DbHandler constructor
-     */
-    public DBHandler(PostgresConnection postgresConnection) {
-        this.postgresConnection = postgresConnection;
-    }
+	static PostgreSqlDBConnection postgresqlDBConnection = new PostgreSqlDBConnection();
+	static MongoDBConnection mongoDBConnection = new MongoDBConnection();
+	static DB mongoDB = mongoDBConnection.connect();
 
-    /**
-     * Update user name query
-     *
-     * @param userNumber
-     * @param displayName
-     * @return ResultSet containing the new user details
-     * @throws SQLException
-     */
-    public ResultSet updateUserName(String userNumber, String displayName) throws SQLException {
-        try {
-            // Execute the sql statement
-            Statement statement = this.postgresConnection.getConn().createStatement();
+	
+	/**
+	 * Execute sql query by the postgreSQL Database.
+	 * 
+	 * @param query
+	 * @return date ResultSet
+	 * @see {@link ResultSet}
+	 */
+	public static JSONObject executeSQLQuery(String query) {
+		Connection connection = postgresqlDBConnection.connect();
+		JSONObject result = new JSONObject();
+		try {
+			Statement statement = connection.createStatement();
+			JSONArray data = convertToJSONArray(statement.executeQuery(query));
+			result.put("error",false);
+			result.put("data", data);
+		} catch (SQLException e) {
+			result.put("error",true);
+			result.put("error_message", e.getMessage());
+		} finally {
+			postgresqlDBConnection.disconnct();
+		}
+		return result;
+	}
 
-            String update_name = "SELECT update_user_name(" + "'" + userNumber + "'" + ", " + "'" + displayName + "'" + ");";
-            ResultSet resultSet = statement.executeQuery(update_name);
+	public static boolean insertMongoDocument(String jsonDocument, String collectionName) {
+		DBCollection collection = mongoDB.getCollection(collectionName);
+		DBObject dbObject = (DBObject) JSON.parse(jsonDocument);
+		try {
+			collection.insert(dbObject);
+		}
+		// Couldn't insert document for any reason
+		catch (MongoException mongoException) {
+			return false;
+		}
+		return true;
+	}
 
-            // Close the connection
-            statement.close();
-            resultSet.close();
-            postgresConnection.disconnect();
-            return resultSet;
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-            return null;
+	// public static boolean updateMongoDocument(String
+	// attributesToFindDocumentWith,String attributesToUpdateDocumentWith,
+	// String collectionName)
+	// {
+	// DBCollection collection = mongoDB.getCollection(collectionName);
+	// DBObject dbObjectToFind =
+	// (DBObject)JSON.parse(attributesToFindDocumentWith);
+	//
+	// try{
+	//
+	// }
+	// catch
+	// try {
+	// collection.update(attributesToFindDocumentWith,attributesToFindDocumentWith);
+	// }
+	// //Couldn't insert document for any reason
+	// catch(MongoException mongoException)
+	// {
+	// return false;
+	// }
+	// return true;
+	public static boolean insertAllMongoDocuments(ArrayList<String> jsonDocuments, String collectionName) {
+		DBCollection collection = mongoDB.getCollection(collectionName);
+		ArrayList<DBObject> dbObjects = new ArrayList<DBObject>();
+		for (String document : jsonDocuments)
+			dbObjects.add((DBObject) JSON.parse(document));
 
-        }
-    }
+		try {
+			collection.insert(dbObjects);
+		}
+		// Couldn't insert document for any reason
+		catch (MongoException mongoException) {
+			return false;
+		}
+		return true;
 
-    /**
-     * Update user status
-     *
-     * @param userNumber
-     * @param updatedStatus
-     * @return ResultSet query output
-     */
-    public ResultSet updateUserStatus(String userNumber, String updatedStatus) {
+	}
 
-        try {
-            // Execute the sql statement
-            Statement statement = this.postgresConnection.getConn().createStatement();
+	public static DBObject findMongoDocument(String jsonDocument, String collectionName) throws MongoException {
+		DBCollection collection = mongoDB.getCollection(collectionName);
+		DBObject dbObject = (DBObject) JSON.parse(jsonDocument);
+		DBObject mongoDocument = collection.findOne(dbObject);
 
-            String updated_status = "SELECT update_user_status(" + "'" + userNumber + "'" + ", " + "'" + updatedStatus + "'" + ");";
-            ResultSet resultSet = statement.executeQuery(updated_status);
+		if (mongoDocument == null)
+			throw new MongoException("Document does not exit");
 
-            // Close the connection
-            statement.close();
-            resultSet.close();
-            postgresConnection.disconnect();
-            return resultSet;
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
+		return mongoDocument;
 
-        }
-        return null;
-    }
+	}
 
-    /**
-     * Block a user
-     * @param blockerNumber
-     * @param blockedNumber
-     */
-    public ResultSet blockUser(String blockerNumber, String blockedNumber){
-        try {
-            // Execute the sql statement
-            Statement statement = postgresConnection.getConn().createStatement();
-            String sqlString = "INSERT INTO BLOCKED VALUES (DEFAULT, " + "'"+blockerNumber+"'" + ", " + "'"+blockedNumber+"'" + ");";
-            statement.executeUpdate(sqlString);
 
-            // Close the connection
-            statement.close();
-            postgresConnection.disconnect();
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-        }
+	public static ArrayList<DBObject> findAllMongoDocuments(String jsonDocument, String collectionName)
+			throws MongoException {
+		// ArrayList<DBOject>
+		DBCollection collection = mongoDB.getCollection(collectionName);
+		DBObject dbObject = (DBObject) JSON.parse(jsonDocument);
+		DBCursor mongoDocuments = collection.find(dbObject);
 
-        return null;
-    }
+		if (mongoDocuments.size() == 0)
+			throw new MongoException("Document does not exit");
 
-    /**
-     * Unblock a user
-     * @param blockerNumber
-     * @param blockedNumber
-     */
-    public ResultSet unBlockUser(String blockerNumber, String blockedNumber){
-        try {
-            // Execute the sql statement
-            Statement statement = postgresConnection.getConn().createStatement();
-            String sqlString = "DELETE FROM blocked WHERE blocker_mobile_number LIKE " + "'"+blockerNumber+"'" +
-                               "AND blocked_mobile_number LIKE " + "'"+blockedNumber+"'";
-            statement.executeUpdate(sqlString);
+		return (ArrayList<DBObject>) mongoDocuments.toArray();
+	}
 
-            // Close the connection
-            statement.close();
-            postgresConnection.disconnect();
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-        }
+	public static JSONArray convertToJSONArray(ResultSet resultSet) throws SQLException {
+		JSONArray parsedResult = new JSONArray();
+		ResultSetMetaData rsmd = resultSet.getMetaData();
+		int columnsNumber = rsmd.getColumnCount();
+		while (resultSet.next()) {
+			JSONObject jsonObject = new JSONObject();
+			for (int i = 1; i <= columnsNumber; i++) {
+				String columnName = rsmd.getColumnName(i);
+				jsonObject.put(columnName, resultSet.getString(columnName));
+			}
+			parsedResult.put(jsonObject);
+		}
+		return parsedResult;
+	}
 
-        return null;
-    }
+	public static void main(String[] args) throws SQLException {
 
-    /**
-     * Report a user
-     * @param reporterNumber
-     * @param reportedNumber
-     * @return
-     */
-    public ResultSet reportUser(String reporterNumber, String reportedNumber){
-        try {
-            // Execute the sql statement
-            Statement statement = postgresConnection.getConn().createStatement();
-            String sqlString = "INSERT INTO REPORTED VALUES (DEFAULT, " + "'"+reporterNumber+"'" + ", " + "'"+reportedNumber+"'" + ");";
-            statement.executeUpdate(sqlString);
+		//ResultSet resultSet = executeSQLQuery("SELECT * FROM playground");
+		
+//		JSONArray ja = convertToJSONArray(resultSet);
+//		System.out.println(ja);
+		
+//		ResultSetMetaData rsmd = resultSet.getMetaData();
+//		int columnsNumber = rsmd.getColumnCount();
+//		while (resultSet.next()) {
+//			for (int i = 1; i <= columnsNumber; i++) {
+//
+//				if (i > 1)
+//					System.out.print(",  ");
+//				String columnValue = resultSet.getString(i);
+//				System.out.print(columnValue + " " + rsmd.getColumnName(i));
+//			}
+//			System.out.println("");
+//		}
+		// System.out.println(findAllMongoDocuments("{}", "mycollection"));
+		// insertMongoDocument("{'name' : 'tutorialspoint' }", "mycollection");
+		// System.out.println("Collection myCollection selected successfully " +
+		// collection.findOne());
+		// insertMongoDocument("{'name': 'kiran', 'age': '20'}",
+		// "mycollection");
+		// ArrayList<String> docs = new ArrayList<String>();
+		// docs.add("{'name': 'misho1'}");
+		// docs.add("{'name': 'misho2'}");
+		// docs.add("{'name': 'misho3'}");
+		// insertAllMongoDocuments(docs,"mycollection");
 
-            // Close the connection
-            statement.close();
-            postgresConnection.disconnect();
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
+	}
 }

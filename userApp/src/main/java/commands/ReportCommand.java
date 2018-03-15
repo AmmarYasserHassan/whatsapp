@@ -1,34 +1,54 @@
 package commands;
 
+import com.google.gson.JsonObject;
 import database.DBHandler;
-import database.PostgresConnection;
+import org.json.JSONException;
+import org.json.JSONObject;
+import sender.MqttSender;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+public class ReportCommand implements Command, Runnable{
 
-public class ReportCommand{
     DBHandler dbHandler;
     String reporterNumber, reportedNumber;
 
     /**
-     * The constructor
+     * Constructor
+     *
      * @param dbHandler
-     * @param reporterNumber
-     * @param reportedNumber
+     * @param request
      */
-    public ReportCommand(DBHandler dbHandler, String reporterNumber, String reportedNumber){
-        super();
+    public ReportCommand(DBHandler dbHandler, JsonObject request) {
         this.dbHandler = dbHandler;
-        this.reporterNumber = reporterNumber;
-        this.reportedNumber = reportedNumber;
+        this.reporterNumber = request.get("reporterNumber").getAsString();
+        this.reportedNumber = request.get("reportedNumber").getAsString();
     }
 
     /**
-     * Execute the report sql query
+     * Execute the report command
      * @return
      */
-    public ResultSet execute() {
-        return this.dbHandler.reportUser(reporterNumber, reportedNumber);
+    public JSONObject execute() {
+        String query = "INSERT INTO REPORTED VALUES (DEFAULT, " + "'"+reporterNumber+"'" + ", " + "'"+reportedNumber+"'" + ");";
+        try {
+            return this.dbHandler.executeSQLQuery(query);
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
+
+    public void run() {
+        JSONObject res = this.execute();
+        try {
+            MqttSender sender = new MqttSender();
+            sender.send(res);
+            sender.close();
+        }
+        catch (Exception e){
+
+        }
+    }
+
 }
