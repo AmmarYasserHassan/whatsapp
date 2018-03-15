@@ -37,7 +37,6 @@ public class GetMessagesInAChatForAUserCommand implements Command, Runnable {
      */
     public JSONObject execute() {
 
-
         String get_messages_in_a_chat = "SELECT get_messages_in_a_chat(" + "'" + userNumber + "'" + ", " + "'" + chatId + "'" + ");";
         return this.dbHandler.executeSQLQuery(get_messages_in_a_chat);
     }
