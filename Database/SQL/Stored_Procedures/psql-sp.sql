@@ -14,6 +14,15 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Procedure to unblock a user
+CREATE OR REPLACE FUNCTION unblock_user(blocker VARCHAR(70), blocked VARCHAR(70))
+RETURNS void AS $$
+BEGIN
+  DELETE FROM blocked 
+  WHERE blocker_mobile_number LIKE blocker AND blocked_mobile_number LIKE blocked;
+END;
+$$ LANGUAGE plpgsql;
+
 -- Procedure to add a new user
 CREATE OR REPLACE FUNCTION insert_user(mobile_number VARCHAR(20), display_name VARCHAR(100), 
     display_picture TEXT, user_status TEXT, verification_code VARCHAR(10))
@@ -27,71 +36,77 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Procedure to update all the user data at once given that the mobile number
-CREATE OR REPLACE FUNCTION update_user(user_number VARCHAR(20), display_name , display_picture, user_status)
+DROP FUNCTION update_user(character varying,character varying,text,text);
+CREATE OR REPLACE FUNCTION update_user(user_number VARCHAR(20), display_name_new VARCHAR(100), 
+    display_picture_new TEXT, user_status_new TEXT)
 RETURNS void AS $$
 BEGIN
   UPDATE users SET
     (display_name , display_picture, user_status)
    =
-    (display_name , display_picture , user_status)
+    (display_name_new , display_picture_new , user_status_new)
    WHERE
-     mobile_number LIKE user_number 
+     mobile_number LIKE user_number;
        
 END;
 $$ LANGUAGE plpgsql;
 
 -- Procedure to update the user's name given that the mobile number
-CREATE OR REPLACE FUNCTION update_user_name(user_number VARCHAR(20), display_name)
+DROP FUNCTION update_user_name(character varying,character varying);
+CREATE OR REPLACE FUNCTION update_user_name(user_number VARCHAR(20), display_name_new VARCHAR(100))
 RETURNS void AS $$
 BEGIN
   UPDATE users SET
     (display_name)
    =
-    (display_name)
+    (display_name_new)
    WHERE
-     mobile_number LIKE user_number 
+     mobile_number LIKE user_number; 
        
 END;
 $$ LANGUAGE plpgsql;
 
 -- Procedure to update the user's display_picture given that the mobile number
-CREATE OR REPLACE FUNCTION update_user_picture(user_number VARCHAR(20), display_picture)
+DROP FUNCTION update_user_picture(character varying,text);
+CREATE OR REPLACE FUNCTION update_user_picture(user_number VARCHAR(20), display_picture_new TEXT)
 RETURNS void AS $$
 BEGIN
   UPDATE users SET
-    (display_picture)
+    display_picture
    =
-    (display_picture)
+    display_picture_new
    WHERE
-     mobile_number LIKE user_number 
+     mobile_number LIKE user_number;
        
 END;
 $$ LANGUAGE plpgsql;
 
 -- Procedure to update the user's user_status given that the mobile number
-CREATE OR REPLACE FUNCTION update_user_status(user_number VARCHAR(20), user_status)
+DROP FUNCTION update_user_status(character varying,text);
+CREATE OR REPLACE FUNCTION update_user_status(user_number VARCHAR(20), user_status_new TEXT)
 RETURNS void AS $$
 BEGIN
   UPDATE users SET
-    (user_status)
+    user_status
    =
-    (user_status)
+    user_status_new
    WHERE
-     mobile_number LIKE user_number 
+     mobile_number LIKE user_number;
        
 END;
 $$ LANGUAGE plpgsql;
 
 -- Procedure to verify a user given that the mobile number
+DROP FUNCTION verify_user(character varying);
 CREATE OR REPLACE FUNCTION verify_user(user_number VARCHAR(20))
 RETURNS void AS $$
 BEGIN
   UPDATE users SET
-    (verified)
+    verified
    =
-    (TRUE)
+    TRUE
    WHERE
-     mobile_number LIKE user_number 
+     mobile_number LIKE user_number;
        
 END;
 $$ LANGUAGE plpgsql;
