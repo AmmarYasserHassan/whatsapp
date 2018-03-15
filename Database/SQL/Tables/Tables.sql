@@ -17,6 +17,16 @@ CREATE TABLE IF NOT EXISTS USERS (
  PRIMARY KEY (mobile_number)
 );
 
+--friends table
+CREATE TABLE IF NOT EXISTS FRIENDS (
+	id SERIAL NOT NULL,
+	first_number VARCHAR(20) NOT NULL,
+	second_number VARCHAR(20) NOT NULL,
+	PRIMARY KEY(first_number,second_number),
+	FOREIGN KEY(first_number) REFERENCES USERS (mobile_number),
+	FOREIGN KEY(second_number) REFERENCES USERS (mobile_number)
+);
+
 -- chats table
 CREATE TABLE IF NOT EXISTS CHATS (
  id SERIAL NOT NULL,

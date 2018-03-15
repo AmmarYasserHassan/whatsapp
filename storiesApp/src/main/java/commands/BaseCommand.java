@@ -1,13 +1,20 @@
 package commands;
 
 
+import database.DBHandler;
+import models.Story;
+
+import java.util.ArrayList;
+
 public abstract class BaseCommand {
 
     /**
      * BaseCommand constructor
      */
-    public BaseCommand() {
+    DBHandler handler;
 
+    public BaseCommand(DBHandler handler) {
+        this.handler = handler;
     }
 
     /**
@@ -15,5 +22,5 @@ public abstract class BaseCommand {
      *
      * @return output of the command
      */
-    public abstract String execute();
+    public abstract Object execute();
 }
