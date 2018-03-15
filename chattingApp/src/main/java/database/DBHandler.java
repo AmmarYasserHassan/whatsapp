@@ -25,8 +25,8 @@ public class DBHandler {
 	 * Execute sql query by the postgreSQL Database.
 	 * 
 	 * @param query
-	 * @return date ResultSet
-	 * @see {@link ResultSet}
+	 * @return JSONObject, if error == false then data is returned successsfully, if error == true then further info in error_message
+	 *
 	 */
 	public static JSONObject executeSQLQuery(String query) {
 		Connection connection = postgresqlDBConnection.connect();
@@ -61,6 +61,14 @@ public class DBHandler {
 		return parsedResult;
 	}
 
+	/**
+	 * inserts a single document in a mongo collection.
+	 *
+	 * @param jsonDocument in a string format
+	 * @param collectionName string name of the collection to be inserted int
+	 * @return JSONObject, if error == false then data is returned successsfully, if error == true then further info in error_message
+	 *
+	 */
 	public static JSONObject insertMongoDocument(String jsonDocument, String collectionName) {
 		DBCollection collection = mongoDB.getCollection(collectionName);
 		DBObject dbObject = (DBObject) JSON.parse(jsonDocument);
@@ -77,7 +85,15 @@ public class DBHandler {
 
 		return result;
 	}
-	
+
+	/**
+	 * insert multiple documents in a mongo collection.
+	 *
+	 * @param jsonDocuments arraylist of json objects in string format
+	 * @param collectionName string name of the collection to be inserted int
+	 * @return JSONObject, if error == false then data is returned successsfully, if error == true then further info in error_message
+	 *
+	 */
 	public static JSONObject insertAllMongoDocuments(ArrayList<String> jsonDocuments, String collectionName) {
 		DBCollection collection = mongoDB.getCollection(collectionName);
 		ArrayList<DBObject> dbObjects = new ArrayList<DBObject>();
@@ -97,6 +113,15 @@ public class DBHandler {
 
 	}
 
+
+	/**
+	 * finds a single document in a mongo collection.
+	 *
+	 * @param jsonDocument  in string format to be matched with other documents
+	 * @param collectionName string name of the collection to be inserted int
+	 * @return JSONObject, if error == false then data is returned successsfully, if error == true then further info in error_message
+	 *
+	 */
 	public static JSONObject findMongoDocument(String jsonDocument, String collectionName) throws MongoException {
 
 		DBCollection collection = mongoDB.getCollection(collectionName);
@@ -115,6 +140,14 @@ public class DBHandler {
 		return result;
 	}
 
+	/**
+	 * find  documents in a mongo collection.
+	 *
+	 * @param jsonDocument  in string format to be matched with other documents
+	 * @param collectionName string name of the collection to be inserted int
+	 * @return JSONObject, if error == false then data is returned successsfully, if error == true then further info in error_message
+	 *
+	 */
 	public static JSONObject findAllMongoDocuments(String jsonDocument, String collectionName) throws MongoException {
 		DBCollection collection = mongoDB.getCollection(collectionName);
 		DBObject dbObject = (DBObject) JSON.parse(jsonDocument);
