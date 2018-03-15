@@ -24,7 +24,7 @@ public class GetMessagesInAChatForAUserCommand implements Command, Runnable {
         super();
         this.dbHandler = dbHandler;
         this.userNumber = request.get("userNumber").getAsString();
-        this.chatId = request.get("userNumber").getAsInt();
+        this.chatId = request.get("chatId").getAsInt();
     }
 
 

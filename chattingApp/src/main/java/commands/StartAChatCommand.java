@@ -19,14 +19,13 @@ public class StartAChatCommand implements Command, Runnable {
      * Constructor
      *
      * @param dbHandler
-     * @param firstUserNumber
-     * @param secondUerNumber
+     * @param request
      */
 
-    public StartAChatCommand(DBHandler dbHandler, String firstUserNumber, String secondUerNumber) {
+    public StartAChatCommand(DBHandler dbHandler, JsonObject request) {
         this.dbHandler = dbHandler;
-        this.firstUserNumber = firstUserNumber;
-        this.secondUerNumber = secondUerNumber;
+        this.firstUserNumber = request.get("firstUserNumber").getAsString();
+        this.secondUerNumber = request.get("secondUerNumber").getAsString();
     }
 
     /**

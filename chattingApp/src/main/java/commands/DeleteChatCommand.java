@@ -26,7 +26,7 @@ public class DeleteChatCommand implements Command, Runnable {
     public DeleteChatCommand(DBHandler dbHandler, JsonObject request) {
         this.dbHandler = dbHandler;
         this.userNumber = request.get("userNumber").getAsString();
-        this.chatId = request.get("userNumber").getAsInt();
+        this.chatId = request.get("chatId").getAsInt();
         this.isGroupChat = request.get("isGroupChat").getAsBoolean();
     }
 
