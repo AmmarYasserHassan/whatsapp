@@ -111,3 +111,94 @@ RETURNS refcursor AS $$
     RETURN ref;
   END;
   $$ LANGUAGE plpgsql;
+
+
+
+------------------------------------------- Admin Procedures -------------------------------------------
+
+
+
+-- Procedure to let an admin add a user to a group chat
+CREATE OR REPLACE FUNCTION add_user_to_group_chat(group_id INT, admin_number VARCHAR(20), user_number VARCHAR(20))
+RETURNS void AS $$
+BEGIN
+
+  INSERT INTO GROUP_CHAT_MEMBERS (
+    group_chat_id,
+    mobile_number,
+    is_archived,
+    is_admin,
+    join_at,
+    left_at
+  )
+  SELECT
+    group_id, user_number, FALSE, FALSE, NOW(), NULL
+
+  WHERE EXISTS (
+    SELECT * 
+    FROM GROUP_CHAT_MEMBERS
+    WHERE group_chat_id = group_id AND mobile_number LIKE admin_number AND is_admin = TRUE
+  );
+
+END;
+$$ LANGUAGE plpgsql;
+
+
+-- Procedure to let an admin add another admin to a group chat
+CREATE OR REPLACE FUNCTION add_admin_to_group_chat(group_id INT, admin_number VARCHAR(20), other_admin_number VARCHAR(20))
+RETURNS void AS $$
+BEGIN
+
+  INSERT INTO GROUP_CHAT_MEMBERS (
+    group_chat_id,
+    mobile_number,
+    is_archived,
+    is_admin,
+    join_at,
+    left_at
+  )
+  SELECT
+    group_id, other_admin_number, FALSE, TRUE, NOW(), NULL
+
+  WHERE EXISTS (
+    SELECT * 
+    FROM GROUP_CHAT_MEMBERS
+    WHERE group_chat_id = group_id AND mobile_number LIKE admin_number AND is_admin = TRUE
+  );
+
+END;
+$$ LANGUAGE plpgsql;
+
+
+-- Procedure to let an admin remove a user from a group chat
+CREATE OR REPLACE FUNCTION remove_user_from_group_chat(group_id INT, admin_number VARCHAR(20), user_number VARCHAR(20))
+RETURNS void AS $$
+BEGIN
+
+  DELETE FROM GROUP_CHAT_MEMBERS
+  WHERE EXISTS (
+    SELECT * 
+    FROM GROUP_CHAT_MEMBERS
+    WHERE group_chat_id = group_id AND mobile_number LIKE admin_number AND is_admin = TRUE
+  )
+  AND mobile_number LIKE user_number;
+
+END;
+$$ LANGUAGE plpgsql;
+
+
+-- Procedure to let an admin remove another admin from a group chat
+CREATE OR REPLACE FUNCTION remove_admin_from_group_chat(group_id INT, admin_number VARCHAR(20), other_admin_number VARCHAR(20))
+RETURNS void AS $$
+BEGIN
+
+  DELETE FROM GROUP_CHAT_MEMBERS
+  WHERE EXISTS (
+    SELECT * 
+    FROM GROUP_CHAT_MEMBERS
+    WHERE group_chat_id = group_id AND mobile_number LIKE admin_number AND is_admin = TRUE
+  )
+  AND mobile_number LIKE other_admin_number AND is_admin = TRUE;
+
+END;
+$$ LANGUAGE plpgsql;
