@@ -23,16 +23,18 @@ public class DBHandler {
     /**
      * DbHandler constructor
      */
-
+    static String mongoHost = "localhost";
+    static String mongoPort ="27017";
+    static String mongoDbName="whatsapp";
+    static PostgreSqlDBConnection postgresqlDBConnection = new PostgreSqlDBConnection();
+    static MongoDBConnection mongoDBConnection = new MongoDBConnection(mongoHost,mongoPort,mongoDbName);
     private MongoDatabase mongodb;
     private MongoCollection stories;
-    private Connection sqldb;
 
-    public DBHandler(MongoDBConnection db, PostgresConnection sql){
+    public DBHandler(){
 
-        this.mongodb = db.getMongodb();
+        this.mongodb = mongoDBConnection.getMongodb();
         this.stories = mongodb.getCollection("stories");
-        this.sqldb = sql.getConn();
         if(stories==null){
             System.out.println("Collection:stories not found");
         }
@@ -76,6 +78,7 @@ public class DBHandler {
 
     public ArrayList<Story> getAllStroies(String ownerMobileNumber){
 
+        Connection sqldb = postgresqlDBConnection.connect();
         ArrayList<Story> friendStories = null;
         try {
             friendStories = new ArrayList<Story>();
@@ -109,6 +112,8 @@ public class DBHandler {
 
         } catch (SQLException e) {
             System.err.println(e.getMessage());
+        } finally {
+            postgresqlDBConnection.disconnct();
         }
 
 
