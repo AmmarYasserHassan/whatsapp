@@ -1,6 +1,7 @@
 package commands;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import database.DBHandler;
 import models.Story;
 import org.json.JSONObject;
@@ -11,9 +12,9 @@ public class GetStory implements Command,Runnable {
     DBHandler handler;
     String id;
 
-    public GetStory(DBHandler handler, JSONObject request) {
+    public GetStory(DBHandler handler, JsonObject request) {
         this.handler = handler;
-        this.id = request.getString("storyId");
+        this.id = request.get("storyId").getAsString();
     }
 
     public JSONObject execute() {

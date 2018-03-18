@@ -1,6 +1,7 @@
 package commands;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import database.DBHandler;
 import models.Story;
 import org.json.JSONObject;
@@ -13,9 +14,9 @@ public class GetAllStories implements Command,Runnable {
     DBHandler dbHandler;
     String userNumber;
 
-    public GetAllStories(DBHandler handler, JSONObject request) {
+    public GetAllStories(DBHandler handler, JsonObject request) {
         this.dbHandler = handler;
-        this.userNumber = request.getString("userNumber");
+        this.userNumber = request.get("userNumber").getAsString();
     }
 
 
