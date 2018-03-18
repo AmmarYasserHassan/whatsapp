@@ -4,9 +4,6 @@ package database;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoDatabase;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.Properties;
 
 
 public class MongoDBConnection {
