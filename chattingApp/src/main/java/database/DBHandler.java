@@ -74,7 +74,6 @@ public class DBHandler {
 	 *
 	 */
 	public JSONObject insertMongoDocument(String jsonDocument, String collectionName) {
-		System.out.println(mongoDB);
 		DBCollection collection = mongoDB.getCollection(collectionName);
 		DBObject dbObject = (DBObject) JSON.parse(jsonDocument);
 		JSONObject result = new JSONObject();

@@ -30,7 +30,8 @@ public class UpdateUserStatus{
      * @return ResultSet query result
      */
     public ResultSet execute() {
-        return this.dbHandler.updateUserStatus(user_number, user_status);
+//        return this.dbHandler.updateUserStatus(user_number, user_status);
+        return null;
     }
 }
 
