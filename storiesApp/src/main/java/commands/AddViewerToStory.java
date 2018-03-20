@@ -7,7 +7,7 @@ import models.Story;
 import org.json.JSONObject;
 import sender.MqttSender;
 
-public class AddViewerToStory {
+public class AddViewerToStory implements Command, Runnable {
     DBHandler dbHandler;
     String id;
     String viewerMobileNumber;
@@ -17,18 +17,20 @@ public class AddViewerToStory {
         this.id = request.get("storyId").getAsString();
         this.viewerMobileNumber = request.get("ViewerMobileNumber").getAsString();
     }
+
     public void run() {
         JSONObject res = this.execute();
         try {
             MqttSender sender = new MqttSender();
             sender.send(res);
             sender.close();
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
+
     public JSONObject execute() {
-        JSONObject s = this.dbHandler.update(id,viewerMobileNumber);
+        JSONObject s = this.dbHandler.update(id, viewerMobileNumber);
         return s;
     }
 

@@ -1,11 +1,9 @@
 package database;
 
 
-<<<<<<< HEAD
 import com.mongodb.BasicDBObject;
-=======
+
 import com.google.gson.JsonObject;
->>>>>>> e7c5d5bea84b7be38a7a191d3e6a350e6bdacd6d
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -127,9 +125,10 @@ public class DBHandler {
 
         return friendStories;
     }
-    public JSONObject update(String id , String viewerNum){
+
+    public JSONObject update(String id, String viewerNum) {
         JSONObject res = new JSONObject();
-        stories.updateOne(new Document("_id", new ObjectId(id)), new BasicDBObject("$push", new BasicDBObject("viewed_by",viewerNum)));
+        stories.updateOne(new Document("_id", new ObjectId(id)), new BasicDBObject("$push", new BasicDBObject("viewed_by", viewerNum)));
         res.put("state", "DONE");
         return res;
     }
