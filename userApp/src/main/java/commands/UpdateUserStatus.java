@@ -4,7 +4,7 @@ import database.DBHandler;
 import java.sql.ResultSet;
 
 
-public class UpdateUserStatus extends BaseCommand {
+public class UpdateUserStatus{
     DBHandler dbHandler;
     String user_number;
     String user_status;
