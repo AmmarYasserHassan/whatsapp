@@ -27,8 +27,8 @@ public class JSONHandler extends SimpleChannelInboundHandler<Object> {
 
         MqttSender sender = new MqttSender(jsonObject.getString("appName"));
         String result = sender.send(jsonObject.toString());
-        System.out.println(result);
         sender.close();
+
         FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(result.toString().getBytes()));
         response.headers().set(CONTENT_TYPE, "application/json");
         response.headers().set(CONTENT_LENGTH, response.content().readableBytes());
