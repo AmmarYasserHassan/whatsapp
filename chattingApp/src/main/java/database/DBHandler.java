@@ -7,8 +7,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.mongodb.*;
 import com.mongodb.util.JSON;
 
@@ -16,19 +14,25 @@ import org.json.*;
 
 public class DBHandler {
 
-	static PostgreSqlDBConnection postgresqlDBConnection = new PostgreSqlDBConnection();
-	static MongoDBConnection mongoDBConnection = new MongoDBConnection();
-	static DB mongoDB = mongoDBConnection.connect();
+	PostgreSqlDBConnection postgresqlDBConnection;
+	MongoDBConnection mongoDBConnection;
+	DB mongoDB;
 
-	
+	public DBHandler(PostgreSqlDBConnection postgresqlDBConnection, MongoDBConnection mongoDBConnection) {
+		this.postgresqlDBConnection = postgresqlDBConnection;
+		this.mongoDBConnection = mongoDBConnection;
+		this.mongoDB = mongoDBConnection.connect();
+	}
+
+
 	/**
 	 * Execute sql query by the postgreSQL Database.
 	 * 
 	 * @param query
-	 * @return JSONObject, if error == false then data is returned successsfully, if error == true then further info in error_message
+	 * @return JSONObject, if error == false then data is returned successfully, if error == true then further info in error_message
 	 *
 	 */
-	public static JSONObject executeSQLQuery(String query) {
+	public JSONObject executeSQLQuery(String query) {
 		Connection connection = postgresqlDBConnection.connect();
 		JSONObject result = new JSONObject();
 		try {
@@ -46,7 +50,7 @@ public class DBHandler {
 	}
 
 
-	public static JSONArray convertToJSONArray(ResultSet resultSet) throws SQLException {
+	public JSONArray convertToJSONArray(ResultSet resultSet) throws SQLException {
 		JSONArray parsedResult = new JSONArray();
 		ResultSetMetaData rsmd = resultSet.getMetaData();
 		int columnsNumber = rsmd.getColumnCount();
@@ -69,7 +73,8 @@ public class DBHandler {
 	 * @return JSONObject, if error == false then data is returned successsfully, if error == true then further info in error_message
 	 *
 	 */
-	public static JSONObject insertMongoDocument(String jsonDocument, String collectionName) {
+	public JSONObject insertMongoDocument(String jsonDocument, String collectionName) {
+		System.out.println(mongoDB);
 		DBCollection collection = mongoDB.getCollection(collectionName);
 		DBObject dbObject = (DBObject) JSON.parse(jsonDocument);
 		JSONObject result = new JSONObject();
@@ -85,6 +90,22 @@ public class DBHandler {
 
 		return result;
 	}
+	public JSONObject updateMongoDocument(String jsonQueryDocument, String jsonUpdateDocument, String collectionName) {
+		DBCollection collection = mongoDB.getCollection(collectionName);
+		DBObject queryDbObject = (DBObject) JSON.parse(jsonQueryDocument);
+		DBObject updateDbObject = (DBObject) JSON.parse(jsonUpdateDocument);
+		JSONObject result = new JSONObject();
+		try {
+			collection.update(queryDbObject, updateDbObject);
+			result.put("error",false);
+		}
+		// Couldn't insert document for any reason
+		catch (MongoException mongoException) {
+			result.put("error",true);
+			result.put("error_message", mongoException.getMessage());
+		}
+		return result;
+	}
 
 	/**
 	 * insert multiple documents in a mongo collection.
@@ -94,7 +115,7 @@ public class DBHandler {
 	 * @return JSONObject, if error == false then data is returned successsfully, if error == true then further info in error_message
 	 *
 	 */
-	public static JSONObject insertAllMongoDocuments(ArrayList<String> jsonDocuments, String collectionName) {
+	public JSONObject insertAllMongoDocuments(ArrayList<String> jsonDocuments, String collectionName) {
 		DBCollection collection = mongoDB.getCollection(collectionName);
 		ArrayList<DBObject> dbObjects = new ArrayList<DBObject>();
 		for (String document : jsonDocuments)
@@ -122,7 +143,7 @@ public class DBHandler {
 	 * @return JSONObject, if error == false then data is returned successsfully, if error == true then further info in error_message
 	 *
 	 */
-	public static JSONObject findMongoDocument(String jsonDocument, String collectionName) throws MongoException {
+	public JSONObject findMongoDocument(String jsonDocument, String collectionName) throws MongoException {
 
 		DBCollection collection = mongoDB.getCollection(collectionName);
 		DBObject dbObject = (DBObject) JSON.parse(jsonDocument);
@@ -148,7 +169,7 @@ public class DBHandler {
 	 * @return JSONObject, if error == false then data is returned successsfully, if error == true then further info in error_message
 	 *
 	 */
-	public static JSONObject findAllMongoDocuments(String jsonDocument, String collectionName) throws MongoException {
+	public JSONObject findAllMongoDocuments(String jsonDocument, String collectionName) throws MongoException {
 		DBCollection collection = mongoDB.getCollection(collectionName);
 		DBObject dbObject = (DBObject) JSON.parse(jsonDocument);
 		DBCursor mongoDocuments = collection.find(dbObject);
@@ -167,13 +188,13 @@ public class DBHandler {
 	}
 
 	public static void main(String[] args) throws SQLException {
-
-		//ResultSet resultSet = executeSQLQuery("SELECT * FROM playground");
-
+		
+//		JSONObject resultSet = executeSQLQuery("SELECT * FROM playground");
+//		System.out.println(resultSet);
 		 //System.out.println(findAllMongoDocuments("{}", "mycollection"));
-		  //insertMongoDocument("{'name' : 'ammar' }", "mycollection");
-		// System.out.println("Collection myCollection selected successfully " +
-		// collection.findOne());
+//		 insertMongoDocument("{'name' : 'ammar' }", "mycollection");
+//		 updateMongoDocument("{'name' : 'ammar' }", "{$set:{'gender' : 'fezo'}}", "mycollection");
+//		 System.out.println(findMongoDocument("{'name' : 'ammar' }","mycollection"));
 		// insertMongoDocument("{'name': 'kiran', 'age': '20'}",
 		// "mycollection");
 		// ArrayList<String> docs = new ArrayList<String>();

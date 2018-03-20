@@ -6,6 +6,8 @@ import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 
+import config.ApplicationProperties;
+
 public class MongoDBConnection {
 	
 	private MongoClient mongoClient;
@@ -23,10 +25,10 @@ public class MongoDBConnection {
     public MongoDBConnection() {
     	mongoClient = null;
     	database = null;
-    	basicURI = "localhost:27017";
-    	databaseName = "mydb";
-    	username = "Username";
-    	password = "Password";
+		basicURI = ApplicationProperties.getProperty("mongoBasicURI");
+		databaseName =  ApplicationProperties.getProperty("mongoDatabaseName");
+		username =  ApplicationProperties.getProperty("mongoUsername");
+		password =  ApplicationProperties.getProperty("mongoPassword");
 	}
 
     /**
