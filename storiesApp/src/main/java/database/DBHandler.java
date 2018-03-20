@@ -1,12 +1,14 @@
 package database;
 
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import models.Story;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.json.JSONObject;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -118,6 +120,12 @@ public class DBHandler {
 
 
         return friendStories;
+    }
+    public JSONObject update(String id , String viewerNum){
+        JSONObject res = new JSONObject();
+        stories.updateOne(new Document("_id", new ObjectId(id)), new BasicDBObject("$push", new BasicDBObject("viewed_by",viewerNum)));
+        res.put("state", "DONE");
+        return res;
     }
 
 
