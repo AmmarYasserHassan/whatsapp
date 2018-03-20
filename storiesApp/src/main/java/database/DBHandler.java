@@ -8,6 +8,7 @@ import com.mongodb.client.MongoDatabase;
 import models.Story;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.json.JSONObject;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -140,6 +141,19 @@ public class DBHandler {
         doc.append("viewed_by", new ArrayList());
         stories.insertOne(doc);
         return this.createStory(doc);
+    }
+
+    /**
+     * Delete a story
+     *
+     * @param request
+     * @return
+     */
+    public JSONObject deleteAStory(JsonObject request) {
+        JSONObject result = new JSONObject();
+        stories.deleteOne(new Document("_id", new ObjectId(request.get("storyId").getAsString())));
+        result.put("state", "DONE");
+        return result;
     }
 
 
