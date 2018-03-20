@@ -9,10 +9,11 @@ import java.sql.SQLException;
 import org.json.JSONObject;
 import sender.MqttSender;
 
-public class GetAllChatsForAUserCommand implements Command, Runnable {
+public class StartAChatCommand implements Command, Runnable {
 
     DBHandler dbHandler;
-    String userNumber;
+    String firstUserNumber;
+    String secondUerNumber;
 
     /**
      * Constructor
@@ -21,22 +22,21 @@ public class GetAllChatsForAUserCommand implements Command, Runnable {
      * @param request
      */
 
-    public GetAllChatsForAUserCommand(DBHandler dbHandler, JsonObject request) {
-        super();
+    public StartAChatCommand(DBHandler dbHandler, JsonObject request) {
         this.dbHandler = dbHandler;
-        this.userNumber = request.get("userNumber").getAsString();
+        this.firstUserNumber = request.get("firstUserNumber").getAsString();
+        this.secondUerNumber = request.get("secondUerNumber").getAsString();
     }
 
-
     /**
-     * Execute the get all my chats command
+     * Start a chat between two users, insert into the chats table 2 entities
      *
      * @return Result Set
      * @throws SQLException
      */
     public JSONObject execute() {
-        String get_chats = "SELECT get_chats(" + "'" + userNumber + "'" + ");";
-        return this.dbHandler.executeSQLQuery(get_chats);
+        String start_chat = "SELECT start_chat(" + "'" +firstUserNumber + "'" + ", " + "'" + secondUerNumber + "'" + ");";
+        return this.dbHandler.executeSQLQuery(start_chat);
     }
 
     public void run() {

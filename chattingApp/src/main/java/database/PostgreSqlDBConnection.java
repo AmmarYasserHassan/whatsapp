@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
 
+import config.ApplicationProperties;
+
 public class PostgreSqlDBConnection {
 	
 	private Connection connection;
@@ -21,10 +23,10 @@ public class PostgreSqlDBConnection {
      */
     public PostgreSqlDBConnection() {
 		connection = null;
-		basicURL = "localhost:5432";
-		databaseName = "postgres";
-		username = "postgres";
-		password = "kimo3433";
+		basicURL = ApplicationProperties.getProperty("postgresBasicURL");
+		databaseName =  ApplicationProperties.getProperty("postgresDatabaseName");
+		username =  ApplicationProperties.getProperty("postgresUsername");
+		password =  ApplicationProperties.getProperty("postgresPassword");
 	}
 
 	/**

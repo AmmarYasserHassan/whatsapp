@@ -1,5 +1,6 @@
 package commands;
 
+
 import com.google.gson.JsonObject;
 import database.DBHandler;
 
@@ -9,10 +10,11 @@ import java.sql.SQLException;
 import org.json.JSONObject;
 import sender.MqttSender;
 
-public class GetAllChatsForAUserCommand implements Command, Runnable {
+public class LeaveAGroupChatCommand implements Command, Runnable {
 
     DBHandler dbHandler;
     String userNumber;
+    String groupChatId;
 
     /**
      * Constructor
@@ -21,22 +23,21 @@ public class GetAllChatsForAUserCommand implements Command, Runnable {
      * @param request
      */
 
-    public GetAllChatsForAUserCommand(DBHandler dbHandler, JsonObject request) {
-        super();
+    public LeaveAGroupChatCommand(DBHandler dbHandler, JsonObject request) {
         this.dbHandler = dbHandler;
         this.userNumber = request.get("userNumber").getAsString();
+        this.groupChatId = request.get("groupChatId").getAsString();
     }
 
-
     /**
-     * Execute the get all my chats command
+     * Start a chat between two users, insert into the chats table 2 entities
      *
      * @return Result Set
      * @throws SQLException
      */
     public JSONObject execute() {
-        String get_chats = "SELECT get_chats(" + "'" + userNumber + "'" + ");";
-        return this.dbHandler.executeSQLQuery(get_chats);
+        String leave_group_chat = "SELECT start_chat(" + "'" +userNumber + "'" + ", " + "'" + groupChatId + "'" + ");";
+        return this.dbHandler.executeSQLQuery(leave_group_chat);
     }
 
     public void run() {

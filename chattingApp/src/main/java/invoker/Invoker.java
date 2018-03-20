@@ -6,6 +6,8 @@ import commands.Command;
 import config.ApplicationProperties;
 import database.DBHandler;
 import org.json.JSONObject;
+import database.MongoDBConnection;
+import database.PostgreSqlDBConnection;
 
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
@@ -20,6 +22,8 @@ import java.util.concurrent.Executors;
 public class Invoker {
     protected Hashtable htblCommands;
     protected ExecutorService threadPoolCmds;
+    protected PostgreSqlDBConnection postgresqlDBConnection;
+    protected MongoDBConnection mongoDBConnection;
 
     public Invoker() throws Exception {
         this.init();
@@ -29,7 +33,7 @@ public class Invoker {
         Command cmd;
         Class<?> cmdClass = (Class<?>) htblCommands.get(cmdName);
         Constructor constructor = cmdClass.getConstructor(DBHandler.class, JsonObject.class);
-        Object cmdInstance = constructor.newInstance(new DBHandler(), request);
+        Object cmdInstance = constructor.newInstance(new DBHandler(postgresqlDBConnection, mongoDBConnection), request);
         cmd = (Command) cmdInstance;
         JSONObject result = cmd.execute();
         return result.toString();
@@ -61,5 +65,7 @@ public class Invoker {
     public void init() throws Exception {
         loadThreadPool();
         loadCommands();
+        postgresqlDBConnection = new PostgreSqlDBConnection();
+        mongoDBConnection = new MongoDBConnection();
     }
 }
