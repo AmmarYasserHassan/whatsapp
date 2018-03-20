@@ -1,11 +1,11 @@
 package invoker;
 
 import com.google.gson.JsonObject;
-import commands.AddAdminsToAGroupChatCommand;
 import commands.Command;
 import config.ApplicationProperties;
 import database.DBHandler;
 
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -36,6 +36,7 @@ public class Invoker {
     protected void loadCommands() throws Exception {
         htblCommands = new Hashtable();
         Properties prop = new Properties();
+//       FileInputStream i = new FileInputStream("config/commands.properties");
         InputStream in = ApplicationProperties.class.getResourceAsStream("commands.properties");
         prop.load(in);
         in.close();

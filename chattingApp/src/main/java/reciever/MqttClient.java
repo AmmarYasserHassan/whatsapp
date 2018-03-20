@@ -26,16 +26,24 @@ public class MqttClient {
 
         channel = connection.createChannel();
         channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-
+        channel.basicQos(1);
         Consumer consumerChattingApp = new DefaultConsumer(channel) {
             @Override
             public void handleDelivery(String consumerTag, Envelope envelope,
                                        AMQP.BasicProperties properties, byte[] body)
                     throws IOException {
+
+                AMQP.BasicProperties replyProps = new AMQP.BasicProperties
+                        .Builder()
+                        .correlationId(properties.getCorrelationId())
+                        .build();
+
                 String requestRaw = new String(body);
                 JsonObject request = new JsonParser().parse(requestRaw).getAsJsonObject();
+
                 try {
-                    invoker.invoke(request.get("commandName").getAsString(), request);
+                    String result = invoker.invoke(request.get("commandName").getAsString(), request);
+                    channel.basicPublish("", properties.getReplyTo(), replyProps, result.getBytes());
                 } catch (Exception e) {
 
                 }

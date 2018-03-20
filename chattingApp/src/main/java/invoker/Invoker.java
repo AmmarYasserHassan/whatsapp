@@ -5,6 +5,7 @@ import commands.AddAdminsToAGroupChatCommand;
 import commands.Command;
 import config.ApplicationProperties;
 import database.DBHandler;
+import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
@@ -24,13 +25,15 @@ public class Invoker {
         this.init();
     }
 
-    public void invoke(String cmdName, JsonObject request) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    public String invoke(String cmdName, JsonObject request) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         Command cmd;
         Class<?> cmdClass = (Class<?>) htblCommands.get(cmdName);
         Constructor constructor = cmdClass.getConstructor(DBHandler.class, JsonObject.class);
         Object cmdInstance = constructor.newInstance(new DBHandler(), request);
         cmd = (Command) cmdInstance;
-        threadPoolCmds.execute((Runnable) cmd);
+        JSONObject result = cmd.execute();
+        return result.toString();
+//        threadPoolCmds.execute((Runnable) cmd);
     }
 
     protected void loadCommands() throws Exception {
