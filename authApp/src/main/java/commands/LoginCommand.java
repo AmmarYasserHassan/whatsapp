@@ -38,7 +38,7 @@ public class LoginCommand implements Command, Runnable{
         super();
         this.dbHandler = dbHandler;
         this.userNumber = request.get("userNumber").getAsString();
-        this.token  = request.get("token ").getAsString();
+
 
 
 
@@ -47,19 +47,19 @@ public class LoginCommand implements Command, Runnable{
 
 
     public JSONObject execute() {
-
+        JSONObject  returned= new JSONObject();
         try {
 
 
-            // Start validate JWT
+
+            // Start create JWT
             Algorithm algorithm = Algorithm.HMAC256("secret");
-            JWTVerifier verifier = JWT.require(algorithm)
-                    .withIssuer("USER:"+userNumber)
-                    .withClaim("scope", "USER")
+            String token = JWT.create()
                     .withClaim("userNumber", userNumber)
-                    .build(); //Reusable verifier instance
-            DecodedJWT jwt = verifier.verify(token);
-            // End validate JWT
+                    .withClaim("scope", "USER")
+                    .withIssuer("USER:"+userNumber)
+                    .sign(algorithm);
+            // End create JWT
 
 
             // Execute the sql statement
@@ -72,7 +72,18 @@ public class LoginCommand implements Command, Runnable{
 
 
 
-            return this.dbHandler.executeSQLQuery(checkOnIsUserFound);
+            JSONObject checkIfUserFound=   this.dbHandler.executeSQLQuery(checkOnIsUserFound);
+         String isError =(String)checkIfUserFound.get("error");
+
+         if(isError.equals("false")){
+             returned.put("jwt",token);
+
+
+         }else {
+
+             return checkIfUserFound;
+         }
+
         }
         catch (JSONException e) {
             e.printStackTrace();
@@ -85,7 +96,7 @@ public class LoginCommand implements Command, Runnable{
 
         }
 
-        return null;
+        return returned;
     }
 
 
