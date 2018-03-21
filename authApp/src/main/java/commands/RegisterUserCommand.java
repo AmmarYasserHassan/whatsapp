@@ -79,7 +79,8 @@ public class RegisterUserCommand implements Command, Runnable{
             Algorithm algorithm = Algorithm.HMAC256("secret");
             String token = JWT.create()
                     .withClaim("userNumber", userNumber)
-                    .withIssuer(displayName)
+                    .withClaim("scope", "USER")
+                    .withIssuer("USER:"+userNumber)
                     .sign(algorithm);
             // End create JWT
 
