@@ -20,7 +20,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import sender.MqttSender;
 
-public class LoginCommand {
+public class LoginCommand implements Command, Runnable{
     DBHandler dbHandler;
     String userNumber;
     String displayName;
@@ -34,7 +34,7 @@ public class LoginCommand {
      */
 
 
-    public LoginCommand(DBHandler dbHandler, JsonObject request) {
+    public LoginCommand(DBHandler dbHandler, JsonObject request)  {
         super();
         this.dbHandler = dbHandler;
         this.userNumber = request.get("userNumber").getAsString();
