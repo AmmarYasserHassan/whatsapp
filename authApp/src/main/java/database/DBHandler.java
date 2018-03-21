@@ -1,11 +1,17 @@
 package database;
 
-import com.mongodb.util.JSON;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.sql.*;
-import java.util.ArrayList;
+import com.mongodb.*;
+import com.mongodb.util.JSON;
 
 public class DBHandler {
 
@@ -13,10 +19,10 @@ public class DBHandler {
 	static MongoDBConnection mongoDBConnection = new MongoDBConnection();
 	static DB mongoDB = mongoDBConnection.connect();
 
-	
+
 	/**
 	 * Execute sql query by the postgreSQL Database.
-	 * 
+	 *
 	 * @param query
 	 * @return date ResultSet
 	 * @see {@link ResultSet}
@@ -133,10 +139,10 @@ public class DBHandler {
 	public static void main(String[] args) throws SQLException {
 
 		//ResultSet resultSet = executeSQLQuery("SELECT * FROM playground");
-		
+
 //		JSONArray ja = convertToJSONArray(resultSet);
 //		System.out.println(ja);
-		
+
 //		ResultSetMetaData rsmd = resultSet.getMetaData();
 //		int columnsNumber = rsmd.getColumnCount();
 //		while (resultSet.next()) {
