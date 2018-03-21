@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import org.json.JSONObject;
 import sender.MqttSender;
 
-public class DeleteChatCommand implements Command, Runnable {
+public class DeleteAChatCommand implements Command, Runnable {
     DBHandler dbHandler;
     String userNumber;
     int chatId;
@@ -23,10 +23,10 @@ public class DeleteChatCommand implements Command, Runnable {
      * @param dbHandler
      * @param request
      */
-    public DeleteChatCommand(DBHandler dbHandler, JsonObject request) {
+    public DeleteAChatCommand(DBHandler dbHandler, JsonObject request) {
         this.dbHandler = dbHandler;
         this.userNumber = request.get("userNumber").getAsString();
-        this.chatId = request.get("userNumber").getAsInt();
+        this.chatId = request.get("chatId").getAsInt();
         this.isGroupChat = request.get("isGroupChat").getAsBoolean();
     }
 

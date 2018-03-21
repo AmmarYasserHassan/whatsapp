@@ -39,7 +39,7 @@ public class CreateAGroupChatCommand implements Command, Runnable {
      * @throws SQLException
      */
     public JSONObject execute() {
-        String create_group_chat = "SELECT create_gorup_chat(" + "'" + groupChatName + "'" + ", " + "'" + groupDisplayPicture + "'" + ", " + "'" + userNumber + "'" + ");";
+        String create_group_chat = "SELECT create_group_chat(" + "'" + groupChatName + "'" + ", " + "'" + groupDisplayPicture + "'" + ", " + "'" + userNumber + "'" + ");";
 
         return this.dbHandler.executeSQLQuery(create_group_chat);
     }
