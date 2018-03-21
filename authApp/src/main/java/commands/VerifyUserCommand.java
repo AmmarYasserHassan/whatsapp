@@ -20,7 +20,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import sender.MqttSender;
 
-public class VerifyUserCommand {
+public class VerifyUserCommand  implements Command, Runnable {
 
     DBHandler dbHandler;
     String userNumber;
