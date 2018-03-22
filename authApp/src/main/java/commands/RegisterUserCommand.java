@@ -1,19 +1,13 @@
 package commands;
 
 import java.io.UnsupportedEncodingException;
-import java.sql.Statement;
 import java.util.Random;
-
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.google.gson.JsonObject;
 import database.DBHandler;
-
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import sender.MqttSender;
@@ -43,9 +37,6 @@ public class RegisterUserCommand implements Command, Runnable{
         this.display_picture = request.get("display_picture").getAsString();
         this.user_status = request.get("user_status").getAsString();
         this.verification_code =generateRandom();
-
-
-
     }
 
 
@@ -84,17 +75,11 @@ public class RegisterUserCommand implements Command, Runnable{
                     .sign(algorithm);
             // End create JWT
 
-
             // Execute the sql statement
-            String insert_name = "SELECT insert_user(" + "'" + userNumber + "'" + ", " + "'" + displayName + "'" +
+            String insert_name = "SELECT insert_user(" + "'" + userNumber + "'" + ", " + "'" + displayName + "'" + ", "+
                     "'" + display_picture + "'" + ", " + "'" + user_status + "'" + ", " + "'" + verification_code + "'" + ");";
 
-
-
             //end of reg
-
-
-
 
             return this.dbHandler.executeSQLQuery(insert_name);
         }
