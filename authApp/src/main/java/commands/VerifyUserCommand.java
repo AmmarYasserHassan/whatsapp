@@ -1,7 +1,5 @@
 package commands;
 
-
-
 import java.io.UnsupportedEncodingException;
 import java.sql.Statement;
 import java.util.Random;
@@ -16,11 +14,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import sender.MqttSender;
 
-public class VerifyUserCommand  implements Command, Runnable {
+public class VerifyUserCommand implements Command, Runnable {
 
     DBHandler dbHandler;
     String userNumber;
@@ -37,51 +36,42 @@ public class VerifyUserCommand  implements Command, Runnable {
         super();
         this.dbHandler = dbHandler;
         this.userNumber = request.get("userNumber").getAsString();
-        this.verification_code=request.get("verification_code").getAsString();
-
-
+        this.verification_code = request.get("verification_code").getAsString();
 
     }
-
-
-
-
 
     public JSONObject execute() {
+        JSONObject returned = new JSONObject();
 
         try {
-            String checkOnVerificationCode = "SELECT * from USERS where verification_code = "+"'"+verification_code+"'";
+            String checkOnVerificationCode = "SELECT * from USERS where " +"mobile_number = " + "'" + userNumber + "'" 
+            +" and "+ "verification_code = " + "'" + verification_code+ "'";
 
-           String isError;
-            isError = (String) this.dbHandler.executeSQLQuery(checkOnVerificationCode).get("error");
+            JSONObject res = this.dbHandler.executeSQLQuery(checkOnVerificationCode);
+            boolean isError = (boolean)res.get("error");
+            JSONArray data = (JSONArray) res.get("data");
+            if (!isError && data.length() != 0) {
+                String verify_User = "SELECT verify_user(" + "'" + userNumber + "'" + ");";
+                return this.dbHandler.executeSQLQuery(verify_User);
 
-            if(isError.equals("false")) {
-               String verify_User = "SELECT verify_user(" + "'" + userNumber + "'" + ");";
-
-               return this.dbHandler.executeSQLQuery(verify_User);
-
-           }
-        }
-        catch (JSONException e) {
+            }
+           
+        } catch (JSONException e) {
             e.printStackTrace();
 
-        } catch (JWTCreationException exception) {
-            //Invalid Signing configuration / Couldn't convert Claims.
-
         }
-
-        return null;
+        returned.put("error", true);
+        return returned;
     }
+
     public void run() {
         JSONObject res = this.execute();
         try {
             MqttSender sender = new MqttSender();
             sender.send(res);
             sender.close();
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
-
-
 }
