@@ -106,5 +106,26 @@ public class RegisterUserCommand implements Command, Runnable{
 
         }
     }
+    //begin testing block
+/*
+    public static void testRegister(){
+        DBHandler dbHandler = new DBHandler();
+        JsonObject request = new JsonObject();
+        request.addProperty("userNumber", "0100000000113");
+        request.addProperty("displayName", "testUser");
+        request.addProperty("display_picture", "familiarFace");
+        request.addProperty("user_status", "test case passed");
+
+        RegisterUserCommand register = new RegisterUserCommand(dbHandler, request);
+        JSONObject res = register.execute();
+        System.out.println(res);
+
+    }
+
+    public static void main(String[] args) {
+        testRegister();
+    }
+*/
+//end testing block
 
 }
