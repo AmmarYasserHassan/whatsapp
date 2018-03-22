@@ -81,4 +81,33 @@ public class LoginCommand implements Command, Runnable {
 
         }
     }
+
+//begin testing block
+/*
+    public static void testLoginSucc(){
+        DBHandler dbHandler = new DBHandler();
+        JsonObject request = new JsonObject();
+        request.addProperty("userNumber", "01000000001");
+        LoginCommand login = new LoginCommand(dbHandler, request);
+        JSONObject res = login.execute();
+        System.out.println(res);
+
+    }
+    public static void testLoginFail(){
+        DBHandler dbHandler = new DBHandler();
+        JsonObject request = new JsonObject();
+        request.addProperty("userNumber", "010000000012334");
+        LoginCommand login = new LoginCommand(dbHandler, request);
+        JSONObject res = login.execute();
+        System.out.println(res);
+
+    }
+
+    public static void main(String[] args) {
+        testLoginSucc();
+        testLoginFail();
+    }
+*/
+//end testing block
+
 }
