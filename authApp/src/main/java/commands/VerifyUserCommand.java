@@ -74,4 +74,25 @@ public class VerifyUserCommand implements Command, Runnable {
 
         }
     }
+
+//begin testing block
+/*
+    public static void testVerifyUser(){
+        DBHandler dbHandler = new DBHandler();
+        JsonObject request = new JsonObject();
+        request.addProperty("userNumber", "01000000002");
+        request.addProperty("verification_code", "231578");
+
+        VerifyUserCommand verify = new VerifyUserCommand(dbHandler, request);
+        JSONObject res = verify.execute();
+        System.out.println(res);
+
+    }
+
+    public static void main(String[] args) {
+        testVerifyUser();
+    }
+*/
+//end testing block
+
 }
