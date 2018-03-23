@@ -1,17 +1,15 @@
 package commands;
 
+
 import com.google.gson.JsonObject;
 import database.DBBroker;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
-public class UpdateUserStatus extends BaseCommand {
+public class BlockCommand implements Command {
     DBBroker dbBroker;
-    String userNumber;
-    String user_status_new;
-
+    String blockerNumber, blockedNumber;
 
     /**
      * Constructor
@@ -19,21 +17,18 @@ public class UpdateUserStatus extends BaseCommand {
      * @param dbBroker
      * @param request
      */
-
-    public UpdateUserStatus(DBBroker dbBroker, JsonObject request) {
+    public BlockCommand(DBBroker dbBroker, JsonObject request) {
         this.dbBroker = dbBroker;
-        this.userNumber = request.get("userNumber").getAsString();
-        this.user_status_new = request.get("user_status_new").getAsString();
-
+        this.blockerNumber = request.get("blockerNumber").getAsString();
+        this.blockedNumber = request.get("blockedNumber").getAsString();
     }
 
-
     /**
-     * Execute the update command
-     * @return JSONObject query result
+     * Execute the block command
+     * @return
      */
     public JSONObject execute() {
-        String query =  "UPDATE users SET user_status = "+"'"+user_status_new+"'"+"WHERE mobile_number LIKE" +"'" +userNumber+"'";
+        String query = "INSERT INTO BLOCKED VALUES (DEFAULT, " + "'"+blockerNumber+"'" + ", " + "'"+blockedNumber+"'" + ");";
         try {
             return this.dbBroker.executeSQLQuery(query);
         }
@@ -41,8 +36,6 @@ public class UpdateUserStatus extends BaseCommand {
             e.printStackTrace();
         }
 
-
         return null;
     }
 }
-

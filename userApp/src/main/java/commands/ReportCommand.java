@@ -2,16 +2,13 @@ package commands;
 
 import com.google.gson.JsonObject;
 import database.DBBroker;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
+public class ReportCommand implements Command{
 
-public class UpdateUserStatus extends BaseCommand {
     DBBroker dbBroker;
-    String userNumber;
-    String user_status_new;
-
+    String reporterNumber, reportedNumber;
 
     /**
      * Constructor
@@ -19,21 +16,18 @@ public class UpdateUserStatus extends BaseCommand {
      * @param dbBroker
      * @param request
      */
-
-    public UpdateUserStatus(DBBroker dbBroker, JsonObject request) {
+    public ReportCommand(DBBroker dbBroker, JsonObject request) {
         this.dbBroker = dbBroker;
-        this.userNumber = request.get("userNumber").getAsString();
-        this.user_status_new = request.get("user_status_new").getAsString();
-
+        this.reporterNumber = request.get("reporterNumber").getAsString();
+        this.reportedNumber = request.get("reportedNumber").getAsString();
     }
 
-
     /**
-     * Execute the update command
-     * @return JSONObject query result
+     * Execute the report command
+     * @return
      */
     public JSONObject execute() {
-        String query =  "UPDATE users SET user_status = "+"'"+user_status_new+"'"+"WHERE mobile_number LIKE" +"'" +userNumber+"'";
+        String query = "INSERT INTO REPORTED VALUES (DEFAULT, " + "'"+reporterNumber+"'" + ", " + "'"+reportedNumber+"'" + ");";
         try {
             return this.dbBroker.executeSQLQuery(query);
         }
@@ -41,8 +35,7 @@ public class UpdateUserStatus extends BaseCommand {
             e.printStackTrace();
         }
 
-
         return null;
     }
-}
 
+}
