@@ -1,8 +1,4 @@
--- make sure that you have created a db called whatsapp -if it is not created already-
--- using command CREATE DATABASE whatsapp;
 
--- use created database
-\connect whatsapp;
 
 -- Users table
 CREATE TABLE IF NOT EXISTS USERS (
@@ -17,15 +13,26 @@ CREATE TABLE IF NOT EXISTS USERS (
  PRIMARY KEY (mobile_number)
 );
 
+--friends table
+CREATE TABLE IF NOT EXISTS FRIENDS (
+	id SERIAL NOT NULL,
+	first_mobile_number VARCHAR(20) NOT NULL,
+	second_mobile_number VARCHAR(20) NOT NULL,
+	PRIMARY KEY(first_mobile_number,second_mobile_number),
+	FOREIGN KEY(first_mobile_number) REFERENCES USERS (mobile_number),
+	FOREIGN KEY(second_mobile_number) REFERENCES USERS (mobile_number)
+);
+
 -- chats table
 CREATE TABLE IF NOT EXISTS CHATS (
  id SERIAL NOT NULL,
- mobile_number VARCHAR(20) NOT NULL,
- is_archived BOOLEAN NOT NULL DEFAULT FALSE,
- is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+ first_mobile_number VARCHAR(20) NOT NULL,
+ second_mobile_number VARCHAR(20) NOT NULL,
  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
  PRIMARY KEY (id),
- FOREIGN KEY (mobile_number) REFERENCES USERS (mobile_number)
+ FOREIGN KEY (first_mobile_number) REFERENCES USERS (mobile_number),
+ FOREIGN KEY (second_mobile_number) REFERENCES USERS (mobile_number)
+
 );
 
 -- group chats table
@@ -71,4 +78,15 @@ CREATE TABLE IF NOT EXISTS BLOCKED (
  PRIMARY KEY (id),
  FOREIGN KEY (reporter_mobile_number) REFERENCES USERS (mobile_number),
  FOREIGN KEY (reported_mobile_number) REFERENCES USERS (mobile_number)
+);
+
+
+-- archived chats table
+CREATE TABLE IF NOT EXISTS ARCHIVED_CHATS (
+ id SERIAL NOT NULL,
+ chat_id int NOT NULL,
+ mobile_number VARCHAR(20) NOT NULL,
+ PRIMARY KEY (id),
+ FOREIGN KEY (mobile_number) REFERENCES USERS (mobile_number),
+ FOREIGN KEY (chat_id) REFERENCES CHATS (id)                          
 );
