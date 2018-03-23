@@ -24,7 +24,7 @@ public class GetAllChatsForAUserCommand implements Command, Runnable {
     public GetAllChatsForAUserCommand(DBHandler dbHandler, JsonObject request) {
         super();
         this.dbHandler = dbHandler;
-        this.userNumber = request.get("isGroupChat").getAsString();
+        this.userNumber = request.get("userNumber").getAsString();
     }
 
 

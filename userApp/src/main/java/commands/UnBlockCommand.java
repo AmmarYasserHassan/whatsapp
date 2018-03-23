@@ -6,7 +6,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import sender.MqttSender;
 
-public class UnblockCommand implements Command, Runnable {
+public class UnBlockCommand implements Command, Runnable {
     DBHandler dbHandler;
     String blockerNumber, blockedNumber;
 
@@ -16,7 +16,7 @@ public class UnblockCommand implements Command, Runnable {
      * @param dbHandler
      * @param request
      */
-    public UnblockCommand(DBHandler dbHandler, JsonObject request) {
+    public UnBlockCommand(DBHandler dbHandler, JsonObject request) {
         this.dbHandler = dbHandler;
         this.blockerNumber = request.get("blockerNumber").getAsString();
         this.blockedNumber = request.get("blockedNumber").getAsString();
