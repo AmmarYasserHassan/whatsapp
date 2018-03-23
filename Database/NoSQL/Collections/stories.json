@@ -1,0 +1,14 @@
+{
+  "owner_mobile_number": "Required, Forgein key",
+  "data": {
+    "type": "image or video",
+    "link": "actual link for media"
+  },
+  "duration": "calculated",
+  "experation_date": "mongo timestamp",
+  "viewed_by":[{
+      "mobile_number": "mobile number of a user,so the local storage in every client app would associate it with it's appropiate display name",
+      "display_name": "in case this number is not saved this will be shown",
+      "viewed_at": "mongo timestamo"
+    }]
+}

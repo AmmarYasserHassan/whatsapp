@@ -1,0 +1,31 @@
+{
+
+  "step_1_request": {
+    "mobile_number": ""
+  },
+
+  "step_1_response": {
+    "via text message": ""
+  },
+
+
+  "step_2_request": {
+    "verification_code": ""
+  },
+
+  "step_2_response": {
+    "success_message": "",
+    "token": ""
+  },
+
+  "step_3_request": {
+    "display_name": "",
+    "display_picture": "",
+    "status": ""
+  },
+
+  "step_3_response": {
+    "success_message": ""
+  }
+
+}

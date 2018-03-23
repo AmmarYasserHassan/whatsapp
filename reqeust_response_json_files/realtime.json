@@ -1,0 +1,10 @@
+{
+    "request": {
+        "chat_id": "",
+        "payload": ""
+    },
+
+    "response": {
+        "success_message": ""
+    }
+}
