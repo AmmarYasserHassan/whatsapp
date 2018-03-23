@@ -22,7 +22,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class DBHandler {
+public class DBBroker {
 
     /**
      * DbHandler constructor
@@ -35,7 +35,7 @@ public class DBHandler {
     private MongoDatabase mongodb;
     private MongoCollection stories;
 
-    public DBHandler() {
+    public DBBroker() {
         mongoDBConnection.connect();
         this.mongodb = mongoDBConnection.getMongodb();
         this.stories = mongodb.getCollection("stories");

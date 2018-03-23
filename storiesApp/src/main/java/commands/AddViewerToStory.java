@@ -1,36 +1,22 @@
 package commands;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import database.DBHandler;
-import models.Story;
+import database.DBBroker;
 import org.json.JSONObject;
-import sender.MqttSender;
 
-public class AddViewerToStory implements Command, Runnable {
-    DBHandler dbHandler;
+public class AddViewerToStory implements Command {
+    DBBroker dbBroker;
     String id;
     String viewerMobileNumber;
 
-    public AddViewerToStory(DBHandler handler, JsonObject request) {
-        this.dbHandler = handler;
+    public AddViewerToStory(DBBroker handler, JsonObject request) {
+        this.dbBroker = handler;
         this.id = request.get("storyId").getAsString();
         this.viewerMobileNumber = request.get("ViewerMobileNumber").getAsString();
     }
 
-    public void run() {
-        JSONObject res = this.execute();
-        try {
-            MqttSender sender = new MqttSender();
-            sender.send(res);
-            sender.close();
-        } catch (Exception e) {
-
-        }
-    }
-
     public JSONObject execute() {
-        JSONObject s = this.dbHandler.update(id, viewerMobileNumber);
+        JSONObject s = this.dbBroker.update(id, viewerMobileNumber);
         return s;
     }
 

@@ -2,26 +2,22 @@ package commands;
 
 
 import com.google.gson.JsonObject;
-import database.DBHandler;
+import database.DBBroker;
 import org.json.JSONObject;
 
-public class DeleteAStoryCommand implements Command, Runnable {
-    DBHandler dbHandler;
+public class DeleteAStoryCommand implements Command {
+    DBBroker dbBroker;
     JsonObject request;
 
-    public DeleteAStoryCommand(DBHandler dbHandler, JsonObject request) {
-        this.dbHandler = dbHandler;
+    public DeleteAStoryCommand(DBBroker dbBroker, JsonObject request) {
+        this.dbBroker = dbBroker;
         this.request = request;
     }
 
     @Override
     public JSONObject execute() {
-        JSONObject res = this.dbHandler.deleteAStory(request);
+        JSONObject res = this.dbBroker.deleteAStory(request);
         return res;
     }
 
-    @Override
-    public void run() {
-
-    }
 }
