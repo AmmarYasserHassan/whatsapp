@@ -6,11 +6,11 @@ import database.DBBroker;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
-public class UpdateUserStatus extends BaseCommand {
+public class UpdateProfilePicture {
     DBBroker dbBroker;
     String userNumber;
-    String user_status_new;
+    String profilePic;
+
 
     /**
      * Constructor
@@ -18,20 +18,17 @@ public class UpdateUserStatus extends BaseCommand {
      * @param dbBroker
      * @param request
      */
-
-    public UpdateUserStatus(DBBroker dbBroker, JsonObject request) {
+    public UpdateProfilePicture(DBBroker dbBroker,JsonObject request) {
         this.dbBroker = dbBroker;
         this.userNumber = request.get("userNumber").getAsString();
-        this.user_status_new = request.get("user_status_new").getAsString();
+        this.profilePic = request.get("profilePic").getAsString();
     }
-
-
     /**
      * Execute the update command
      * @return JSONObject query result
      */
-    public JSONObject execute() {
-        String query =  "UPDATE users SET user_status = "+"'"+user_status_new+"'"+"WHERE mobile_number LIKE" +"'" +userNumber+"'";
+    public JSONObject execute(){
+        String query = "UPDATE users SET display_picture ="+"'"+profilePic+"'"+"WHERE mobile_number LIKE"+"'"+userNumber+"'";
         try {
             return this.dbBroker.executeSQLQuery(query);
         }

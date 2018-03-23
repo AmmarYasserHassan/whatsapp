@@ -1,44 +1,42 @@
 package commands;
 
-import database.DBHandler;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import com.google.gson.JsonObject;
+import database.DBBroker;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class UpdateUserName {
-    DBHandler dbHandler;
+    DBBroker dbBroker;
     String userNumber;
     String displayName;
+
 
     /**
      * Constructor
      *
-     * @param dbHandler
-     * @param userNumber
-     * @param displayName
+     * @param dbBroker
+     * @param request
      */
+    public UpdateUserName(DBBroker dbBroker,JsonObject request) {
+        this.dbBroker = dbBroker;
+        this.userNumber = request.get("userNumber").getAsString();
+        this.displayName = request.get("displayName").getAsString();
+    }
+        /**
+         * Execute the update command
+         * @return JSONObject query result
+         */
+        public JSONObject execute(){
+            String query = "UPDATE users SET (display_name) ="+"("+"'"+displayName+"'"+")"+"WHERE mobile_number LIKE"+"'"+userNumber+"'";
+            try {
+                return this.dbBroker.executeSQLQuery(query);
+            }
+            catch (JSONException e) {
+                e.printStackTrace();
+            }
 
-    /**
-     * Update User name constructor
-     * @param dbHandler
-     * @param userNumber
-     * @param displayName
-     */
-    public UpdateUserName(DBHandler dbHandler, String userNumber, String displayName) {
-        super();
-        this.dbHandler = dbHandler;
-        this.userNumber = userNumber;
-        this.displayName = displayName;
+            return null;
+        }
     }
 
-
-    /**
-     * Execute the update command
-     *
-     * @return Result Set
-     * @throws SQLException
-     */
-    public ResultSet execute() throws SQLException {
-        return this.dbHandler.updateUserName(userNumber, displayName);
-    }
-}
