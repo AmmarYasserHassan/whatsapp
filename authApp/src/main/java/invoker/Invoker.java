@@ -3,7 +3,7 @@ package invoker;
 import com.google.gson.JsonObject;
 import commands.Command;
 import config.ApplicationProperties;
-import database.DBHandler;
+import database.DBBroker;
 import org.json.JSONObject;
 
 import java.io.InputStream;
@@ -26,8 +26,8 @@ public class Invoker {
     public String invoke(String cmdName, JsonObject request) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         Command cmd;
         Class<?> cmdClass = (Class<?>) htblCommands.get(cmdName);
-        Constructor constructor = cmdClass.getConstructor(DBHandler.class, JsonObject.class);
-        Object cmdInstance = constructor.newInstance(new DBHandler(), request);
+        Constructor constructor = cmdClass.getConstructor(DBBroker.class, JsonObject.class);
+        Object cmdInstance = constructor.newInstance(new DBBroker(), request);
         cmd = (Command) cmdInstance;
         JSONObject result = cmd.execute();
         return result.toString();

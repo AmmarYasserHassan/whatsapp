@@ -7,13 +7,14 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.gson.JsonObject;
+import database.DBBroker;
 import org.json.JSONException;
 import org.json.JSONObject;
-import sender.MqttSender;
 
-public class ValidateTokenCommand implements Command, Runnable {
+public class ValidateTokenCommand implements Command {
 
     String userNumber;
+    DBBroker dbBroker;
     String token;
 
     /**
@@ -21,11 +22,11 @@ public class ValidateTokenCommand implements Command, Runnable {
      * @param request
      */
 
-    public ValidateTokenCommand(JsonObject request) {
+    public ValidateTokenCommand(DBBroker dbBroker, JsonObject request) {
         super();
         this.userNumber = request.get("userNumber").getAsString();
         this.token = request.get("jwt").getAsString();
-
+        this.dbBroker = dbBroker;
     }
 
     public JSONObject execute() {
@@ -59,17 +60,6 @@ public class ValidateTokenCommand implements Command, Runnable {
         return res;
     }
 
-    public void run() {
-        JSONObject res = this.execute();
-        try {
-            MqttSender sender = new MqttSender();
-            sender.send(res);
-            sender.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-
-        }
-    }
 
     //begin testing block
     /*
@@ -79,7 +69,7 @@ public class ValidateTokenCommand implements Command, Runnable {
         request.addProperty("userNumber", "01000000001");
         request.addProperty("jwt",
                 "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzY29wZSI6IlVTRVIiLCJpc3MiOiJVU0VSOjAxMDAwMDAwMDAxIiwidXNlck51bWJlciI6IjAxMDAwMDAwMDAxIn0.IWpLuHkcUfPCW2dckGm2fYkxatrYgwRm0ybjFC_fxbo");
-        ValidateTokenCommand validate = new ValidateTokenCommand(request);
+        ValidateTokenCommand validate = new ValidateTokenCommand(new DBBroker,request);
         JSONObject res = validate.execute();
         System.out.println(res);
     }

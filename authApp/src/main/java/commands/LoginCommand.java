@@ -5,14 +5,13 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.google.gson.JsonObject;
-import database.DBHandler;
+import database.DBBroker;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import sender.MqttSender;
 
-public class LoginCommand implements Command, Runnable {
-    DBHandler dbHandler;
+public class LoginCommand implements Command {
+    DBBroker dbBroker;
     String userNumber;
     String displayName;
     String token;
@@ -20,13 +19,13 @@ public class LoginCommand implements Command, Runnable {
     /**
      * Constructor
      *
-     * @param dbHandler
+     * @param dbBroker
      * @param request
      */
 
-    public LoginCommand(DBHandler dbHandler, JsonObject request) {
+    public LoginCommand(DBBroker dbBroker, JsonObject request) {
         super();
-        this.dbHandler = dbHandler;
+        this.dbBroker = dbBroker;
         this.userNumber = request.get("userNumber").getAsString();
 
     }
@@ -46,7 +45,7 @@ public class LoginCommand implements Command, Runnable {
 
             //end of reg
 
-            JSONObject checkIfUserFound = this.dbHandler.executeSQLQuery(checkOnIsUserFound);
+            JSONObject checkIfUserFound = this.dbBroker.executeSQLQuery(checkOnIsUserFound);
             boolean isError = (boolean) checkIfUserFound.get("error");
             JSONArray data = (JSONArray) checkIfUserFound.get("data");
             if (!isError && data.length() !=0) {
@@ -71,33 +70,23 @@ public class LoginCommand implements Command, Runnable {
         return returned;
     }
 
-    public void run() {
-        JSONObject res = this.execute();
-        try {
-            MqttSender sender = new MqttSender();
-            sender.send(res);
-            sender.close();
-        } catch (Exception e) {
-
-        }
-    }
 
 //begin testing block
 /*
     public static void testLoginSucc(){
-        DBHandler dbHandler = new DBHandler();
+        DBBroker dbBroker = new DBBroker();
         JsonObject request = new JsonObject();
         request.addProperty("userNumber", "01000000001");
-        LoginCommand login = new LoginCommand(dbHandler, request);
+        LoginCommand login = new LoginCommand(dbBroker, request);
         JSONObject res = login.execute();
         System.out.println(res);
 
     }
     public static void testLoginFail(){
-        DBHandler dbHandler = new DBHandler();
+        DBBroker dbBroker = new DBBroker();
         JsonObject request = new JsonObject();
         request.addProperty("userNumber", "010000000012334");
-        LoginCommand login = new LoginCommand(dbHandler, request);
+        LoginCommand login = new LoginCommand(dbBroker, request);
         JSONObject res = login.execute();
         System.out.println(res);
 

@@ -6,15 +6,14 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.google.gson.JsonObject;
-import database.DBHandler;
+import database.DBBroker;
 import java.sql.SQLException;
 import org.json.JSONException;
 import org.json.JSONObject;
-import sender.MqttSender;
 
-public class RegisterUserCommand implements Command, Runnable{
+public class RegisterUserCommand implements Command{
 
-    DBHandler dbHandler;
+    DBBroker dbBroker;
     String userNumber;
     String displayName;
     String display_picture;
@@ -24,14 +23,14 @@ public class RegisterUserCommand implements Command, Runnable{
     /**
      * Constructor
      *
-     * @param dbHandler
+     * @param dbBroker
      * @param request
      */
 
 
-    public RegisterUserCommand(DBHandler dbHandler, JsonObject request) {
+    public RegisterUserCommand(DBBroker dbBroker, JsonObject request) {
         super();
-        this.dbHandler = dbHandler;
+        this.dbBroker = dbBroker;
         this.userNumber = request.get("userNumber").getAsString();
         this.displayName = request.get("displayName").getAsString();
         this.display_picture = request.get("display_picture").getAsString();
@@ -81,7 +80,7 @@ public class RegisterUserCommand implements Command, Runnable{
 
             //end of reg
 
-            return this.dbHandler.executeSQLQuery(insert_name);
+            return this.dbBroker.executeSQLQuery(insert_name);
         }
         catch (JSONException e) {
             e.printStackTrace();
@@ -96,27 +95,17 @@ public class RegisterUserCommand implements Command, Runnable{
 
         return null;
     }
-    public void run() {
-        JSONObject res = this.execute();
-        try {
-            MqttSender sender = new MqttSender();
-            sender.send(res);
-            sender.close();
-        }catch (Exception e){
-
-        }
-    }
     //begin testing block
 /*
     public static void testRegister(){
-        DBHandler dbHandler = new DBHandler();
+        DBBroker dbBroker = new DBBroker();
         JsonObject request = new JsonObject();
         request.addProperty("userNumber", "0100000000113");
         request.addProperty("displayName", "testUser");
         request.addProperty("display_picture", "familiarFace");
         request.addProperty("user_status", "test case passed");
 
-        RegisterUserCommand register = new RegisterUserCommand(dbHandler, request);
+        RegisterUserCommand register = new RegisterUserCommand(dbBroker, request);
         JSONObject res = register.execute();
         System.out.println(res);
 

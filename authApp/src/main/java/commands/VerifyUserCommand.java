@@ -1,40 +1,28 @@
 package commands;
 
-import java.io.UnsupportedEncodingException;
-import java.sql.Statement;
-import java.util.Random;
-
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTCreationException;
 import com.google.gson.JsonObject;
-import database.DBHandler;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
+import database.DBBroker;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import sender.MqttSender;
 
-public class VerifyUserCommand implements Command, Runnable {
+public class VerifyUserCommand implements Command {
 
-    DBHandler dbHandler;
+    DBBroker dbBroker;
     String userNumber;
     String verification_code;
 
     /**
      * Constructor
      *
-     * @param dbHandler
+     * @param dbBroker
      * @param request
      */
 
-    public VerifyUserCommand(DBHandler dbHandler, JsonObject request) {
+    public VerifyUserCommand(DBBroker dbBroker, JsonObject request) {
         super();
-        this.dbHandler = dbHandler;
+        this.dbBroker = dbBroker;
         this.userNumber = request.get("userNumber").getAsString();
         this.verification_code = request.get("verification_code").getAsString();
 
@@ -47,12 +35,12 @@ public class VerifyUserCommand implements Command, Runnable {
             String checkOnVerificationCode = "SELECT * from USERS where " +"mobile_number = " + "'" + userNumber + "'" 
             +" and "+ "verification_code = " + "'" + verification_code+ "'";
 
-            JSONObject res = this.dbHandler.executeSQLQuery(checkOnVerificationCode);
+            JSONObject res = this.dbBroker.executeSQLQuery(checkOnVerificationCode);
             boolean isError = (boolean)res.get("error");
             JSONArray data = (JSONArray) res.get("data");
             if (!isError && data.length() != 0) {
                 String verify_User = "SELECT verify_user(" + "'" + userNumber + "'" + ");";
-                return this.dbHandler.executeSQLQuery(verify_User);
+                return this.dbBroker.executeSQLQuery(verify_User);
 
             }
            
@@ -64,26 +52,15 @@ public class VerifyUserCommand implements Command, Runnable {
         return returned;
     }
 
-    public void run() {
-        JSONObject res = this.execute();
-        try {
-            MqttSender sender = new MqttSender();
-            sender.send(res);
-            sender.close();
-        } catch (Exception e) {
-
-        }
-    }
-
 //begin testing block
 /*
     public static void testVerifyUser(){
-        DBHandler dbHandler = new DBHandler();
+        DBBroker dbBroker = new DBBroker();
         JsonObject request = new JsonObject();
         request.addProperty("userNumber", "01000000002");
         request.addProperty("verification_code", "231578");
 
-        VerifyUserCommand verify = new VerifyUserCommand(dbHandler, request);
+        VerifyUserCommand verify = new VerifyUserCommand(dbBroker, request);
         JSONObject res = verify.execute();
         System.out.println(res);
 

@@ -11,7 +11,7 @@ import java.io.IOException;
 public class MqttClient {
 
     private final String HOST_IP = "localhost";
-    private final String QUEUE_NAME = "userApp";
+    private final String QUEUE_NAME = "authApp";
 
     private ConnectionFactory factory;
     private Channel channel;
@@ -64,6 +64,6 @@ public class MqttClient {
 
     public static void main(String[] args) throws Exception {
         MqttClient client = new MqttClient();
-        System.out.println("Stories app started successfully ");
+        System.out.println("Auth app started successfully ");
     }
 }

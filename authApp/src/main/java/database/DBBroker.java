@@ -8,7 +8,7 @@ import org.json.JSONObject;
 import java.sql.*;
 import java.util.ArrayList;
 
-public class DBHandler {
+public class DBBroker {
 
 	static PostgreSqlDBConnection postgresqlDBConnection = new PostgreSqlDBConnection();
 	static MongoDBConnection mongoDBConnection = new MongoDBConnection();
