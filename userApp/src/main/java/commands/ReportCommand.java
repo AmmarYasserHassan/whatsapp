@@ -1,24 +1,23 @@
 package commands;
 
 import com.google.gson.JsonObject;
-import database.DBHandler;
+import database.DBBroker;
 import org.json.JSONException;
 import org.json.JSONObject;
-import sender.MqttSender;
 
-public class ReportCommand implements Command, Runnable{
+public class ReportCommand implements Command{
 
-    DBHandler dbHandler;
+    DBBroker dbBroker;
     String reporterNumber, reportedNumber;
 
     /**
      * Constructor
      *
-     * @param dbHandler
+     * @param dbBroker
      * @param request
      */
-    public ReportCommand(DBHandler dbHandler, JsonObject request) {
-        this.dbHandler = dbHandler;
+    public ReportCommand(DBBroker dbBroker, JsonObject request) {
+        this.dbBroker = dbBroker;
         this.reporterNumber = request.get("reporterNumber").getAsString();
         this.reportedNumber = request.get("reportedNumber").getAsString();
     }
@@ -30,25 +29,13 @@ public class ReportCommand implements Command, Runnable{
     public JSONObject execute() {
         String query = "INSERT INTO REPORTED VALUES (DEFAULT, " + "'"+reporterNumber+"'" + ", " + "'"+reportedNumber+"'" + ");";
         try {
-            return this.dbHandler.executeSQLQuery(query);
+            return this.dbBroker.executeSQLQuery(query);
         }
         catch (JSONException e) {
             e.printStackTrace();
         }
 
         return null;
-    }
-
-    public void run() {
-        JSONObject res = this.execute();
-        try {
-            MqttSender sender = new MqttSender();
-            sender.send(res);
-            sender.close();
-        }
-        catch (Exception e){
-
-        }
     }
 
 }

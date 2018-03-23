@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.mongodb.*;
 import com.mongodb.util.JSON;
 
-public class DBHandler {
+public class DBBroker {
 
 	static PostgreSqlDBConnection postgresqlDBConnection = new PostgreSqlDBConnection();
 	static MongoDBConnection mongoDBConnection = new MongoDBConnection();
