@@ -1,29 +1,27 @@
 package commands;
 
 import com.google.gson.JsonObject;
-import database.DBHandler;
+import database.DBBroker;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.json.JSONObject;
-import sender.MqttSender;
 
-public class StartAChatCommand implements Command, Runnable {
+public class StartAChatCommand implements Command {
 
-    DBHandler dbHandler;
+    DBBroker dbBroker;
     String firstUserNumber;
     String secondUerNumber;
 
     /**
      * Constructor
      *
-     * @param dbHandler
+     * @param dbBroker
      * @param request
      */
 
-    public StartAChatCommand(DBHandler dbHandler, JsonObject request) {
-        this.dbHandler = dbHandler;
+    public StartAChatCommand(DBBroker dbBroker, JsonObject request) {
+        this.dbBroker = dbBroker;
         this.firstUserNumber = request.get("firstUserNumber").getAsString();
         this.secondUerNumber = request.get("secondUerNumber").getAsString();
     }
@@ -36,18 +34,8 @@ public class StartAChatCommand implements Command, Runnable {
      */
     public JSONObject execute() {
         String start_chat = "SELECT start_chat(" + "'" +firstUserNumber + "'" + ", " + "'" + secondUerNumber + "'" + ");";
-        return this.dbHandler.executeSQLQuery(start_chat);
+        return this.dbBroker.executeSQLQuery(start_chat);
     }
 
-    public void run() {
-        JSONObject res = this.execute();
-        try {
-            MqttSender sender = new MqttSender();
-            sender.send(res);
-            sender.close();
-        } catch (Exception e) {
-
-        }
-    }
 }
 

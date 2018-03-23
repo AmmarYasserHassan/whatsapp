@@ -2,29 +2,27 @@ package commands;
 
 
 import com.google.gson.JsonObject;
-import database.DBHandler;
+import database.DBBroker;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.json.JSONObject;
-import sender.MqttSender;
 
-public class LeaveAGroupChatCommand implements Command, Runnable {
+public class LeaveAGroupChatCommand implements Command {
 
-    DBHandler dbHandler;
+    DBBroker dbBroker;
     String userNumber;
     String groupChatId;
 
     /**
      * Constructor
      *
-     * @param dbHandler
+     * @param dbBroker
      * @param request
      */
 
-    public LeaveAGroupChatCommand(DBHandler dbHandler, JsonObject request) {
-        this.dbHandler = dbHandler;
+    public LeaveAGroupChatCommand(DBBroker dbBroker, JsonObject request) {
+        this.dbBroker = dbBroker;
         this.userNumber = request.get("userNumber").getAsString();
         this.groupChatId = request.get("groupChatId").getAsString();
     }
@@ -37,18 +35,8 @@ public class LeaveAGroupChatCommand implements Command, Runnable {
      */
     public JSONObject execute() {
         String leave_group_chat = "SELECT start_chat(" + "'" +userNumber + "'" + ", " + "'" + groupChatId + "'" + ");";
-        return this.dbHandler.executeSQLQuery(leave_group_chat);
+        return this.dbBroker.executeSQLQuery(leave_group_chat);
     }
 
-    public void run() {
-        JSONObject res = this.execute();
-        try {
-            MqttSender sender = new MqttSender();
-            sender.send(res);
-            sender.close();
-        } catch (Exception e) {
-
-        }
-    }
 }
 

@@ -1,16 +1,13 @@
 package commands;
 
-import java.sql.SQLException;
-
 import org.json.JSONObject;
 
 import com.google.gson.JsonObject;
 
-import database.DBHandler;
-import sender.MqttSender;
+import database.DBBroker;
 
-public class UpdateMessageStatusCommand implements Command, Runnable {
-    DBHandler dbHandler;
+public class UpdateMessageStatusCommand implements Command {
+    DBBroker dbBroker;
     String userNumber;
     String messageId;
     String statusUpdate;
@@ -20,12 +17,12 @@ public class UpdateMessageStatusCommand implements Command, Runnable {
     /**
      * Constructor
      *
-     * @param dbHandler
+     * @param dbBroker
      * @param request
      */
-    public UpdateMessageStatusCommand(DBHandler dbHandler, JsonObject request) {
+    public UpdateMessageStatusCommand(DBBroker dbBroker, JsonObject request) {
         super();
-        this.dbHandler = dbHandler;
+        this.dbBroker = dbBroker;
         this.userNumber = request.get("userNumber").getAsString();
         this.messageId = request.get("messageId").getAsString();
         this.statusUpdate = request.get("statusUpdate").getAsString();
@@ -43,30 +40,15 @@ public class UpdateMessageStatusCommand implements Command, Runnable {
         			+ "'participants_status':{$elemMatch:{'mobile_number':"+userNumber+"}}";
         	String jsonUpdateDocument = "\"{$set:{'participants_status.$.status':\""+ statusUpdate + "\"}}\"";
         	
-        	return this.dbHandler.updateMongoDocument(jsonFindDocument, jsonUpdateDocument, "group_chats");
+        	return this.dbBroker.updateMongoDocument(jsonFindDocument, jsonUpdateDocument, "group_chats");
         	
         }else{
         	String jsonFindDocument = "\"{_id:ObjectId("+messageId+")\"";
         	String jsonUpdateDocument = "\"{$set: {'status':\""+ statusUpdate +"\"}}\"";
         	System.out.println(jsonUpdateDocument);
-        	return this.dbHandler.updateMongoDocument(jsonFindDocument, jsonUpdateDocument, "chats");
+        	return this.dbBroker.updateMongoDocument(jsonFindDocument, jsonUpdateDocument, "chats");
         }
     }
 
-    public void run() {
-        JSONObject res = this.execute();
-        try {
-            MqttSender sender = new MqttSender();
-            sender.send(res);
-            sender.close();
-        } catch (Exception e) {
-
-        }
-    }
-//    public static void main(String[] args) {
-//    	String jsonUpdateDocument = "\"{'participants_status': {$elemMatch:{ 'mobile_number': \""+
-//    	        0+"\", status:\""+ 0 + "\" }}}\"";
-//    	System.out.println(jsonUpdateDocument);
-//	}
 }
 

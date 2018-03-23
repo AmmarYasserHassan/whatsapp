@@ -12,13 +12,13 @@ import com.mongodb.util.JSON;
 
 import org.json.*;
 
-public class DBHandler {
+public class DBBroker {
 
 	PostgreSqlDBConnection postgresqlDBConnection;
 	MongoDBConnection mongoDBConnection;
 	DB mongoDB;
 
-	public DBHandler(PostgreSqlDBConnection postgresqlDBConnection, MongoDBConnection mongoDBConnection) {
+	public DBBroker(PostgreSqlDBConnection postgresqlDBConnection, MongoDBConnection mongoDBConnection) {
 		this.postgresqlDBConnection = postgresqlDBConnection;
 		this.mongoDBConnection = mongoDBConnection;
 		this.mongoDB = mongoDBConnection.connect();

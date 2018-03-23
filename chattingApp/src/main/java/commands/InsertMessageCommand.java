@@ -6,23 +6,22 @@ import org.json.JSONObject;
 
 import com.google.gson.JsonObject;
 
-import database.DBHandler;
-import sender.MqttSender;
+import database.DBBroker;
 
-public class InsertMessageCommand  implements Command, Runnable {
+public class InsertMessageCommand  implements Command {
 	
-    DBHandler dbHandler;
+    DBBroker dbBroker;
     String messageDocument;
     boolean isGroupChat;
     /**
      * Constructor
      *
-     * @param dbHandler
+     * @param dbBroker
      * @param request
      */
 
-    public InsertMessageCommand(DBHandler dbHandler, JsonObject request) {
-        this.dbHandler = dbHandler;
+    public InsertMessageCommand(DBBroker dbBroker, JsonObject request) {
+        this.dbBroker = dbBroker;
         this.messageDocument = request.get("messageDocument").getAsString();
         this.isGroupChat = request.get("isGroupChat").getAsBoolean();
     }
@@ -40,18 +39,8 @@ public class InsertMessageCommand  implements Command, Runnable {
         else
             collectionName = "chats";
         
-    	return this.dbHandler.insertMongoDocument(messageDocument, collectionName);
+    	return this.dbBroker.insertMongoDocument(messageDocument, collectionName);
     }
 
-    public void run() {
-        JSONObject res = this.execute();
-        try {
-            MqttSender sender = new MqttSender();
-            sender.send(res);
-            sender.close();
-        } catch (Exception e) {
-
-        }
-    }
 
 }

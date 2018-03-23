@@ -4,11 +4,10 @@ import org.json.JSONObject;
 
 import com.google.gson.JsonObject;
 
-import database.DBHandler;
-import sender.MqttSender;
+import database.DBBroker;
 
-public class ReceivePendingMessageCommand implements Command, Runnable {
-    DBHandler dbHandler;
+public class ReceivePendingMessageCommand implements Command {
+    DBBroker dbBroker;
     String userNumber;
     int chatId;
     boolean isGroupChat;
@@ -16,12 +15,12 @@ public class ReceivePendingMessageCommand implements Command, Runnable {
     /**
      * Constructor
      *
-     * @param dbHandler
+     * @param dbBroker
      * @param request
      */
-    public ReceivePendingMessageCommand(DBHandler dbHandler, JsonObject request) {
+    public ReceivePendingMessageCommand(DBBroker dbBroker, JsonObject request) {
         super();
-        this.dbHandler = dbHandler;
+        this.dbBroker = dbBroker;
         this.userNumber = request.get("userNumber").getAsString();
         this.chatId = request.get("chatId").getAsInt();
         this.isGroupChat = request.get("isGroupChat").getAsBoolean();
@@ -35,22 +34,11 @@ public class ReceivePendingMessageCommand implements Command, Runnable {
         if(isGroupChat){
         	String jsonDocument = "\"{'chat_id':\"" + chatId+"\","+ "'sender_mobile_number': {$ne:\"" +userNumber +"\"} "+ ","
         	        +"'participants_status': {$elemMatch:{'mobile_number': \""+userNumber+"\", 'status':\"sent\"}}}\"";
-        	return this.dbHandler.findAllMongoDocuments(jsonDocument,"group_chats");
+        	return this.dbBroker.findAllMongoDocuments(jsonDocument,"group_chats");
         }else{
         	String jsonDocument = "\"{'chat_id':\"" + chatId+"\","+ "'sender_mobile_number': {$ne:\"" + userNumber +"\"} "+ ","
         	        + "'status': \"" + "sent" +"\"}\"";
-        	return this.dbHandler.findAllMongoDocuments(jsonDocument,"chats");
-        }
-    }
-
-    public void run() {
-        JSONObject res = this.execute();
-        try {
-            MqttSender sender = new MqttSender();
-            sender.send(res);
-            sender.close();
-        } catch (Exception e) {
-
+        	return this.dbBroker.findAllMongoDocuments(jsonDocument,"chats");
         }
     }
 }

@@ -1,30 +1,26 @@
 package commands;
 
 import com.google.gson.JsonObject;
-import database.DBHandler;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import database.DBBroker;
 
 import org.json.JSONObject;
-import sender.MqttSender;
 
-public class StarAMessageCommand implements Command, Runnable {
-    DBHandler dbHandler;
+public class StarAMessageCommand implements Command {
+    DBBroker dbBroker;
     String userNumber;
     String messageToBeStarred;
 
     /**
      * Constructor
      *
-     * @param dbHandler
+     * @param dbBroker
      * @param request
      *
      *
      */
-    public StarAMessageCommand(DBHandler dbHandler, JsonObject request) {
+    public StarAMessageCommand(DBBroker dbBroker, JsonObject request) {
         super();
-        this.dbHandler = dbHandler;
+        this.dbBroker = dbBroker;
         this.userNumber = request.get("userNumber").getAsString();
         this.messageToBeStarred = request.get("messageToBeStarred").getAsString();
     }
@@ -38,18 +34,8 @@ public class StarAMessageCommand implements Command, Runnable {
 
         String jsonDocument = "\"{'user_number':" + userNumber+ ",'message':" + messageToBeStarred+" }\"";
         String collectionName = "starred_messages";
-        return this.dbHandler.insertMongoDocument(jsonDocument,collectionName);
+        return this.dbBroker.insertMongoDocument(jsonDocument,collectionName);
 
     }
 
-    public void run() {
-        JSONObject res = this.execute();
-        try {
-            MqttSender sender = new MqttSender();
-            sender.send(res);
-            sender.close();
-        } catch (Exception e) {
-
-        }
-    }
 }

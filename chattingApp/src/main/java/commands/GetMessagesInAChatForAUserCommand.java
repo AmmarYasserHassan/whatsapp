@@ -1,16 +1,12 @@
 package commands;
 
 import com.google.gson.JsonObject;
-import database.DBHandler;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import database.DBBroker;
 
 import org.json.JSONObject;
-import sender.MqttSender;
 
-public class GetMessagesInAChatForAUserCommand implements Command, Runnable {
-    DBHandler dbHandler;
+public class GetMessagesInAChatForAUserCommand implements Command {
+    DBBroker dbBroker;
     String userNumber;
     int chatId;
     boolean isGroupChat;
@@ -18,12 +14,12 @@ public class GetMessagesInAChatForAUserCommand implements Command, Runnable {
     /**
      * Constructor
      *
-     * @param dbHandler
+     * @param dbBroker
      * @param request
      */
-    public GetMessagesInAChatForAUserCommand(DBHandler dbHandler, JsonObject request) {
+    public GetMessagesInAChatForAUserCommand(DBBroker dbBroker, JsonObject request) {
         super();
-        this.dbHandler = dbHandler;
+        this.dbBroker = dbBroker;
         this.userNumber = request.get("userNumber").getAsString();
         this.chatId = request.get("chatId").getAsInt();
         this.isGroupChat = request.get("isGroupChat").getAsBoolean();
@@ -43,20 +39,10 @@ public class GetMessagesInAChatForAUserCommand implements Command, Runnable {
         else
             collectionName = "chats";
 
-        return this.dbHandler.findAllMongoDocuments(jsonDocument,collectionName);
+        return this.dbBroker.findAllMongoDocuments(jsonDocument,collectionName);
 
 
     }
 
-    public void run() {
-        JSONObject res = this.execute();
-        try {
-            MqttSender sender = new MqttSender();
-            sender.send(res);
-            sender.close();
-        } catch (Exception e) {
-
-        }
-    }
 }
 

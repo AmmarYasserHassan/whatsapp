@@ -2,30 +2,27 @@ package commands;
 
 
 import com.google.gson.JsonObject;
-import database.DBHandler;
+import database.DBBroker;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 import org.json.JSONObject;
-import sender.MqttSender;
 
-public class DeleteAGroupChatCommand implements Command, Runnable {
+public class DeleteAGroupChatCommand implements Command {
 
-    DBHandler dbHandler;
+    DBBroker dbBroker;
     String adminUserNumber;
     int groupChatId;
 
     /**
      * Constructor
      *
-     * @param dbHandler
+     * @param dbBroker
      * @param request
      */
 
-    public DeleteAGroupChatCommand(DBHandler dbHandler, JsonObject request) {
-        this.dbHandler = dbHandler;
+    public DeleteAGroupChatCommand(DBBroker dbBroker, JsonObject request) {
+        this.dbBroker = dbBroker;
         this.adminUserNumber = request.get("adminUserNumber").getAsString();
         this.groupChatId = request.get("groupChatId").getAsInt();
     }
@@ -39,17 +36,7 @@ public class DeleteAGroupChatCommand implements Command, Runnable {
      */
     public JSONObject execute() {
         String delete_a_group_chat = "SELECT delete_a_group_chat(" + "'" + adminUserNumber + "'" + ", " + "'" + groupChatId + ");";
-        return this.dbHandler.executeSQLQuery(delete_a_group_chat);
+        return this.dbBroker.executeSQLQuery(delete_a_group_chat);
     }
 
-    public void run() {
-        JSONObject res = this.execute();
-        try {
-            MqttSender sender = new MqttSender();
-            sender.send(res);
-            sender.close();
-        } catch (Exception e) {
-
-        }
-    }
 }

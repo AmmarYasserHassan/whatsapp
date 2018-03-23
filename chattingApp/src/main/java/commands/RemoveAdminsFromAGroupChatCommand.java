@@ -2,18 +2,15 @@ package commands;
 
 
 import com.google.gson.JsonObject;
-import database.DBHandler;
+import database.DBBroker;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 import org.json.JSONObject;
-import sender.MqttSender;
 
-public class RemoveAdminsFromAGroupChatCommand implements Command, Runnable {
+public class RemoveAdminsFromAGroupChatCommand implements Command {
 
-    DBHandler dbHandler;
+    DBBroker dbBroker;
     String adminUserNumber;
     String numberOfMemberToBeRemovedAsAdmin;
     int groupChatId;
@@ -21,12 +18,12 @@ public class RemoveAdminsFromAGroupChatCommand implements Command, Runnable {
     /**
      * Constructor
      *
-     * @param dbHandler
+     * @param dbBroker
      * @param request
      */
 
-    public RemoveAdminsFromAGroupChatCommand(DBHandler dbHandler, JsonObject request) {
-        this.dbHandler = dbHandler;
+    public RemoveAdminsFromAGroupChatCommand(DBBroker dbBroker, JsonObject request) {
+        this.dbBroker = dbBroker;
         this.adminUserNumber = request.get("adminUserNumber").getAsString();
         this.numberOfMemberToBeRemovedAsAdmin = request.get("numberOfMemberToBeRemovedAsAdmin").getAsString();
         this.groupChatId = request.get("groupChatId").getAsInt();
@@ -43,17 +40,7 @@ public class RemoveAdminsFromAGroupChatCommand implements Command, Runnable {
 
 
         String remove_admin_from_a_group_chat = "SELECT remove_admin_from_a_group_chat(" + "'" + adminUserNumber + "'" + ", " + "'" + groupChatId + "'" + ", " + "'" + numberOfMemberToBeRemovedAsAdmin + "'" + ");";
-        return this.dbHandler.executeSQLQuery(remove_admin_from_a_group_chat);
+        return this.dbBroker.executeSQLQuery(remove_admin_from_a_group_chat);
     }
 
-    public void run() {
-        JSONObject res = this.execute();
-        try {
-            MqttSender sender = new MqttSender();
-            sender.send(res);
-            sender.close();
-        } catch (Exception e) {
-
-        }
-    }
 }

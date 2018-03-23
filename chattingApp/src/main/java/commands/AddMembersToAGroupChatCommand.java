@@ -1,18 +1,15 @@
 package commands;
 
 import com.google.gson.JsonObject;
-import database.DBHandler;
+import database.DBBroker;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 import org.json.JSONObject;
-import sender.MqttSender;
 
-public class AddMembersToAGroupChatCommand implements Command, Runnable {
+public class AddMembersToAGroupChatCommand implements Command {
 
-    DBHandler dbHandler;
+    DBBroker dbBroker;
     String adminUserNumber;
     String numberOfMemberToBeAdded;
     int groupChatId;
@@ -20,12 +17,12 @@ public class AddMembersToAGroupChatCommand implements Command, Runnable {
     /**
      * Constructor
      *
-     * @param dbHandler
+     * @param dbBroker
      * @param request
      */
 // String adminUserNumber, String numberOfMemberToBeAdded, int groupChatId
-    public AddMembersToAGroupChatCommand(DBHandler dbHandler, JsonObject request) {
-        this.dbHandler = dbHandler;
+    public AddMembersToAGroupChatCommand(DBBroker dbBroker, JsonObject request) {
+        this.dbBroker = dbBroker;
         this.adminUserNumber = request.get("adminUserNumber").getAsString();
         this.numberOfMemberToBeAdded = request.get("numberOfMemberToBeAdded").getAsString();
         this.groupChatId = request.get("groupChatId").getAsInt();
@@ -40,17 +37,7 @@ public class AddMembersToAGroupChatCommand implements Command, Runnable {
      */
     public JSONObject execute() {
         String add_member_to_a_group_chat = "SELECT add_members_to_a_group_chat(" + "'" + adminUserNumber + "'" + ", " + "'" + groupChatId + "'" + ", " + "'" + numberOfMemberToBeAdded + "'" + ");";
-        return this.dbHandler.executeSQLQuery(add_member_to_a_group_chat);
+        return this.dbBroker.executeSQLQuery(add_member_to_a_group_chat);
     }
 
-    public void run() {
-        JSONObject res = this.execute();
-        try {
-            MqttSender sender = new MqttSender();
-            sender.send(res);
-            sender.close();
-        }catch (Exception e){
-
-        }
-    }
 }
