@@ -1,0 +1,75 @@
+version: '3'
+
+
+services:
+
+  rabbitmq:
+      build: ./rabbitmq
+      ports:
+        - "5672:5672"
+        - "15672:15672"
+        - "15671:15671"
+      privileged: true
+      environment:
+        - RABBITMQ_DEFAULT_USER=guest
+        - RABBITMQ_DEFAULT_PASS=guest
+      healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:15672"]
+        interval: 30s
+        timeout: 10s
+        retries: 5  
+
+  mongo:
+    build: ./mongo
+    ports:
+      - "27017:27017"
+      
+  postgres:
+    build: ./postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=whatsapp
+      - POSTGRES_USER=default
+      - POSTGRES_PASSWORD=secret
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 30s
+      retries: 3  
+
+  auth-app: 
+    build: 
+      context: ./authApp
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - MONGO_HOST=mongo
+      - POSTGRES_HOST=postgres
+    depends_on:
+      - mongo 
+      - rabbitmq
+      - postgres
+
+  # chattingApp: 
+  #   build: 
+  #     context: ./chattingApp
+  #   environment:
+  #     - RABBITMQ=localhost  
+  #   networks:
+  #     - backend 
+
+  # storiesApp: 
+  #   build: 
+  #     context: ./storiesApp
+  #   environment:
+  #     - RABBITMQ=localhost  
+  #   networks:
+  #     - backend 
+
+  # userApp: 
+  #   build: 
+  #     context: ./userApp
+  #   environment:
+  #     - RABBITMQ=localhost  
+  #   networks:
+  #     - backend          

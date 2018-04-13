@@ -18,10 +18,10 @@ public class PostgreSqlDBConnection {
      */
     public PostgreSqlDBConnection() {
 		connection = null;
-		basicURL = "localhost:5432";
-		databaseName = "postgres";
-		username = "postgres";
-		password = "123456";
+		basicURL = System.getenv("POSTGRES_HOST")+":5432";
+		databaseName = "whatsapp";
+		username = "default";
+		password = "secret";
 	}
 
 	/**
@@ -30,7 +30,7 @@ public class PostgreSqlDBConnection {
      * @return sql connection object.
      * @see {@link Connection}
      */
-    Connection connect(){
+    public Connection connect(){
     	String postgresqlJdbcUrl = "jdbc:postgresql://"+basicURL+"/"+databaseName+"/";
         try {
 			connection = DriverManager.getConnection(postgresqlJdbcUrl, username, password);
