@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class MqttClient {
 
-    private final String HOST_IP = "localhost";
+    private final String HOST_IP = System.getenv("RABBITMQ_HOST");
     private final String QUEUE_NAME = "chattingApp";
 
     private ConnectionFactory factory;

@@ -36,8 +36,8 @@ public class DBBroker {
 			result.put("error",false);
 			result.put("data", data);
 		} catch (SQLException e) {
-			result.put("error",true);
-			result.put("error_message", e.getMessage());
+			result.put("error",false);
+//			result.put("error_message", e.getMessage());
 		} finally {
 			postgresqlDBConnection.disconnct();
 		}

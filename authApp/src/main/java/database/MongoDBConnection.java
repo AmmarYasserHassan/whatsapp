@@ -22,7 +22,7 @@ public class MongoDBConnection {
 	public MongoDBConnection() {
 		mongoClient = null;
 		database = null;
-		basicURI = "localhost:27017";
+		basicURI = System.getenv("MONGO_HOST")+":27017";
 		databaseName = "mydb";
 		username = "Username";
 		password = "Password";
@@ -34,7 +34,7 @@ public class MongoDBConnection {
 	 * @return database object.
 	 * @see {@link DB}
 	 */
-	DB connect() {
+	public DB connect() {
 		//    	+username+":"+password+"@"
 		String uri = "mongodb://" + basicURI;
 		MongoClientURI mongoClientURI = new MongoClientURI(uri);
