@@ -21,7 +21,7 @@ public class PostgreSqlDBConnection {
 		basicURL = "localhost:5432";
 		databaseName = "postgres";
 		username = "postgres";
-		password = "kimo3433";
+		password = "123456";
 	}
 
 	/**

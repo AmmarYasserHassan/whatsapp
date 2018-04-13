@@ -64,6 +64,6 @@ public class MqttClient {
 
     public static void main(String[] args) throws Exception {
         MqttClient client = new MqttClient();
-        System.out.println("Stories app started successfully ");
+        System.out.println("Users app started successfully ");
     }
 }
