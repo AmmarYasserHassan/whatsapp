@@ -6,6 +6,7 @@ import java.sql.SQLException;
 
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
+import config.ApplicationProperties;
 
 public class PostgreSqlDBConnection {
 
@@ -21,10 +22,10 @@ public class PostgreSqlDBConnection {
      */
     public PostgreSqlDBConnection() {
         connection = null;
-        basicURL = "localhost:5432";
-        databaseName = "postgres";
-        username = "postgres";
-        password = "kimo3433";
+        basicURL = ApplicationProperties.getPostgresHost() + ":5432";
+        databaseName = "whatsapp";
+        username = "default";
+        password = "secret";
     }
 
     /**
@@ -33,12 +34,12 @@ public class PostgreSqlDBConnection {
      * @return sql connection object.
      * @see {@link Connection}
      */
-    Connection connect(){
-        String postgresqlJdbcUrl = "jdbc:postgresql://"+basicURL+"/"+databaseName+"/";
+    public Connection connect() {
+        String postgresqlJdbcUrl = "jdbc:postgresql://" + basicURL + "/" + databaseName + "/";
         try {
             connection = DriverManager.getConnection(postgresqlJdbcUrl, username, password);
         } catch (SQLException e) {
-            System.err.println("Cannot connect to PostgreSql Database !: "+e.getMessage());
+            System.err.println("Cannot connect to PostgreSql Database !: " + e.getMessage());
         }
         return connection;
     }
@@ -48,17 +49,17 @@ public class PostgreSqlDBConnection {
      *
      * @return true if connection found and disconnected successfully from if, false otherwise.
      */
-    boolean disconnct(){
-        if(connection != null){
+    public boolean disconnct() {
+        if (connection != null) {
             try {
                 connection.close();
                 connection = null;
                 return true;
             } catch (SQLException e) {
-                System.err.println("Cannot disconnect from PostgreSql Database !: "+e.getMessage());
+                System.err.println("Cannot disconnect from PostgreSql Database !: " + e.getMessage());
                 return false;
             }
-        }else{
+        } else {
             return false;
         }
     }

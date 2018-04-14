@@ -3,16 +3,22 @@ package reciever;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.rabbitmq.client.*;
+import config.ApplicationProperties;
 import database.MongoDBConnection;
 import database.PostgreSqlDBConnection;
 import invoker.Invoker;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 public class MqttClient {
 
-    private final String HOST_IP = System.getenv("RABBITMQ_HOST");
+    static private Logger logger = LoggerFactory.getLogger(MqttClient.class);
+
+
+    private final String HOST_IP = ApplicationProperties.getRabbitMqHost();
     private final String QUEUE_NAME = "authApp";
 
     private ConnectionFactory factory;
@@ -65,28 +71,13 @@ public class MqttClient {
     }
 
     public static void main(String[] args) throws Exception {
-        Thread.sleep(60000);
+        Thread.sleep(20000);
         try {
             MqttClient client = new MqttClient();
-            System.out.println("Auth app started successfully ");
+            logger.info("Connected to rabbitmq on queue " + client.QUEUE_NAME);
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error(e.toString());
         }
-        try {
-            PostgreSqlDBConnection connection = new PostgreSqlDBConnection();
-            connection.connect();
-            System.out.println("CONNECTED -----> POSTGRES");
-        } catch (Exception e) {
-            System.out.println("ERROR PSOTGRESS");
-        }
-
-        try {
-            MongoDBConnection mongoDBConnection = new MongoDBConnection();
-            mongoDBConnection.connect();
-            System.out.println("CONNECTED -----> MONGO");
-        } catch (Exception e) {
-            System.out.println("ERROR MONGO");
-        }
-
+        logger.info("Auth app started successfully ");
     }
 }

@@ -1,29 +1,40 @@
 version: '3'
 
+networks:
+  # establish a default network using the bridge adapter
+  backend:
+    driver: bridge
 
 services:
 
+  # rabbitmq service 
   rabbitmq:
-      build: ./rabbitmq
-      ports:
-        - "5672:5672"
-        - "15672:15672"
-        - "15671:15671"
-      privileged: true
-      environment:
-        - RABBITMQ_DEFAULT_USER=guest
-        - RABBITMQ_DEFAULT_PASS=guest
-      healthcheck:
-        test: ["CMD", "curl", "-f", "http://localhost:15672"]
-        interval: 30s
-        timeout: 10s
-        retries: 5  
+    build: ./rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      - "15671:15671"
+    privileged: true
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:15672"]
+      interval: 30s
+      timeout: 10s
+      retries: 5  
+    networks:
+      - backend  
 
+  # mongo service
   mongo:
     build: ./mongo
     ports:
       - "27017:27017"
-      
+    networks:
+      - backend  
+
+  # postgres service
   postgres:
     build: ./postgres
     ports:
@@ -36,8 +47,11 @@ services:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 30s
       timeout: 30s
-      retries: 3  
+      retries: 3
+    networks:
+      - backend   
 
+  # authApp 
   auth-app: 
     build: 
       context: ./authApp
@@ -49,27 +63,63 @@ services:
       - mongo 
       - rabbitmq
       - postgres
+    networks:
+      - backend   
 
-  # chattingApp: 
-  #   build: 
-  #     context: ./chattingApp
-  #   environment:
-  #     - RABBITMQ=localhost  
-  #   networks:
-  #     - backend 
+  # chattingApp service 
+  chatting-app: 
+    build: 
+      context: ./chattingApp
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - MONGO_HOST=mongo
+      - POSTGRES_HOST=postgres
+    depends_on:
+      - mongo 
+      - rabbitmq
+      - postgres
+    networks:
+      - backend   
 
-  # storiesApp: 
-  #   build: 
-  #     context: ./storiesApp
-  #   environment:
-  #     - RABBITMQ=localhost  
-  #   networks:
-  #     - backend 
+  # storiesApp service
+  stories-app: 
+    build: 
+      context: ./storiesApp
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - MONGO_HOST=mongo
+      - POSTGRES_HOST=postgres
+    depends_on:
+      - mongo 
+      - rabbitmq
+      - postgres
+    networks:
+      - backend   
 
-  # userApp: 
-  #   build: 
-  #     context: ./userApp
-  #   environment:
-  #     - RABBITMQ=localhost  
-  #   networks:
-  #     - backend          
+  # userApp service
+  user-app: 
+    build: 
+      context: ./userApp
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - MONGO_HOST=mongo
+      - POSTGRES_HOST=postgres
+    depends_on:
+      - mongo 
+      - rabbitmq
+      - postgres 
+    networks:
+      - backend
+
+  # mainServer service
+  main-server: 
+    build: 
+      context: ./mainServer
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+    ports:
+      - "8080:8080"  
+    depends_on:
+      - rabbitmq
+    networks:
+      - backend               

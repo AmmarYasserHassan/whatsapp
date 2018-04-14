@@ -2,6 +2,7 @@ package mqtt_sender;
 
 
 import com.rabbitmq.client.*;
+import config.ApplicationProperties;
 import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 import java.io.IOException;
@@ -22,7 +23,7 @@ public class MqttSender {
     public MqttSender(String queueName) throws IOException, InterruptedException, TimeoutException {
         this.requestQueueName = queueName;
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("localhost");
+        factory.setHost(ApplicationProperties.getRabbitMqHost());
         connection = factory.newConnection();
         channel = connection.createChannel();
         replyQueueName = channel.queueDeclare().getQueue();

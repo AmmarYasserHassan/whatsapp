@@ -3,14 +3,19 @@ package reciever;
 import com.rabbitmq.client.*;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import config.ApplicationProperties;
 import invoker.Invoker;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 public class MqttClient {
 
-    private final String HOST_IP = "localhost";
+    static private Logger logger = LoggerFactory.getLogger(MqttClient.class);
+
+    private final String HOST_IP = ApplicationProperties.getRabbitMqHost();
     private final String QUEUE_NAME = "storiesApp";
 
     private ConnectionFactory factory;
@@ -63,7 +68,13 @@ public class MqttClient {
     }
 
     public static void main(String[] args) throws Exception {
-        MqttClient client = new MqttClient();
-        System.out.println("Stories app started successfully ");
+        Thread.sleep(20000);
+        try {
+            MqttClient client = new MqttClient();
+            logger.info("Connected to rabbitmq on queue " + client.QUEUE_NAME);
+        } catch (Exception e) {
+            logger.error(e.toString());
+        }
+        logger.info("Stories app started successfully ");
     }
 }

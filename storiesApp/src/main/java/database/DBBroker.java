@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import config.ApplicationProperties;
 import models.Story;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -27,7 +28,7 @@ public class DBBroker {
     /**
      * DbHandler constructor
      */
-    static String mongoHost = "localhost";
+    static String mongoHost = ApplicationProperties.getMongoHost();
     static String mongoPort = "27017";
     static String mongoDbName = "whatsapp";
     static PostgreSqlDBConnection postgresqlDBConnection;
