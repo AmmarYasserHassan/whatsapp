@@ -1,6 +1,5 @@
 package config;
 
-
 public class ApplicationProperties {
     /**
      * Get RabbitMq host from env variable if exists, else return a default value
@@ -28,6 +27,5 @@ public class ApplicationProperties {
     public static String getMongoHost() {
         return System.getenv("MONGO_HOST") == null ? "localhost" : System.getenv("MONGO_HOST");
     }
-
 
 }

@@ -25,7 +25,6 @@ public class HTTPServer {
                     .childHandler(new HTTPServerInitializer());
             b.option(ChannelOption.SO_KEEPALIVE, true);
             Channel ch = b.bind(port).sync().channel();
-            logger.info("Server is listening on http://127.0.0.1:" + port + '/');
 
             ch.closeFuture().sync();
 
@@ -41,5 +40,7 @@ public class HTTPServer {
 
     public static void main(String[] args) throws Exception {
         HTTPServer.start(8080);
+        logger.info("Server is listening on http://127.0.0.1:" + 8080 + '/');
+
     }
 }
