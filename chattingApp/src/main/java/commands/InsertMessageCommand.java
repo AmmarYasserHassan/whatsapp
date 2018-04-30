@@ -24,6 +24,7 @@ public class InsertMessageCommand  implements Command {
         this.dbBroker = dbBroker;
         this.messageDocument = request.get("messageDocument").getAsString();
         this.isGroupChat = request.get("isGroupChat").getAsBoolean();
+
     }
 
     /**
@@ -33,13 +34,12 @@ public class InsertMessageCommand  implements Command {
      * @throws SQLException
      */
     public JSONObject execute() {
-    	String collectionName;
+        String collectionName;
         if(isGroupChat)
             collectionName = "group_chats";
         else
             collectionName = "chats";
-        
-    	return this.dbBroker.insertMongoDocument(messageDocument, collectionName);
+        return this.dbBroker.insertMongoDocument(messageDocument, collectionName);
     }
 
 

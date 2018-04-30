@@ -1,6 +1,7 @@
 package invoker;
 
 import com.google.gson.JsonObject;
+import com.mongodb.DB;
 import commands.Command;
 import config.ApplicationProperties;
 import database.DBBroker;
@@ -21,7 +22,7 @@ public class Invoker {
     protected Hashtable htblCommands;
     protected ExecutorService threadPoolCmds;
     protected PostgreSqlDBConnection postgresqlDBConnection;
-    protected MongoDBConnection mongoDBConnection;
+    protected DB mongoDBConnection;
 
     public Invoker() throws Exception {
         this.init();
@@ -63,7 +64,8 @@ public class Invoker {
     public void init() throws Exception {
         loadThreadPool();
         loadCommands();
+        System.out.println(htblCommands);
         postgresqlDBConnection = new PostgreSqlDBConnection();
-        mongoDBConnection = new MongoDBConnection();
+        mongoDBConnection = new MongoDBConnection().connect();
     }
 }

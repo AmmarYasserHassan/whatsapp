@@ -48,7 +48,6 @@ public class MqttClient {
                 String requestRaw = new String(body);
                 JsonObject request = new JsonParser().parse(requestRaw).getAsJsonObject();
                 try {
-                    System.out.println(request.get("command").getAsString());
                     String result = invoker.invoke(request.get("command").getAsString(), request);
                     channel.basicPublish("", properties.getReplyTo(), replyProps, result.getBytes());
                     channel.basicAck(envelope.getDeliveryTag(), false);
@@ -59,6 +58,7 @@ public class MqttClient {
                 } catch (Exception e) {
                     JSONObject error = new JSONObject();
                     error.put("message", e);
+                    System.out.println(e);
                     channel.basicPublish("", properties.getReplyTo(), replyProps, error.toString().getBytes());
                     channel.basicAck(envelope.getDeliveryTag(), false);
                 }
@@ -69,7 +69,7 @@ public class MqttClient {
     }
 
     public static void main(String[] args) throws Exception {
-        Thread.sleep(20000);
+//        Thread.sleep(20000);
         try {
             MqttClient client = new MqttClient();
             logger.info("Connected to rabbitmq on queue " + client.QUEUE_NAME);

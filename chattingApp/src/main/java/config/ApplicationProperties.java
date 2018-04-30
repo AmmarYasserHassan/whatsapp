@@ -40,7 +40,8 @@ public class ApplicationProperties {
      * @return
      */
     public static String getRabbitMqHost() {
-        return System.getenv("RABBITMQ_HOST") == null ? "localhost" : System.getenv("RABBITMQ_HOST");
+//        return System.getenv("RABBITMQ_HOST") == null ? "localhost" : System.getenv("RABBITMQ_HOST");
+        return "localhost";
     }
 
     /**
@@ -58,7 +59,8 @@ public class ApplicationProperties {
      * @return
      */
     public static String getMongoHost() {
-        return System.getenv("MONGO_HOST") == null ? "localhost" : System.getenv("MONGO_HOST");
+//        return System.getenv("MONGO_HOST") == null ? "localhost" : System.getenv("MONGO_HOST");
+        return "localhost";
     }
 
 }

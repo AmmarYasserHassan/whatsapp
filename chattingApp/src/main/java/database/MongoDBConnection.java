@@ -27,8 +27,8 @@ public class MongoDBConnection {
         database = null;
         basicURI = ApplicationProperties.getMongoHost();
         databaseName = ApplicationProperties.getProperty("mongoDatabaseName");
-        username = ApplicationProperties.getProperty("mongoUsername");
-        password = ApplicationProperties.getProperty("mongoPassword");
+//        username = ApplicationProperties.getProperty("mongoUsername");
+//        password = ApplicationProperties.getProperty("mongoPassword");
     }
 
     /**
@@ -43,6 +43,8 @@ public class MongoDBConnection {
         MongoClientURI mongoClientURI = new MongoClientURI(uri);
         try {
             mongoClient = new MongoClient(mongoClientURI);
+            System.out.println(databaseName);
+            System.out.println(basicURI);
             database = mongoClient.getDB(databaseName);
         } catch (UnknownHostException e) {
             System.err.println("Cannot connect to mongoDB !");
