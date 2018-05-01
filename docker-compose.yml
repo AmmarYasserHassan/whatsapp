@@ -51,6 +51,58 @@ services:
     networks:
       - backend   
 
+  # mfs master
+  mfsmaster:
+    image: moosefs/master
+    container_name: "mfsmaster"
+    ports:
+      - "8082:9425"
+
+  # mfs client
+  mfsclient:
+    image: moosefs/client
+    container_name: "mfsclient"
+    cap_add:
+      - SYS_ADMIN
+    devices:
+      - /dev/fuse:/dev/fuse
+    security_opt:
+      - apparmor:unconfined
+    stdin_open: true
+    tty: true
+    links:
+      - mfsmaster
+    volumes:
+      - ./files:/mnt/mfs
+
+  # mfs chunk server1
+  mfschunkserver1:
+    image: moosefs/chunkserver
+    container_name: "mfschunkserver1"
+    links:
+      - mfsmaster
+
+  # mfs chunk server2    
+  mfschunkserver2:
+    image: moosefs/chunkserver
+    container_name: "mfschunkserver2"
+    links:
+      - mfsmaster
+
+  # mfs chunk server3    
+  mfschunkserver3:
+    image: moosefs/chunkserver
+    container_name: "mfschunkserver3"
+    links:
+      - mfsmaster
+
+  # mfs chunk server4    
+  mfschunkserver4:
+    image: moosefs/chunkserver
+    container_name: "mfschunkserver4"
+    links:
+      - mfsmaster            
+
   # authApp 
   auth-app: 
     build: 
@@ -122,4 +174,15 @@ services:
     depends_on:
       - rabbitmq
     networks:
-      - backend               
+      - backend 
+
+  # media server service
+  media-server:
+    build: 
+      context: ./mediaServer
+    environment: 
+      - FOLDER_DIR=./mediaServer/files 
+    ports: 
+      - "5001:5001"
+    networks: 
+      - backend                      
