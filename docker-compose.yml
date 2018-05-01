@@ -73,7 +73,7 @@ services:
     links:
       - mfsmaster
     volumes:
-      - ./files:/mnt/mfs
+      - ./mediaServer/files:/mnt/mfs
 
   # mfs chunk server1
   mfschunkserver1:
