@@ -1,11 +1,13 @@
-FROM python:3
+FROM golang:latest
 
-WORKDIR /mediaServer
+RUN mkdir /usr/local/go/src/mediaServer
 
-COPY . .
+ADD . /usr/local/go/src/mediaServer
 
-RUN pip install -r requirements.txt
+WORKDIR /usr/local/go/src/mediaServer
 
 EXPOSE 5001
 
-CMD ["python", "server.py"]
+RUN go build -o main .
+
+CMD ["/usr/local/go/src/mediaServer/main"]
