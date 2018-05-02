@@ -18,10 +18,10 @@ public class DBBroker {
 	MongoDBConnection mongoDBConnection;
 	DB mongoDB;
 
-	public DBBroker(PostgreSqlDBConnection postgresqlDBConnection, MongoDBConnection mongoDBConnection) {
+	public DBBroker(PostgreSqlDBConnection postgresqlDBConnection, DB mongoDBConnection) {
 		this.postgresqlDBConnection = postgresqlDBConnection;
-		this.mongoDBConnection = mongoDBConnection;
-		this.mongoDB = mongoDBConnection.connect();
+//		this.mongoDBConnection = mongoDBConnection;
+		this.mongoDB = mongoDBConnection;
 	}
 
 

@@ -1,1 +1,20 @@
-/target/
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.
+
+# Files
+*.png
+*.jpeg
+*.jpg
+*.gif
+
+# Test binary, build with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+./idea
