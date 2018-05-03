@@ -21,13 +21,11 @@ public class UnBlockCommand implements Command {
         this.blockedNumber = request.get("blockedNumber").getAsString();
     }
 
-    /**
-     * Execute the unblock command
-     * @return
-     */
-    public JSONObject execute() {
+
+    @Override
+    public JSONObject call() throws Exception {
         String query = "DELETE FROM blocked WHERE blocker_mobile_number LIKE " + "'"+blockerNumber+"'" +
-                       "AND blocked_mobile_number LIKE " + "'"+blockedNumber+"'";
+                "AND blocked_mobile_number LIKE " + "'"+blockedNumber+"'";
         try {
             return this.dbBroker.executeSQLQuery(query);
         }

@@ -5,7 +5,7 @@ import database.DBBroker;
 import java.sql.ResultSet;
 
 
-public class UpdateUserStatus{
+public class UpdateUserStatus implements Command{
     DBBroker dbBroker;
     String user_number;
     String user_status;
@@ -31,7 +31,12 @@ public class UpdateUserStatus{
      * @return ResultSet query result
      */
     public ResultSet execute() {
-//        return this.dbBroker.updateUserStatus(user_number, user_status);
+//
+        return null;
+    }
+
+    @Override
+    public Object call() throws Exception {
         return null;
     }
 }

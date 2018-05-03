@@ -15,10 +15,10 @@ public class AddViewerToStory implements Command {
         this.viewerMobileNumber = request.get("ViewerMobileNumber").getAsString();
     }
 
-    public JSONObject execute() {
+    @Override
+    public JSONObject call() throws Exception {
         JSONObject s = this.dbBroker.update(id, viewerMobileNumber);
         return s;
     }
-
 }
 

@@ -1,6 +1,7 @@
 package invoker;
 
 import com.google.gson.JsonObject;
+import com.mongodb.DB;
 import commands.Command;
 import config.ApplicationProperties;
 import database.DBBroker;
@@ -16,28 +17,30 @@ import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class Invoker {
     protected Hashtable htblCommands;
     protected ExecutorService threadPoolCmds;
     protected PGPoolingDataSource postgresqlDBConnectionsPool;
-    protected MongoDBConnection mongoDBConnection;
+    protected DB mongoDBConnection;
+
 
     public Invoker() throws Exception {
         this.init();
     }
 
-    public String invoke(String cmdName, JsonObject request) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, SQLException{
+    public String invoke(String cmdName, JsonObject request) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ExecutionException, InterruptedException, SQLException {
         Command cmd;
         Class<?> cmdClass = (Class<?>) htblCommands.get(cmdName);
         Constructor constructor = cmdClass.getConstructor(DBBroker.class, JsonObject.class);
         Object cmdInstance = constructor.newInstance(new DBBroker(getPostgresConnection(), mongoDBConnection), request);
         cmd = (Command) cmdInstance;
-        JSONObject result = cmd.execute();
-        return result.toString();
-//        threadPoolCmds.execute((Runnable) cmd);
+        Future<JSONObject> result = threadPoolCmds.submit(cmd);
+        return result.get().toString();
     }
 
     protected void loadCommands() throws Exception {
@@ -89,6 +92,7 @@ public class Invoker {
         loadThreadPool();
         loadCommands();
         createPostgresDataSource();
-        mongoDBConnection = new MongoDBConnection();
+         System.out.println(htblCommands);
+//        postgresqlDBConnection = new PostgreSqlDBConnection();
     }
 }

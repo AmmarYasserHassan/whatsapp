@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import config.ApplicationProperties;
+import org.postgresql.ds.PGPoolingDataSource;
 
 public class PostgreSqlDBConnection {
 
@@ -20,7 +21,7 @@ public class PostgreSqlDBConnection {
      * DBConnection constructor.
      * This constructor uses environment variables to for the database options.
      */
-    public PostgreSqlDBConnection() {
+    public PostgreSqlDBConnection()  {
         connection = null;
         basicURL = ApplicationProperties.getPostgresHost() + ":5432";
         databaseName = "whatsapp";

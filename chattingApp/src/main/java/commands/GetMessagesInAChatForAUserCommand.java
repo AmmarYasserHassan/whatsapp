@@ -25,24 +25,16 @@ public class GetMessagesInAChatForAUserCommand implements Command {
         this.isGroupChat = request.get("isGroupChat").getAsBoolean();
     }
 
-
-    /**
-     * Execute the get messages in a chat or group chat command
-     * @return JSONObject, if error == false then data is returned successsfully, if error == true then further info in error_message
-     */
-    public JSONObject execute() {
-
-        String jsonDocument = "\"{'chat_id':" + chatId+ " }\"";
+    @Override
+    public JSONObject call() throws Exception {
+        String jsonDocument = "\"{'chat_id':" + chatId + " }\"";
         String collectionName;
-        if(isGroupChat)
+        if (isGroupChat)
             collectionName = "group_chats";
         else
             collectionName = "chats";
 
-        return this.dbBroker.findAllMongoDocuments(jsonDocument,collectionName);
-
-
+        return this.dbBroker.findAllMongoDocuments(jsonDocument, collectionName);
     }
-
 }
 

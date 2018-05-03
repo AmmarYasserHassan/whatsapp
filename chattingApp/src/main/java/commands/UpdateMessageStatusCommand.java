@@ -30,25 +30,21 @@ public class UpdateMessageStatusCommand implements Command {
         this.isGroupChat = request.get("isGroupChat").getAsBoolean();
     }
 
-    /**
-     * Execute the get messages in a chat or group chat command
-     * @return JSONObject, if error == false then data is returned successfully, if error == true then further info in error_message
-     */
-    public JSONObject execute() {  
-        if(isGroupChat){
-        	String jsonFindDocument = "\"{_id:ObjectId("+messageId+"),"
-        			+ "'participants_status':{$elemMatch:{'mobile_number':"+userNumber+"}}";
-        	String jsonUpdateDocument = "\"{$set:{'participants_status.$.status':\""+ statusUpdate + "\"}}\"";
-        	
-        	return this.dbBroker.updateMongoDocument(jsonFindDocument, jsonUpdateDocument, "group_chats");
-        	
-        }else{
-        	String jsonFindDocument = "\"{_id:ObjectId("+messageId+")\"";
-        	String jsonUpdateDocument = "\"{$set: {'status':\""+ statusUpdate +"\"}}\"";
-        	System.out.println(jsonUpdateDocument);
-        	return this.dbBroker.updateMongoDocument(jsonFindDocument, jsonUpdateDocument, "chats");
+    @Override
+    public Object call() throws Exception {
+        if (isGroupChat) {
+            String jsonFindDocument = "\"{_id:ObjectId(" + messageId + "),"
+                    + "'participants_status':{$elemMatch:{'mobile_number':" + userNumber + "}}";
+            String jsonUpdateDocument = "\"{$set:{'participants_status.$.status':\"" + statusUpdate + "\"}}\"";
+
+            return this.dbBroker.updateMongoDocument(jsonFindDocument, jsonUpdateDocument, "group_chats");
+
+        } else {
+            String jsonFindDocument = "\"{_id:ObjectId(" + messageId + ")\"";
+            String jsonUpdateDocument = "\"{$set: {'status':\"" + statusUpdate + "\"}}\"";
+            System.out.println(jsonUpdateDocument);
+            return this.dbBroker.updateMongoDocument(jsonFindDocument, jsonUpdateDocument, "chats");
         }
     }
-
 }
 

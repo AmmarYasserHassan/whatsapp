@@ -30,7 +30,8 @@ public class LoginCommand implements Command {
 
     }
 
-    public JSONObject execute() {
+    @Override
+    public JSONObject call() throws Exception {
         JSONObject returned = new JSONObject();
         try {
 

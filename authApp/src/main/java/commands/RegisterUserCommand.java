@@ -51,18 +51,10 @@ public class RegisterUserCommand implements Command{
         return saltStr;
 
     }
-    /**
-     * Execute the update command
-     *
-     * @return Result Set
-     * @throws SQLException
-     */
 
-
-
-    public JSONObject execute() {
-
-         try {
+    @Override
+    public JSONObject call() throws Exception {
+        try {
 
 
             // Start create JWT
