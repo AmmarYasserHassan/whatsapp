@@ -5,7 +5,8 @@ import com.google.gson.JsonObject;
 import database.DBBroker;
 import org.json.JSONObject;
 
-public class DeleteAStoryCommand implements Command {
+public class
+DeleteAStoryCommand implements Command {
     DBBroker dbBroker;
     JsonObject request;
 
@@ -15,9 +16,8 @@ public class DeleteAStoryCommand implements Command {
     }
 
     @Override
-    public JSONObject execute() {
+    public Object call() throws Exception {
         JSONObject res = this.dbBroker.deleteAStory(request);
         return res;
     }
-
 }

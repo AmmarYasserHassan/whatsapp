@@ -25,17 +25,10 @@ public class GetAllChatsForAUserCommand implements Command {
         this.userNumber = request.get("userNumber").getAsString();
     }
 
-
-    /**
-     * Execute the get all my chats command
-     *
-     * @return Result Set
-     * @throws SQLException
-     */
-    public JSONObject execute() {
+    @Override
+    public JSONObject call() throws Exception {
         String get_chats = "SELECT get_chats(" + "'" + userNumber + "'" + ");";
         return this.dbBroker.executeSQLQuery(get_chats);
     }
-
 }
 

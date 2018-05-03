@@ -181,7 +181,7 @@ services:
     build: 
       context: ./mediaServer
     environment: 
-      - FOLDER_DIR=./mediaServer/files 
+      - FOLDER_DIR=./files 
     ports: 
       - "5001:5001"
     networks: 

@@ -23,11 +23,9 @@ public class BlockCommand implements Command {
         this.blockedNumber = request.get("blockedNumber").getAsString();
     }
 
-    /**
-     * Execute the block command
-     * @return
-     */
-    public JSONObject execute() {
+
+    @Override
+    public JSONObject call() throws Exception {
         String query = "INSERT INTO BLOCKED VALUES (DEFAULT, " + "'"+blockerNumber+"'" + ", " + "'"+blockedNumber+"'" + ");";
         try {
             return this.dbBroker.executeSQLQuery(query);

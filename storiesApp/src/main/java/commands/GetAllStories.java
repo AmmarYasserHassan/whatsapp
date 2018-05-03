@@ -18,12 +18,12 @@ public class GetAllStories implements Command {
         this.userNumber = request.get("userNumber").getAsString();
     }
 
-    public JSONObject execute() {
+    @Override
+    public JSONObject call() throws Exception {
         ArrayList<Story> stories = dbBroker.getAllStroies(userNumber);
 
         String json = new Gson().toJson(stories);
 
         return new JSONObject(json);
-
     }
 }

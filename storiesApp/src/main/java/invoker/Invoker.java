@@ -12,8 +12,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class Invoker {
     protected Hashtable htblCommands;
@@ -23,14 +25,14 @@ public class Invoker {
         this.init();
     }
 
-    public String invoke(String cmdName, JsonObject request) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    public String invoke(String cmdName, JsonObject request) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ExecutionException, InterruptedException {
         Command cmd;
         Class<?> cmdClass = (Class<?>) htblCommands.get(cmdName);
         Constructor constructor = cmdClass.getConstructor(DBBroker.class, JsonObject.class);
         Object cmdInstance = constructor.newInstance(new DBBroker(), request);
         cmd = (Command) cmdInstance;
-        JSONObject result = cmd.execute();
-        return result.toString();
+        Future<JSONObject> result = threadPoolCmds.submit(cmd);
+        return result.get().toString();
     }
 
     protected void loadCommands() throws Exception {
@@ -52,7 +54,7 @@ public class Invoker {
     }
 
     protected void loadThreadPool() {
-        threadPoolCmds = Executors.newFixedThreadPool(20);
+        threadPoolCmds = Executors.newFixedThreadPool(40);
     }
 
     public void init() throws Exception {

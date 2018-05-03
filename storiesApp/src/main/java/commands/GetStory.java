@@ -16,7 +16,8 @@ public class GetStory implements Command {
         this.id = request.get("storyId").getAsString();
     }
 
-    public JSONObject execute() {
+    @Override
+    public JSONObject call() throws Exception {
         Story s = this.handler.getStory(id);
 
         String json = new Gson().toJson(s);

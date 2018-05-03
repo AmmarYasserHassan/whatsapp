@@ -28,17 +28,10 @@ public class RemoveMembersFromAGroupChatCommand implements Command {
         this.groupChatId = request.get("groupChatId").getAsInt();
     }
 
-    /**
-     * Execute the remove members from a group chat command
-     * Check first that this adminUsernumber is an admin of this group chat and remove the members
-     *
-     * @return Result Set
-     * @throws SQLException
-     */
-    public JSONObject execute() {
+    @Override
+    public JSONObject call() throws Exception {
         String remove_member_to_a_group_chat = "SELECT remove_members_from_a_group_chat(" + "'" + adminUserNumber + "'" + ", " + "'" + groupChatId + "'" + ", " + "'" + numberOfMemberToBeRemoved + "'" + ");";
         return this.dbBroker.executeSQLQuery(remove_member_to_a_group_chat);
     }
-
 }
 
