@@ -33,11 +33,12 @@ public class DBBroker {
 		try {
 			Statement statement = connection.createStatement();
 			JSONArray data = convertToJSONArray(statement.executeQuery(query));
+			System.out.println(data.toString());
 			result.put("error",false);
 			result.put("data", data);
 		} catch (SQLException e) {
-			result.put("error",false);
-//			result.put("error_message", e.getMessage());
+			result.put("error",true);
+			result.put("error_message", e.getMessage());
 		} finally {
 			postgresqlDBConnection.disconnct();
 		}

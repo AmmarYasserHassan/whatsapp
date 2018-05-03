@@ -8,11 +8,12 @@ import com.google.gson.JsonObject;
 
 import database.DBBroker;
 
-public class InsertMessageCommand  implements Command {
-	
+public class InsertMessageCommand implements Command {
+
     DBBroker dbBroker;
     String messageDocument;
     boolean isGroupChat;
+
     /**
      * Constructor
      *
@@ -27,20 +28,13 @@ public class InsertMessageCommand  implements Command {
 
     }
 
-    /**
-     * Start a chat between two users, insert into the chats table 2 entities
-     *
-     * @return Result Set
-     * @throws SQLException
-     */
-    public JSONObject execute() {
+    @Override
+    public JSONObject call() throws Exception {
         String collectionName;
-        if(isGroupChat)
+        if (isGroupChat)
             collectionName = "group_chats";
         else
             collectionName = "chats";
         return this.dbBroker.insertMongoDocument(messageDocument, collectionName);
     }
-
-
 }

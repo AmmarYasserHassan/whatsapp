@@ -5,6 +5,8 @@ import database.DBBroker;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.concurrent.Callable;
+
 public class ReportCommand implements Command{
 
     DBBroker dbBroker;
@@ -22,11 +24,8 @@ public class ReportCommand implements Command{
         this.reportedNumber = request.get("reportedNumber").getAsString();
     }
 
-    /**
-     * Execute the report command
-     * @return
-     */
-    public JSONObject execute() {
+    @Override
+    public JSONObject call() throws Exception {
         String query = "INSERT INTO REPORTED VALUES (DEFAULT, " + "'"+reporterNumber+"'" + ", " + "'"+reportedNumber+"'" + ");";
         try {
             return this.dbBroker.executeSQLQuery(query);
@@ -37,5 +36,4 @@ public class ReportCommand implements Command{
 
         return null;
     }
-
 }

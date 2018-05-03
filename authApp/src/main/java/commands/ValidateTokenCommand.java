@@ -29,7 +29,9 @@ public class ValidateTokenCommand implements Command {
         this.dbBroker = dbBroker;
     }
 
-    public JSONObject execute() {
+
+    @Override
+    public JSONObject call() throws Exception {
         JSONObject res = new JSONObject();
         boolean valid = true;
         boolean error = false;

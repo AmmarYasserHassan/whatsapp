@@ -29,14 +29,9 @@ public class ArchiveChatCommand implements Command {
         this.isGroupChat = request.get("isGroupChat").getAsBoolean();
     }
 
-    /**
-     * Execute the archive chat ommand
-     * check if it's a group chat or a normal chat then enter the table and archive it
-     *
-     * @return Result Set
-     * @throws SQLException
-     */
-    public JSONObject execute() {
+
+    @Override
+    public JSONObject call() throws Exception {
         String archive_chat;
         if (isGroupChat)
             archive_chat = "SELECT archive_group_chat(" + "'" + userNumber + "'" + ", " + "'" + chatId + "'" + ");";
@@ -45,5 +40,4 @@ public class ArchiveChatCommand implements Command {
 
         return this.dbBroker.executeSQLQuery(archive_chat);
     }
-
 }

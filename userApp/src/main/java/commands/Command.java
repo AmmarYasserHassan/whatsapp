@@ -2,6 +2,7 @@ package commands;
 
 import org.json.JSONObject;
 
-public interface Command {
-	public JSONObject execute();
+import java.util.concurrent.Callable;
+
+public interface Command extends Callable {
 }
