@@ -49,7 +49,7 @@ public class ApplicationProperties {
      * @return
      */
     public static String getPostgresHost() {
-        return System.getenv("POSTGRES_HOST") == null ? "192.168.99.100" : System.getenv("POSTGRES_HOST");
+        return System.getenv("POSTGRES_HOST") == null ? "localhost" : System.getenv("POSTGRES_HOST");
     }
 
     /**
