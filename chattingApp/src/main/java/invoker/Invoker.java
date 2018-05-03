@@ -8,10 +8,12 @@ import database.DBBroker;
 import org.json.JSONObject;
 import database.MongoDBConnection;
 import database.PostgreSqlDBConnection;
+import org.postgresql.ds.PGPoolingDataSource;
 
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
@@ -23,18 +25,19 @@ import java.util.concurrent.Future;
 public class Invoker {
     protected Hashtable htblCommands;
     protected ExecutorService threadPoolCmds;
-    protected PostgreSqlDBConnection postgresqlDBConnection;
+    protected PGPoolingDataSource postgresqlDBConnectionsPool;
     protected DB mongoDBConnection;
+
 
     public Invoker() throws Exception {
         this.init();
     }
 
-    public String invoke(String cmdName, JsonObject request) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ExecutionException, InterruptedException {
+    public String invoke(String cmdName, JsonObject request) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ExecutionException, InterruptedException, SQLException {
         Command cmd;
         Class<?> cmdClass = (Class<?>) htblCommands.get(cmdName);
         Constructor constructor = cmdClass.getConstructor(DBBroker.class, JsonObject.class);
-        Object cmdInstance = constructor.newInstance(new DBBroker(postgresqlDBConnection, mongoDBConnection), request);
+        Object cmdInstance = constructor.newInstance(new DBBroker(getPostgresConnection(), mongoDBConnection), request);
         cmd = (Command) cmdInstance;
         Future<JSONObject> result = threadPoolCmds.submit(cmd);
         return result.get().toString();
@@ -59,14 +62,37 @@ public class Invoker {
     }
 
     protected void loadThreadPool() {
-        threadPoolCmds = Executors.newFixedThreadPool(40);
+        threadPoolCmds = Executors.newFixedThreadPool(Integer.parseInt(ApplicationProperties.getProperty("threadPoolMaxSize")));
+    }
+
+    protected void createPostgresDataSource() {
+        String host = ApplicationProperties.getPostgresHost();
+        String username = ApplicationProperties.getProperty("postgresUsername");
+        String password = ApplicationProperties.getProperty("postgresPassword");
+        String database = ApplicationProperties.getProperty("postgresDatabaseName");
+
+        PGPoolingDataSource ds = new PGPoolingDataSource();
+        ds.setUser(username);
+        ds.setServerName(host);
+        ds.setPassword(password);
+        ds.setDatabaseName(database);
+        ds.setInitialConnections(0);
+        Integer maxConnections = Integer.parseInt(ApplicationProperties.getProperty("postgresConnectionsPoolMaxSize"));
+        ds.setMaxConnections(maxConnections);
+        this.postgresqlDBConnectionsPool = ds;
+    }
+
+    protected PostgreSqlDBConnection getPostgresConnection() throws SQLException
+    {
+            return (PostgreSqlDBConnection)postgresqlDBConnectionsPool.getConnection();
+
     }
 
     public void init() throws Exception {
         loadThreadPool();
         loadCommands();
-        System.out.println(htblCommands);
+        createPostgresDataSource();
+         System.out.println(htblCommands);
 //        postgresqlDBConnection = new PostgreSqlDBConnection();
-        mongoDBConnection = new MongoDBConnection().connect();
     }
 }
