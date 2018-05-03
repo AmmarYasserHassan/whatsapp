@@ -25,7 +25,6 @@ public class MqttClient {
 
     public MqttClient() throws Exception {
         invoker = new Invoker();
-
         factory = new ConnectionFactory();
         factory.setHost(HOST_IP);
         connection = factory.newConnection();
@@ -68,7 +67,7 @@ public class MqttClient {
     }
 
     public static void main(String[] args) throws Exception {
-        Thread.sleep(20000);
+//        Thread.sleep(20000);
         try {
             MqttClient client = new MqttClient();
             logger.info("Connected to rabbitmq on queue " + client.QUEUE_NAME);
