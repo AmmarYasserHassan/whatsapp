@@ -23,7 +23,7 @@ public class PostgreSqlDBConnection {
      */
     public PostgreSqlDBConnection()  {
         connection = null;
-        basicURL = "192.168.99.100" + ":5432";
+        basicURL = ApplicationProperties.getPostgresHost() + ":5432";
         databaseName = "whatsapp";
         username = "default";
         password = "secret";
