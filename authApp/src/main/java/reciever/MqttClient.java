@@ -71,7 +71,6 @@ public class MqttClient {
     }
 
     public static void main(String[] args) throws Exception {
-        Thread.sleep(20000);
         try {
             MqttClient client = new MqttClient();
             logger.info("Connected to rabbitmq on queue " + client.QUEUE_NAME);

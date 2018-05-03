@@ -13,6 +13,7 @@ import org.postgresql.ds.PGPoolingDataSource;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -82,9 +83,9 @@ public class Invoker {
         this.postgresqlDBConnectionsPool = ds;
     }
 
-    protected PostgreSqlDBConnection getPostgresConnection() throws SQLException
+    protected Connection getPostgresConnection() throws SQLException
     {
-            return (PostgreSqlDBConnection)postgresqlDBConnectionsPool.getConnection();
+            return (Connection)postgresqlDBConnectionsPool.getConnection();
 
     }
 
@@ -92,7 +93,6 @@ public class Invoker {
         loadThreadPool();
         loadCommands();
         createPostgresDataSource();
-         System.out.println(htblCommands);
-//        postgresqlDBConnection = new PostgreSqlDBConnection();
+        this.mongoDBConnection = new MongoDBConnection().connect();
     }
 }

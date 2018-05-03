@@ -1,7 +1,7 @@
 package database;
 
 
-import com.mongodb.BasicDBObject;
+import com.mongodb.*;
 
 import com.google.gson.JsonObject;
 import com.mongodb.client.FindIterable;
@@ -31,15 +31,15 @@ public class DBBroker {
     static String mongoHost = ApplicationProperties.getMongoHost();
     static String mongoPort = "27017";
     static String mongoDbName = "whatsapp";
-    static PostgreSqlDBConnection postgresqlDBConnection;
-    static MongoDBConnection mongoDBConnection = new MongoDBConnection(mongoHost, mongoPort, mongoDbName);
+    protected Connection postgresqlDBConnection;
+    protected DB mongoDBConnection ;
     private MongoDatabase mongodb;
-    private MongoCollection stories;
+    private DBCollection stories;
 
-    public DBBroker() {
-        mongoDBConnection.connect();
-        this.mongodb = mongoDBConnection.getMongodb();
-        this.stories = mongodb.getCollection("stories");
+    public DBBroker(Connection postgresqlDBConnection,DB mongoDBConnection) {
+        this.mongoDBConnection = mongoDBConnection;
+        this.postgresqlDBConnection = postgresqlDBConnection;
+        this.stories = mongoDBConnection.getCollection("stories");
         if (stories == null) {
             System.out.println("Collection:stories not found");
         }
@@ -54,21 +54,24 @@ public class DBBroker {
      */
 
     public Story getStory(String id) {
-        Document document = (Document) stories.find(eq("_id", new ObjectId(id))).first();
+        DBObject ob = new BasicDBObject();
+        ob.put("_id", new ObjectId(id));
+        System.out.println(ob);
+        DBObject document =  stories.findOne(ob);
         return createStory(document);
     }
 
-    public Story createStory(Document document) {
+    public Story createStory(DBObject document) {
 
         Story story = null;
 
         if (document != null) {
 
-            int duration = document.getInteger("duration");
-            Date expirationDate = document.getDate("expiration_date");
-            String mobile = document.getString("owner_mobile_number");
-            String type = document.getString("type");
-            String source = document.getString("link");
+            int duration = (Integer) document.get("duration");
+            Date expirationDate = (Date) document.get("expiration_date");
+            String mobile = (String)document.get("owner_mobile_number");
+            String type = (String)document.get("type");
+            String source = (String)document.get("link");
             ArrayList viewedBy = (ArrayList) document.get("viewed_by");
             story = new Story(mobile, type, source, duration, expirationDate, viewedBy);
         }
@@ -83,22 +86,23 @@ public class DBBroker {
      * @return
      */
 
-    public ArrayList<Story> getAllStroies(String ownerMobileNumber) {
+    public ArrayList<Story> getAllStroies(String ownerMobileNumber) throws SQLException {
 
-        Connection sqldb = postgresqlDBConnection.connect();
+        Connection sqldb = postgresqlDBConnection;
+
         ArrayList<Story> friendStories = null;
         try {
             friendStories = new ArrayList<Story>();
 
             Statement statement = sqldb.createStatement();
-            String sql = "SELECT * FROM FRIENDS WHERE first_number =" + ownerMobileNumber + "OR second_number =" + ownerMobileNumber;
+            String sql = "SELECT * FROM FRIENDS WHERE first_mobile_number LIKE '" + ownerMobileNumber + "' OR second_mobile_number LIKE '" + ownerMobileNumber + "'";
 
             ResultSet rs = statement.executeQuery(sql);
             ArrayList<String> friends = new ArrayList<String>();
 
             while (rs.next()) {
-                String firstNum = rs.getString("first_number");
-                String secondNum = rs.getString("second_number");
+                String firstNum = rs.getString("first_mobile_number");
+                String secondNum = rs.getString("second_mobile_number");
                 if (firstNum.equals(ownerMobileNumber)) {
                     friends.add(secondNum);
                 } else {
@@ -109,8 +113,10 @@ public class DBBroker {
 
             for (int i = 0; i < friends.size(); i++) {
                 String friend = friends.get(i);
-                FindIterable<Document> foundStories = stories.find(eq("owner_mobile_number", friend));
-                for (Document d : foundStories) {
+                DBObject ob = new BasicDBObject();
+                ob.put("owner_mobile", friend);
+                DBCursor foundStories = stories.find(ob);
+                for (DBObject d : foundStories) {
                     Story s = createStory(d);
                     friendStories.add(s);
                 }
@@ -120,16 +126,14 @@ public class DBBroker {
         } catch (SQLException e) {
             System.err.println(e.getMessage());
         } finally {
-            postgresqlDBConnection.disconnct();
+            postgresqlDBConnection.close();
         }
-
-
         return friendStories;
     }
 
     public JSONObject update(String id, String viewerNum) {
         JSONObject res = new JSONObject();
-        stories.updateOne(new Document("_id", new ObjectId(id)), new BasicDBObject("$push", new BasicDBObject("viewed_by", viewerNum)));
+        stories.update(new BasicDBObject("_id", new ObjectId(id)), new BasicDBObject("$push", new BasicDBObject("viewed_by", viewerNum)));
         res.put("state", "DONE");
         return res;
     }
@@ -142,14 +146,14 @@ public class DBBroker {
      * @return
      */
     public Story createNewStory(JsonObject request, Date expiryDate) {
-        Document doc = new Document();
-        doc.append("owner_mobile", request.get("owner_mobile").getAsString());
-        doc.append("type", request.get("type").getAsString());
-        doc.append("link", request.get("link").getAsString());
-        doc.append("duration", request.get("duration").getAsInt());
-        doc.append("expiration_date", expiryDate);
-        doc.append("viewed_by", new ArrayList());
-        stories.insertOne(doc);
+        DBObject doc = new BasicDBObject();
+        doc.put("owner_mobile", request.get("owner_mobile").getAsString());
+        doc.put("type", request.get("type").getAsString());
+        doc.put("link", request.get("link").getAsString());
+        doc.put("duration", request.get("duration").getAsInt());
+        doc.put("expiration_date", expiryDate);
+        doc.put("viewed_by", new ArrayList());
+        stories.insert(doc);
         return this.createStory(doc);
     }
 
@@ -161,7 +165,7 @@ public class DBBroker {
      */
     public JSONObject deleteAStory(JsonObject request) {
         JSONObject result = new JSONObject();
-        stories.deleteOne(new Document("_id", new ObjectId(request.get("storyId").getAsString())));
+        stories.findAndRemove(new BasicDBObject("_id", new ObjectId(request.get("storyId").getAsString())));
         result.put("state", "DONE");
         return result;
     }

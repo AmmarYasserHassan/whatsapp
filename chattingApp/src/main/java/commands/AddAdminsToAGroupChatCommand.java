@@ -32,7 +32,7 @@ public class AddAdminsToAGroupChatCommand implements Command {
 
     @Override
     public JSONObject call() throws Exception {
-        String add_admin_to_a_group_chat = "SELECT add_admins_to_a_group_chat(" + "'" + adminUserNumber + "'" + ", " + "'" + groupChatId + "'" + ", " + "'" + numberOfMemberToBeMadeAdmin + "'" + ");";
+            String add_admin_to_a_group_chat = "SELECT add_admins_to_a_group_chat(" + "'" + adminUserNumber + "'" + ", " + "'" + groupChatId + "'" + ", " + "'" + numberOfMemberToBeMadeAdmin + "'" + ");";
         return this.dbBroker.executeSQLQuery(add_admin_to_a_group_chat);
     }
 }

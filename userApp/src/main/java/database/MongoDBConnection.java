@@ -1,11 +1,11 @@
 package database;
 
-import java.net.UnknownHostException;
-
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import config.ApplicationProperties;
+
+import java.net.UnknownHostException;
 
 public class MongoDBConnection {
 
@@ -16,7 +16,6 @@ public class MongoDBConnection {
     private String username;
     private String password;
 
-
     /**
      * DBConnection constructor.
      * This constructor uses environment variables to for the database options.
@@ -24,8 +23,8 @@ public class MongoDBConnection {
     public MongoDBConnection() {
         mongoClient = null;
         database = null;
-        basicURI = ApplicationProperties.getMongoHost() + ":27017";
-        databaseName = "whatsapp";
+        basicURI = ApplicationProperties.getMongoHost()+":27017";
+        databaseName = "mydb";
         username = "Username";
         password = "Password";
     }
@@ -36,16 +35,13 @@ public class MongoDBConnection {
      * @return database object.
      * @see {@link DB}
      */
-    DB connect() {
-//    	+username+":"+password+"@"
+    public DB connect() throws UnknownHostException {
+        //    	+username+":"+password+"@"
         String uri = "mongodb://" + basicURI;
         MongoClientURI mongoClientURI = new MongoClientURI(uri);
-        try {
-            mongoClient = new MongoClient(mongoClientURI);
-            database = mongoClient.getDB(databaseName);
-        } catch (UnknownHostException e) {
-            System.err.println("Cannot connect to mongoDB !");
-        }
+        mongoClient = new MongoClient(mongoClientURI);
+        database = mongoClient.getDB(databaseName);
+
         return database;
     }
 

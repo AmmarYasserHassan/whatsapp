@@ -1,58 +1,48 @@
 package database;
 
-
+import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
-import com.mongodb.client.MongoDatabase;
+import config.ApplicationProperties;
 
+import java.net.UnknownHostException;
 
 public class MongoDBConnection {
 
-    /**
-     * MongoDBConnection constructor
-     */
-    private MongoDatabase mongodb;
     private MongoClient mongoClient;
-    private  String mongoHost;
-    private String mongoPort;
-    private String mongodbName;
+    private DB database;
+    private String basicURI;
+    private String databaseName;
+    private String username;
+    private String password;
 
-
-    public MongoDBConnection(String mongoHost, String mongoPort, String mongodbName){
-        this.mongodbName = mongodbName;
-        this.mongoHost = mongoHost;
-        this.mongoPort = mongoPort;
+    /**
+     * DBConnection constructor.
+     * This constructor uses environment variables to for the database options.
+     */
+    public MongoDBConnection() {
+        mongoClient = null;
+        database = null;
+        basicURI = ApplicationProperties.getMongoHost()+":27017";
+        databaseName = "whatsapp";
+        username = "Username";
+        password = "Password";
     }
 
     /**
-     * Connect to the database
+     * Connect to the database.
      *
-     * @return MongoDBConnection
+     * @return database object.
+     * @see {@link DB}
      */
-    public MongoDBConnection connect(){
+    public DB connect() {
+        //    	+username+":"+password+"@"
+        String uri = "mongodb://" + basicURI;
+        MongoClientURI mongoClientURI = new MongoClientURI(uri);
+        mongoClient = new MongoClient(mongoClientURI);
+        database = mongoClient.getDB(databaseName);
 
-        if (mongoClient == null && mongoPort != null && mongoHost !=null) {
-            mongoClient = new MongoClient(new MongoClientURI("mongodb://" + mongoHost + ":" + mongoPort));
-            this.mongodb = mongoClient.getDatabase(mongodbName);
-        }
-
-        return this;
-    }
-
-    /**
-     * Disconnect from the database
-     */
-    public void disconnect(){
-
-        if(mongoClient != null) {
-            mongoClient.close();
-            mongoClient = null;
-        }
-
-    }
-
-    public MongoDatabase getMongodb() {
-        return mongodb;
+        return database;
     }
 
 }
