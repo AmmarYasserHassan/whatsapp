@@ -55,7 +55,7 @@
                             </descriptorRefs>
                             <archive>
                                 <manifest>
-                                    <mainClass>reciever.MqttClient</mainClass>
+                                    <mainClass>service.Main</mainClass>
                                 </manifest>
                             </archive>
                         </configuration>
@@ -101,6 +101,11 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>1.7.5</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.1.19.Final</version>
         </dependency>
     </dependencies>
 

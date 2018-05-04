@@ -43,7 +43,7 @@
                             </descriptorRefs>
                             <archive>
                                 <manifest>
-                                    <mainClass>reciever.MqttClient</mainClass>
+                                    <mainClass>service.Main</mainClass>
                                 </manifest>
                             </archive>
                         </configuration>
@@ -83,6 +83,11 @@
             <groupId>postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.1.19.Final</version>
         </dependency>
     </dependencies>
 

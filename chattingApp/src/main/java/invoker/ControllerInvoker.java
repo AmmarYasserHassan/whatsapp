@@ -9,8 +9,6 @@ import org.json.JSONObject;
 import database.MongoDBConnection;
 import database.PostgreSqlDBConnection;
 import org.postgresql.ds.PGPoolingDataSource;
-import singletons.DbThreadPool;
-import singletons.ThreadPool;
 
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
@@ -25,13 +23,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class Invoker {
+public class ControllerInvoker {
     protected Hashtable htblCommands;
-    protected PGPoolingDataSource postgresqlDBConnectionsPool;
-    protected DB mongoDBConnection;
+    protected ExecutorService threadPoolCmds;
+    public static ControllerInvoker controllerInvoker = null;
 
-
-    public Invoker() throws Exception {
+    public ControllerInvoker() throws Exception {
         this.init();
     }
 
@@ -39,16 +36,16 @@ public class Invoker {
         Command cmd;
         Class<?> cmdClass = (Class<?>) htblCommands.get(cmdName);
         Constructor constructor = cmdClass.getConstructor(DBBroker.class, JsonObject.class);
-        Object cmdInstance = constructor.newInstance(new DBBroker(getPostgresConnection(), mongoDBConnection), request);
+        Object cmdInstance = constructor.newInstance(new DBBroker(null, null), request);
         cmd = (Command) cmdInstance;
-        Future<JSONObject> result = ThreadPool.getInstance().getThreadPoolCmds().submit(cmd);
+        Future<JSONObject> result = threadPoolCmds.submit(cmd);
         return result.get().toString();
     }
 
     protected void loadCommands() throws Exception {
         htblCommands = new Hashtable();
         Properties prop = new Properties();
-        InputStream in = ApplicationProperties.class.getResourceAsStream("commands.properties");
+        InputStream in = ApplicationProperties.class.getResourceAsStream("commands.controller.properties");
         prop.load(in);
         in.close();
         Enumeration enumKeys = prop.propertyNames();
@@ -57,18 +54,24 @@ public class Invoker {
         while (enumKeys.hasMoreElements()) {
             strActionName = (String) enumKeys.nextElement();
             strClassName = (String) prop.get(strActionName);
-            Class<?> innerClass = Class.forName("commands." + strClassName);
+//            C:\Users\welcome\Desktop\whatsapp\chattingApp\src\main\java\commands\AddAdminsToAGroupChatCommand.java
+            Class<?> innerClass = Class.forName("commands.controller." + strClassName);
             htblCommands.put(strActionName, innerClass);
         }
     }
 
+    protected void loadThreadPool() {
+        threadPoolCmds = Executors.newFixedThreadPool(Integer.parseInt(ApplicationProperties.getProperty("threadPoolMaxSize")));
+    }
+    public static ControllerInvoker getInstance() throws Exception {
+        if (controllerInvoker == null)
+            controllerInvoker = new ControllerInvoker();
 
-    protected Connection getPostgresConnection() throws SQLException {
-        return (Connection) DbThreadPool.getInstance().getConnection();
+        return controllerInvoker;
     }
 
     public void init() throws Exception {
+        loadThreadPool();
         loadCommands();
-        this.mongoDBConnection = new MongoDBConnection().connect();
     }
 }
