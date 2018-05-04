@@ -8,4 +8,5 @@ RUN mvn install
 FROM openjdk:8-jre-alpine
 WORKDIR /app
 COPY --from=build /app/target/dataimporter-jar-with-dependencies.jar .
+EXPOSE 8003
 CMD ["java","-jar", "dataimporter-jar-with-dependencies.jar"]

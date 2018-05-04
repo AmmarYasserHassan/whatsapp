@@ -111,10 +111,13 @@ services:
       - RABBITMQ_HOST=rabbitmq
       - MONGO_HOST=mongo
       - POSTGRES_HOST=postgres
+    ports:
+      - "8002:8002"  
     depends_on:
       - mongo 
       - rabbitmq
       - postgres
+
     networks:
       - backend   
 
@@ -130,6 +133,8 @@ services:
       - mongo 
       - rabbitmq
       - postgres
+    ports:
+      - "8001:8001"  
     networks:
       - backend   
 
@@ -145,6 +150,8 @@ services:
       - mongo 
       - rabbitmq
       - postgres
+    ports:
+      - "8004:8004"  
     networks:
       - backend   
 
@@ -160,6 +167,8 @@ services:
       - mongo 
       - rabbitmq
       - postgres 
+    ports:
+      - "8003:8003"  
     networks:
       - backend
 
