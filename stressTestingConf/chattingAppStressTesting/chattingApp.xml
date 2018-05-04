@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<!DOCTYPE tsung SYSTEM "/usr/share/tsung/tsung-1.0.dtd" [] >
+<tsung backend="json" loglevel="info">
+
+  <clients>
+   <client host="localhost" use_controller_vm="true"/>
+</clients>
+
+  <servers>
+    <server host="192.168.1.4" port="8080" type="tcp"/>
+  </servers>
+ <monitoring>
+        <monitor host="localhost" type="erlang"></monitor>
+    </monitoring>
+   <load>
+        <arrivalphase phase="1" duration="75" unit="second">
+            <users arrivalrate="30" unit="second"></users>
+        </arrivalphase>
+    </load>
+
+    <options>
+        <option name="connect_timeout" value="4000" />
+        <option name="max_retries" value="0" />
+    </options>
+
+  <sessions>
+    <session name="insert_message_session" weight="1" type="ts_http">
+       <transaction name="insert_message">
+            <request>
+	            <http url="/" method="POST" 
+                content_type='application/json'
+               contents='{&quot;appName&quot;: &quot;chattingApp&quot;,&quot;command&quot;: &quot;insertMessageCommand&quot;,&quot;messageDocument&quot;: &quot;{\&quot;message\&quot;: \&quot;test\&quot;}&quot;, &quot;isGroupChat&quot;: &quot;true&quot;}'>
+                </http>
+         </request>
+        </transaction>
+    </session>
+    <session name="get_chats_session" weight="1" type="ts_http">
+       <transaction name="insert_message">
+            <request>
+	            <http url="/" method="POST" 
+                content_type='application/json'
+                contents='{&quot;appName&quot;: &quot;chattingApp&quot;,&quot;command&quot;: &quot;getAllChatsForAUserCommand&quot;, &quot;userNumber&quot;: &quot;01066795748&quot;}'>
+                </http>
+         </request>
+        </transaction>
+    </session>
+  </sessions>
+</tsung>
