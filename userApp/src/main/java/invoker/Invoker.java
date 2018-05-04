@@ -5,9 +5,12 @@ import com.mongodb.DB;
 import commands.Command;
 import config.ApplicationProperties;
 import database.DBBroker;
-import database.MongoDBConnection;
 import org.json.JSONObject;
+import database.MongoDBConnection;
+import database.PostgreSqlDBConnection;
 import org.postgresql.ds.PGPoolingDataSource;
+import singletons.DbThreadPool;
+import singletons.ThreadPool;
 
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
@@ -24,9 +27,9 @@ import java.util.concurrent.Future;
 
 public class Invoker {
     protected Hashtable htblCommands;
-    protected ExecutorService threadPoolCmds;
     protected PGPoolingDataSource postgresqlDBConnectionsPool;
     protected DB mongoDBConnection;
+
 
     public Invoker() throws Exception {
         this.init();
@@ -38,14 +41,13 @@ public class Invoker {
         Constructor constructor = cmdClass.getConstructor(DBBroker.class, JsonObject.class);
         Object cmdInstance = constructor.newInstance(new DBBroker(getPostgresConnection(), mongoDBConnection), request);
         cmd = (Command) cmdInstance;
-        Future<JSONObject> result = threadPoolCmds.submit(cmd);
+        Future<JSONObject> result = ThreadPool.getInstance().getThreadPoolCmds().submit(cmd);
         return result.get().toString();
     }
 
     protected void loadCommands() throws Exception {
         htblCommands = new Hashtable();
         Properties prop = new Properties();
-//       FileInputStream i = new FileInputStream("config/commands.properties");
         InputStream in = ApplicationProperties.class.getResourceAsStream("commands.properties");
         prop.load(in);
         in.close();
@@ -55,42 +57,18 @@ public class Invoker {
         while (enumKeys.hasMoreElements()) {
             strActionName = (String) enumKeys.nextElement();
             strClassName = (String) prop.get(strActionName);
-//            C:\Users\welcome\Desktop\whatsapp\chattingApp\src\main\java\commands\AddAdminsToAGroupChatCommand.java
             Class<?> innerClass = Class.forName("commands." + strClassName);
             htblCommands.put(strActionName, innerClass);
         }
     }
 
-    protected void createPostgresDataSource() {
-        String host = ApplicationProperties.getPostgresHost();
-        String username = ApplicationProperties.getProperty("postgresUsername");
-        String password = ApplicationProperties.getProperty("postgresPassword");
-        String database = ApplicationProperties.getProperty("postgresDatabaseName");
 
-        PGPoolingDataSource ds = new PGPoolingDataSource();
-        ds.setUser(username);
-        ds.setServerName(host);
-        ds.setPassword(password);
-        ds.setDatabaseName(database);
-        ds.setInitialConnections(0);
-        Integer maxConnections = Integer.parseInt(ApplicationProperties.getProperty("postgresConnectionsPoolMaxSize"));
-        ds.setMaxConnections(maxConnections);
-        this.postgresqlDBConnectionsPool = ds;
-    }
-
-    protected Connection getPostgresConnection() throws SQLException
-    {
-        return (Connection)postgresqlDBConnectionsPool.getConnection();
-
-    }
-    protected void loadThreadPool() {
-        threadPoolCmds = Executors.newFixedThreadPool(40);
+    protected Connection getPostgresConnection() throws SQLException {
+        return (Connection) DbThreadPool.getInstance().getConnection();
     }
 
     public void init() throws Exception {
-        loadThreadPool();
         loadCommands();
-        createPostgresDataSource();
         this.mongoDBConnection = new MongoDBConnection().connect();
     }
 }

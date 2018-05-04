@@ -1,21 +1,17 @@
-package reciever;
+package singletons;
 
-import com.rabbitmq.client.*;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.rabbitmq.client.*;
 import config.ApplicationProperties;
 import invoker.Invoker;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 
-public class MqttClient {
-
-    static private Logger logger = LoggerFactory.getLogger(MqttClient.class);
-
-
+public class Mqtt {
+    private static Mqtt mqtt;
     private final String HOST_IP = ApplicationProperties.getRabbitMqHost();
     private final String QUEUE_NAME = "chattingApp";
 
@@ -23,8 +19,9 @@ public class MqttClient {
     private Channel channel;
     private Connection connection;
     private Invoker invoker;
+    private boolean freeze = false;
 
-    public MqttClient() throws Exception {
+    private Mqtt() throws Exception {
         invoker = new Invoker();
 
         factory = new ConnectionFactory();
@@ -32,8 +29,14 @@ public class MqttClient {
         connection = factory.newConnection();
         channel = connection.createChannel();
         channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-//        channel.basicQos(1);
-        Consumer consumerChattingApp = new DefaultConsumer(channel) {
+        channel.basicQos(1);
+        Consumer consumerChattingApp = getConsumer();
+
+        channel.basicConsume(QUEUE_NAME, false, consumerChattingApp);
+    }
+
+    public Consumer getConsumer() {
+        return new DefaultConsumer(channel) {
             @Override
             public void handleDelivery(String consumerTag, Envelope envelope,
                                        AMQP.BasicProperties properties, byte[] body)
@@ -47,12 +50,19 @@ public class MqttClient {
                 String requestRaw = new String(body);
                 JsonObject request = new JsonParser().parse(requestRaw).getAsJsonObject();
                 try {
-                    String result = invoker.invoke(request.get("command").getAsString(), request);
-                    channel.basicPublish("", properties.getReplyTo(), replyProps, result.getBytes());
-                    channel.basicAck(envelope.getDeliveryTag(), false);
+                    if (!Mqtt.getInstance().freeze) {
+                        String result = invoker.invoke(request.get("command").getAsString(), request);
+                        channel.basicPublish("", properties.getReplyTo(), replyProps, result.getBytes());
+                        channel.basicAck(envelope.getDeliveryTag(), false);
 
-                    synchronized (this) {
-                        this.notify();
+                        synchronized (this) {
+                            this.notify();
+                        }
+                    }else {
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("state", "app is now freezed");
+                        channel.basicPublish("", properties.getReplyTo(), replyProps, jsonObject.toString().getBytes());
+                        channel.basicAck(envelope.getDeliveryTag(), false);
                     }
                 } catch (Exception e) {
                     JSONObject error = new JSONObject();
@@ -63,17 +73,28 @@ public class MqttClient {
                 }
             }
         };
+    }
+
+    public static Mqtt getInstance() throws Exception {
+        if (mqtt == null)
+            mqtt = new Mqtt();
+        return mqtt;
+    }
+
+    public void stop() throws IOException, TimeoutException {
+        this.channel.close();
+    }
+
+    public void resume() throws IOException {
+        channel = connection.createChannel();
+        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+        channel.basicQos(1);
+        Consumer consumerChattingApp = getConsumer();
 
         channel.basicConsume(QUEUE_NAME, false, consumerChattingApp);
     }
 
-    public static void main(String[] args) throws Exception {
-        try {
-            MqttClient client = new MqttClient();
-            logger.info("Connected to rabbitmq on queue " + client.QUEUE_NAME);
-        } catch (Exception e) {
-            logger.error(e.toString());
-        }
-        logger.info("Chatting app started successfully ");
+    public void setFreeze(boolean flag) {
+        this.freeze = flag;
     }
 }
