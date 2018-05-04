@@ -3,6 +3,7 @@ package database;
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
+import config.ApplicationProperties;
 
 import java.net.UnknownHostException;
 
@@ -22,7 +23,7 @@ public class MongoDBConnection {
 	public MongoDBConnection() {
 		mongoClient = null;
 		database = null;
-		basicURI = "localhost:27017";
+		basicURI = ApplicationProperties.getMongoHost()+":27017";
 		databaseName = "mydb";
 		username = "Username";
 		password = "Password";
@@ -34,7 +35,7 @@ public class MongoDBConnection {
 	 * @return database object.
 	 * @see {@link DB}
 	 */
-	DB connect() {
+	public DB connect() {
 		//    	+username+":"+password+"@"
 		String uri = "mongodb://" + basicURI;
 		MongoClientURI mongoClientURI = new MongoClientURI(uri);

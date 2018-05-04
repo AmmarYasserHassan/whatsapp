@@ -27,16 +27,10 @@ public class LeaveAGroupChatCommand implements Command {
         this.groupChatId = request.get("groupChatId").getAsString();
     }
 
-    /**
-     * Start a chat between two users, insert into the chats table 2 entities
-     *
-     * @return Result Set
-     * @throws SQLException
-     */
-    public JSONObject execute() {
-        String leave_group_chat = "SELECT start_chat(" + "'" +userNumber + "'" + ", " + "'" + groupChatId + "'" + ");";
+    @Override
+    public JSONObject call() throws Exception {
+        String leave_group_chat = "SELECT start_chat(" + "'" + userNumber + "'" + ", " + "'" + groupChatId + "'" + ");";
         return this.dbBroker.executeSQLQuery(leave_group_chat);
     }
-
 }
 

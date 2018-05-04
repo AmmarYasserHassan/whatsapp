@@ -26,10 +26,9 @@ public class CreateStoryCommand implements Command {
     }
 
     @Override
-    public JSONObject execute() {
+    public JSONObject call() throws Exception {
         Story res = this.dbBroker.createNewStory(this.request, expirationDate);
         String json = new Gson().toJson(res);
         return new JSONObject(json);
     }
-
 }

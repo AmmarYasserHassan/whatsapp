@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!DOCTYPE tsung SYSTEM "/usr/share/tsung/tsung-1.0.dtd" [] >
+<tsung backend="json" loglevel="info">
+
+  <clients>
+   <client host="localhost" use_controller_vm="true"/>
+</clients>
+
+  <servers>
+    <server host="192.168.1.4" port="8080" type="tcp"/>
+  </servers>
+ <monitoring>
+        <monitor host="localhost" type="erlang"></monitor>
+    </monitoring>
+   <load>
+        <arrivalphase phase="1" duration="75" unit="second">
+            <users arrivalrate="30" unit="second"></users>
+        </arrivalphase>
+    </load>
+
+    <options>
+        <option name="connect_timeout" value="4000" />
+        <option name="max_retries" value="0" />
+    </options>
+
+  <sessions>
+    <session name="create_story_session" weight="1" type="ts_http">
+       <transaction name="create_story">
+            <request>
+	            <http url="/" method="POST" 
+                content_type='application/json'
+                contents='{&quot;appName&quot;: &quot;storiesApp&quot;,&quot;command&quot;: &quot;createStoryCommand&quot;, &quot;owner_mobile&quot;: &quot;01066795748&quot;,&quot;type&quot;: &quot;pic&quot;,&quot;link&quot;: &quot;someLink&quot;, &quot;duration&quot;: &quot;202&quot;}'>
+                </http>
+         </request>
+        </transaction>
+    </session>
+
+    <session name="get_all_stories_session" weight="1" type="ts_http">
+       <transaction name="signup">
+            <request>
+	            <http url="/" method="POST" 
+                content_type='application/json'
+                contents='{&quot;appName&quot;: &quot;storiesApp&quot;,&quot;command&quot;: &quot;getAllStoriesCommand&quot;, &quot;userNumber&quot;: &quot;01066795748&quot;}'>
+                </http>
+             </request>
+        </transaction>
+    </session>
+  </sessions>
+</tsung>

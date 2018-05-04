@@ -26,19 +26,16 @@ public class ReceivePendingMessageCommand implements Command {
         this.isGroupChat = request.get("isGroupChat").getAsBoolean();
     }
 
-    /**
-     * Execute the get messages in a chat or group chat command
-     * @return JSONObject, if error == false then data is returned successfully, if error == true then further info in error_message
-     */
-    public JSONObject execute() {  
-        if(isGroupChat){
-        	String jsonDocument = "\"{'chat_id':\"" + chatId+"\","+ "'sender_mobile_number': {$ne:\"" +userNumber +"\"} "+ ","
-        	        +"'participants_status': {$elemMatch:{'mobile_number': \""+userNumber+"\", 'status':\"sent\"}}}\"";
-        	return this.dbBroker.findAllMongoDocuments(jsonDocument,"group_chats");
-        }else{
-        	String jsonDocument = "\"{'chat_id':\"" + chatId+"\","+ "'sender_mobile_number': {$ne:\"" + userNumber +"\"} "+ ","
-        	        + "'status': \"" + "sent" +"\"}\"";
-        	return this.dbBroker.findAllMongoDocuments(jsonDocument,"chats");
+    @Override
+    public JSONObject call() throws Exception {
+        if (isGroupChat) {
+            String jsonDocument = "\"{'chat_id':\"" + chatId + "\"," + "'sender_mobile_number': {$ne:\"" + userNumber + "\"} " + ","
+                    + "'participants_status': {$elemMatch:{'mobile_number': \"" + userNumber + "\", 'status':\"sent\"}}}\"";
+            return this.dbBroker.findAllMongoDocuments(jsonDocument, "group_chats");
+        } else {
+            String jsonDocument = "\"{'chat_id':\"" + chatId + "\"," + "'sender_mobile_number': {$ne:\"" + userNumber + "\"} " + ","
+                    + "'status': \"" + "sent" + "\"}\"";
+            return this.dbBroker.findAllMongoDocuments(jsonDocument, "chats");
         }
     }
 }

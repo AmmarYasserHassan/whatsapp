@@ -15,8 +15,6 @@ public class StarAMessageCommand implements Command {
      *
      * @param dbBroker
      * @param request
-     *
-     *
      */
     public StarAMessageCommand(DBBroker dbBroker, JsonObject request) {
         super();
@@ -25,17 +23,10 @@ public class StarAMessageCommand implements Command {
         this.messageToBeStarred = request.get("messageToBeStarred").getAsString();
     }
 
-
-    /**
-     * Execute the get messages in a chat or group chat command
-     * @return JSONObject, if error == false then data is returned successsfully, if error == true then further info in error_message
-     */
-    public JSONObject execute() {
-
-        String jsonDocument = "\"{'user_number':" + userNumber+ ",'message':" + messageToBeStarred+" }\"";
+    @Override
+    public JSONObject call() throws Exception {
+        String jsonDocument = "\"{'user_number':'" + userNumber + "','message':'" + messageToBeStarred + "' }\"";
         String collectionName = "starred_messages";
-        return this.dbBroker.insertMongoDocument(jsonDocument,collectionName);
-
+        return this.dbBroker.insertMongoDocument(jsonDocument, collectionName);
     }
-
 }

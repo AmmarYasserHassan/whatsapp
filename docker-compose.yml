@@ -1,0 +1,197 @@
+version: '3'
+
+networks:
+  # establish a default network using the bridge adapter
+  backend:
+    driver: bridge
+
+services:
+
+  # rabbitmq service 
+  rabbitmq:
+    build: ./rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      - "15671:15671"
+    privileged: true
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:15672"]
+      interval: 30s
+      timeout: 10s
+      retries: 5  
+    networks:
+      - backend  
+
+  # mongo service
+  mongo:
+    build: ./mongo
+    ports:
+      - "27017:27017"
+    networks:
+      - backend  
+
+  # postgres service
+  postgres:
+    build: ./postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=whatsapp
+      - POSTGRES_USER=default
+      - POSTGRES_PASSWORD=secret
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    networks:
+      - backend   
+
+  # mfs master
+  mfsmaster:
+    image: moosefs/master
+    container_name: "mfsmaster"
+    ports:
+      - "8082:9425"
+
+  # mfs client
+  mfsclient:
+    image: moosefs/client
+    container_name: "mfsclient"
+    cap_add:
+      - SYS_ADMIN
+    devices:
+      - /dev/fuse:/dev/fuse
+    security_opt:
+      - apparmor:unconfined
+    stdin_open: true
+    tty: true
+    links:
+      - mfsmaster
+    volumes:
+      - ./mediaServer/files:/mnt/mfs
+
+  # mfs chunk server1
+  mfschunkserver1:
+    image: moosefs/chunkserver
+    container_name: "mfschunkserver1"
+    links:
+      - mfsmaster
+
+  # mfs chunk server2    
+  mfschunkserver2:
+    image: moosefs/chunkserver
+    container_name: "mfschunkserver2"
+    links:
+      - mfsmaster
+
+  # mfs chunk server3    
+  mfschunkserver3:
+    image: moosefs/chunkserver
+    container_name: "mfschunkserver3"
+    links:
+      - mfsmaster
+
+  # mfs chunk server4    
+  mfschunkserver4:
+    image: moosefs/chunkserver
+    container_name: "mfschunkserver4"
+    links:
+      - mfsmaster            
+
+  # authApp 
+  auth-app: 
+    build: 
+      context: ./authApp
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - MONGO_HOST=mongo
+      - POSTGRES_HOST=postgres
+    ports:
+      - "8002:8002"  
+    depends_on:
+      - mongo 
+      - rabbitmq
+      - postgres
+
+    networks:
+      - backend   
+
+  # chattingApp service 
+  chatting-app: 
+    build: 
+      context: ./chattingApp
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - MONGO_HOST=mongo
+      - POSTGRES_HOST=postgres
+    depends_on:
+      - mongo 
+      - rabbitmq
+      - postgres
+    ports:
+      - "8001:8001"  
+    networks:
+      - backend   
+
+  # storiesApp service
+  stories-app: 
+    build: 
+      context: ./storiesApp
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - MONGO_HOST=mongo
+      - POSTGRES_HOST=postgres
+    depends_on:
+      - mongo 
+      - rabbitmq
+      - postgres
+    ports:
+      - "8004:8004"  
+    networks:
+      - backend   
+
+  # userApp service
+  user-app: 
+    build: 
+      context: ./userApp
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - MONGO_HOST=mongo
+      - POSTGRES_HOST=postgres
+    depends_on:
+      - mongo 
+      - rabbitmq
+      - postgres 
+    ports:
+      - "8003:8003"  
+    networks:
+      - backend
+
+  # mainServer service
+  main-server: 
+    build: 
+      context: ./mainServer
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+    ports:
+      - "8080:8080"  
+    depends_on:
+      - rabbitmq
+    networks:
+      - backend 
+
+  # media server service
+  media-server:
+    build: 
+      context: ./mediaServer
+    environment: 
+      - FOLDER_DIR=./files 
+    ports: 
+      - "5001:5001"
+    networks: 
+      - backend                      

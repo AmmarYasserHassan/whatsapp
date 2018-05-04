@@ -23,7 +23,7 @@ public class PostgreSqlDBConnection {
      */
     public PostgreSqlDBConnection() {
 		connection = null;
-		basicURL = ApplicationProperties.getProperty("postgresBasicURL");
+		basicURL = ApplicationProperties.getPostgresHost();
 		databaseName =  ApplicationProperties.getProperty("postgresDatabaseName");
 		username =  ApplicationProperties.getProperty("postgresUsername");
 		password =  ApplicationProperties.getProperty("postgresPassword");

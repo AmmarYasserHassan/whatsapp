@@ -14,14 +14,14 @@ import org.json.*;
 
 public class DBBroker {
 
-	PostgreSqlDBConnection postgresqlDBConnection;
+	Connection postgresqlDBConnection;
 	MongoDBConnection mongoDBConnection;
 	DB mongoDB;
 
-	public DBBroker(PostgreSqlDBConnection postgresqlDBConnection, MongoDBConnection mongoDBConnection) {
+	public DBBroker(Connection postgresqlDBConnection, DB mongoDBConnection) {
 		this.postgresqlDBConnection = postgresqlDBConnection;
-		this.mongoDBConnection = mongoDBConnection;
-		this.mongoDB = mongoDBConnection.connect();
+//		this.mongoDBConnection = mongoDBConnection;
+		this.mongoDB = mongoDBConnection;
 	}
 
 
@@ -32,8 +32,8 @@ public class DBBroker {
 	 * @return JSONObject, if error == false then data is returned successfully, if error == true then further info in error_message
 	 *
 	 */
-	public JSONObject executeSQLQuery(String query) {
-		Connection connection = postgresqlDBConnection.connect();
+	public JSONObject executeSQLQuery(String query) throws SQLException {
+		Connection connection = postgresqlDBConnection;
 		JSONObject result = new JSONObject();
 		try {
 			Statement statement = connection.createStatement();
@@ -44,7 +44,7 @@ public class DBBroker {
 			result.put("error",true);
 			result.put("error_message", e.getMessage());
 		} finally {
-			postgresqlDBConnection.disconnct();
+			postgresqlDBConnection.close();
 		}
 		return result;
 	}

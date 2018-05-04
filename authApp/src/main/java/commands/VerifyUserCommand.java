@@ -28,12 +28,13 @@ public class VerifyUserCommand implements Command {
 
     }
 
-    public JSONObject execute() {
+    @Override
+    public JSONObject call() throws Exception {
         JSONObject returned = new JSONObject();
 
         try {
-            String checkOnVerificationCode = "SELECT * from USERS where " +"mobile_number = " + "'" + userNumber + "'" 
-            +" and "+ "verification_code = " + "'" + verification_code+ "'";
+            String checkOnVerificationCode = "SELECT * from USERS where " +"mobile_number = " + "'" + userNumber + "'"
+                    +" and "+ "verification_code = " + "'" + verification_code+ "'";
 
             JSONObject res = this.dbBroker.executeSQLQuery(checkOnVerificationCode);
             boolean isError = (boolean)res.get("error");
@@ -43,7 +44,7 @@ public class VerifyUserCommand implements Command {
                 return this.dbBroker.executeSQLQuery(verify_User);
 
             }
-           
+
         } catch (JSONException e) {
             e.printStackTrace();
 

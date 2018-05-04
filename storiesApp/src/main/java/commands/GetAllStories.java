@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import database.DBBroker;
 import models.Story;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -18,12 +19,13 @@ public class GetAllStories implements Command {
         this.userNumber = request.get("userNumber").getAsString();
     }
 
-    public JSONObject execute() {
+    @Override
+    public JSONObject call() throws Exception {
         ArrayList<Story> stories = dbBroker.getAllStroies(userNumber);
 
         String json = new Gson().toJson(stories);
-
-        return new JSONObject(json);
-
+        JSONObject ob = new JSONObject();
+        ob.put("data", new JSONArray(json));
+        return ob;
     }
 }

@@ -27,14 +27,9 @@ public class DeleteAChatCommand implements Command{
         this.isGroupChat = request.get("isGroupChat").getAsBoolean();
     }
 
-    /**
-     * Execute the delete chat ommand
-     * check if it's a group chat or a normal chat then enter the table and delete it
-     *
-     * @return Result Set
-     * @throws SQLException
-     */
-    public JSONObject execute() {
+
+    @Override
+    public JSONObject call() throws Exception {
         String delete_chat;
         if (isGroupChat)
             delete_chat = "SELECT delete_group_chat(" + "'" + userNumber + "'" + ", " + "'" + chatId + "'" + ");";
@@ -43,5 +38,4 @@ public class DeleteAChatCommand implements Command{
 
         return this.dbBroker.executeSQLQuery(delete_chat);
     }
-
 }

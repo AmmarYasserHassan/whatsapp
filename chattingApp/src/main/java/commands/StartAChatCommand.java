@@ -26,16 +26,10 @@ public class StartAChatCommand implements Command {
         this.secondUerNumber = request.get("secondUerNumber").getAsString();
     }
 
-    /**
-     * Start a chat between two users, insert into the chats table 2 entities
-     *
-     * @return Result Set
-     * @throws SQLException
-     */
-    public JSONObject execute() {
-        String start_chat = "SELECT start_chat(" + "'" +firstUserNumber + "'" + ", " + "'" + secondUerNumber + "'" + ");";
+    @Override
+    public JSONObject call() throws Exception {
+        String start_chat = "SELECT start_chat(" + "'" + firstUserNumber + "'" + ", " + "'" + secondUerNumber + "'" + ");";
         return this.dbBroker.executeSQLQuery(start_chat);
     }
-
 }
 
