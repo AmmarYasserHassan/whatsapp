@@ -43,22 +43,26 @@ public class Invoker {
     }
 
     public String invoke(String cmdName, JsonObject request) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ExecutionException, InterruptedException, SQLException {
-        Command cmd;
+        // Check if cached
         RedisEntry key = new RedisEntry(cmdName, request);
         if(cmdName.equals("getAllChatsForAUserCommand")){
-            //check if in redis
             String res = jedis.get(key.serialize());
             if(res != null)
                 return res;
         }
+
+        Command cmd;
         Class<?> cmdClass = (Class<?>) htblCommands.get(cmdName);
         Constructor constructor = cmdClass.getConstructor(DBBroker.class, JsonObject.class);
         Object cmdInstance = constructor.newInstance(new DBBroker(getPostgresConnection(), mongoDBConnection), request);
         cmd = (Command) cmdInstance;
         Future<JSONObject> result = ThreadPool.getInstance().getThreadPoolCmds().submit(cmd);
 
-        //cache result
-        jedis.set(key.serialize(), result.get().toString());
+        // Cache the result
+        if(cmdName.equals("getAllChatsForAUserCommand")){
+            jedis.set(key.serialize(), result.get().toString());
+        }
+        
         return result.get().toString();
     }
 
