@@ -8,6 +8,8 @@ import invoker.Invoker;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 public class Mqtt {
@@ -28,7 +30,9 @@ public class Mqtt {
         factory.setHost(HOST_IP);
         connection = factory.newConnection();
         channel = connection.createChannel();
-        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+        Map<String, Object> args = new HashMap<String, Object>();
+        args.put("x-max-length", 1000);
+        channel.queueDeclare(QUEUE_NAME, false, false, false, args);
         channel.basicQos(1);
         Consumer consumerChattingApp = getConsumer();
 
@@ -55,14 +59,14 @@ public class Mqtt {
                         channel.basicPublish("", properties.getReplyTo(), replyProps, result.getBytes());
                         channel.basicAck(envelope.getDeliveryTag(), false);
 
-                        synchronized (this) {
-                            this.notify();
-                        }
                     }else {
                         JSONObject jsonObject = new JSONObject();
                         jsonObject.put("state", "app is now freezed");
                         channel.basicPublish("", properties.getReplyTo(), replyProps, jsonObject.toString().getBytes());
                         channel.basicAck(envelope.getDeliveryTag(), false);
+                    }
+                    synchronized (this) {
+                        this.notify();
                     }
                 } catch (Exception e) {
                     JSONObject error = new JSONObject();

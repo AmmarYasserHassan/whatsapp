@@ -25,7 +25,6 @@ public class InsertMessageCommand implements Command {
         this.dbBroker = dbBroker;
         this.messageDocument = request.get("messageDocument").getAsString();
         this.isGroupChat = request.get("isGroupChat").getAsBoolean();
-
     }
 
     @Override

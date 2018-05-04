@@ -15,7 +15,7 @@ public class HTTPServer {
     static private Logger logger = LoggerFactory.getLogger(HTTPServer.class);
 
     private static void start(int port) {
-        EventLoopGroup bossGroup = new NioEventLoopGroup(50);
+        EventLoopGroup bossGroup = new NioEventLoopGroup(30);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
             ServerBootstrap b = new ServerBootstrap();
