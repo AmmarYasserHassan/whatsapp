@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!DOCTYPE tsung SYSTEM "/usr/share/tsung/tsung-1.0.dtd" [] >
+<tsung backend="json" loglevel="info">
+
+  <clients>
+   <client host="localhost" use_controller_vm="true"/>
+</clients>
+
+  <servers>
+    <server host="192.168.1.4" port="8080" type="tcp"/>
+  </servers>
+ <monitoring>
+        <monitor host="localhost" type="erlang"></monitor>
+    </monitoring>
+   <load>
+        <arrivalphase phase="1" duration="75" unit="second">
+            <users arrivalrate="30" unit="second"></users>
+        </arrivalphase>
+    </load>
+
+    <options>
+        <option name="connect_timeout" value="4000" />
+        <option name="max_retries" value="0" />
+    </options>
+
+  <sessions>
+    <session name="reprt_session" weight="1" type="ts_http">
+       <transaction name="report">
+            <request>
+	            <http url="/" method="POST" 
+                content_type='application/json'
+                contents='{&quot;appName&quot;: &quot;userApp&quot;,&quot;command&quot;: &quot;reportCommand&quot;, &quot;reporterNumber&quot;: &quot;01066795748&quot;,&quot;reportedNumber&quot;: &quot;301044419420348&quot;}'>
+                </http>
+         </request>
+        </transaction>
+    </session>
+  </sessions>
+</tsung>
