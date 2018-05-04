@@ -16,12 +16,17 @@ import java.util.Hashtable;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.io.*;
+import java.util.Base64;
+import redis.clients.jedis.Jedis;
+
 
 public class Invoker {
     protected Hashtable htblCommands;
     protected ExecutorService threadPoolCmds;
     protected PostgreSqlDBConnection postgresqlDBConnection;
     protected MongoDBConnection mongoDBConnection;
+    protected Jedis jedis;
 
     public Invoker() throws Exception {
         this.init();
@@ -29,11 +34,21 @@ public class Invoker {
 
     public String invoke(String cmdName, JsonObject request) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         Command cmd;
+        RedisEntry key = new RedisEntry(cmdName, request);
+        if(cmdName.equals("getAllChatsForAUserCommand")){
+            //check if in redis
+            String res = jedis.get(key.serialize());
+            if(res != null)
+                return res;
+        }
         Class<?> cmdClass = (Class<?>) htblCommands.get(cmdName);
         Constructor constructor = cmdClass.getConstructor(DBBroker.class, JsonObject.class);
         Object cmdInstance = constructor.newInstance(new DBBroker(postgresqlDBConnection, mongoDBConnection), request);
         cmd = (Command) cmdInstance;
         JSONObject result = cmd.execute();
+
+        //cache result
+        jedis.set(key.serialize(), result.toString());
         return result.toString();
 //        threadPoolCmds.execute((Runnable) cmd);
     }
@@ -65,5 +80,6 @@ public class Invoker {
         loadCommands();
         postgresqlDBConnection = new PostgreSqlDBConnection();
         mongoDBConnection = new MongoDBConnection();
+        jedis = new Jedis(ApplicationProperties.getProperty("redisBasicUrl"));
     }
 }
