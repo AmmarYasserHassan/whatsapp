@@ -28,4 +28,8 @@ public class ApplicationProperties {
         return System.getenv("MONGO_HOST") == null ? "localhost" : System.getenv("MONGO_HOST");
     }
 
+    public static String getTimeout(){
+        return "{\"error\":false}";
+    }
+
 }

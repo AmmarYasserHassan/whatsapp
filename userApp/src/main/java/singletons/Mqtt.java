@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 public class Mqtt {
-    private static Mqtt mqtt;
+    private static volatile Mqtt mqtt;
     private final String HOST_IP = ApplicationProperties.getRabbitMqHost();
     private final String QUEUE_NAME = "userApp";
 
@@ -32,7 +32,7 @@ public class Mqtt {
         channel = connection.createChannel();
         Map<String, Object> args = new HashMap<String, Object>();
         args.put("x-max-length", 1000);
-        channel.queueDeclare(QUEUE_NAME, false, false, false, args);
+        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
         channel.basicQos(1);
         Consumer consumerChattingApp = getConsumer();
 
@@ -59,14 +59,14 @@ public class Mqtt {
                         channel.basicPublish("", properties.getReplyTo(), replyProps, result.getBytes());
                         channel.basicAck(envelope.getDeliveryTag(), false);
 
-                        synchronized (this) {
-                            this.notify();
-                        }
-                    }else {
+                    } else {
                         JSONObject jsonObject = new JSONObject();
                         jsonObject.put("state", "app is now freezed");
                         channel.basicPublish("", properties.getReplyTo(), replyProps, jsonObject.toString().getBytes());
                         channel.basicAck(envelope.getDeliveryTag(), false);
+                    }
+                    synchronized (this) {
+                        this.notify();
                     }
                 } catch (Exception e) {
                     JSONObject error = new JSONObject();
@@ -80,8 +80,16 @@ public class Mqtt {
     }
 
     public static Mqtt getInstance() throws Exception {
-        if (mqtt == null)
-            mqtt = new Mqtt();
+        if (mqtt != null) return mqtt;
+
+        synchronized (Mqtt.class) {
+
+            if (mqtt == null) {
+
+                mqtt = new Mqtt();
+            }
+        }
+
         return mqtt;
     }
 

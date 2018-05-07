@@ -42,7 +42,8 @@ public class Invoker {
         Object cmdInstance = constructor.newInstance(new DBBroker(getPostgresConnection(), mongoDBConnection), request);
         cmd = (Command) cmdInstance;
         Future<JSONObject> result = ThreadPool.getInstance().getThreadPoolCmds().submit(cmd);
-        return result.get().toString();
+        String r = result.get().toString();
+        return r;
     }
 
     protected void loadCommands() throws Exception {

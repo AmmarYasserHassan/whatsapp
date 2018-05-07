@@ -6,8 +6,9 @@ import org.slf4j.LoggerFactory;
 
 public class Logger {
     private org.slf4j.Logger logger;
-    private static Logger loggerInstance;
-    public Logger(){
+    private static volatile Logger loggerInstance;
+
+    public Logger() {
         logger = LoggerFactory.getLogger(HTTPServer.class);
     }
 
@@ -17,19 +18,26 @@ public class Logger {
 
     public static Level defaultLevel = Level.INFO;
 
-    public static Logger  getInstance()
-    {
-        if (loggerInstance == null)
-            loggerInstance = new Logger();
+    public static Logger getInstance() {
+        if (loggerInstance != null) return loggerInstance;
+
+        synchronized (Logger.class) {
+
+            if (loggerInstance == null) {
+
+                loggerInstance = new Logger();
+            }
+        }
+
         return loggerInstance;
     }
 
-    public void setLoggingLevel(Level level){
+    public void setLoggingLevel(Level level) {
         defaultLevel = level;
     }
 
-    public void log(String txt, Level level){
-        if (level == null){
+    public void log(String txt, Level level) {
+        if (level == null) {
             switch (defaultLevel) {
                 case TRACE:
                     logger.trace(txt);
@@ -47,7 +55,7 @@ public class Logger {
                     logger.error(txt);
                     break;
             }
-        }else {
+        } else {
             switch (level) {
                 case TRACE:
                     logger.trace(txt);

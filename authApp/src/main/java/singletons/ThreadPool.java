@@ -6,7 +6,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ThreadPool {
-    private static ThreadPool threadPool = null;
+    private static volatile ThreadPool threadPool = null;
     protected ExecutorService threadPoolCmds;
 
     private ThreadPool() {
@@ -14,8 +14,16 @@ public class ThreadPool {
     }
 
     public static ThreadPool getInstance() {
-        if (threadPool == null)
-            threadPool = new ThreadPool();
+        if (threadPool != null) return threadPool;
+
+        synchronized (ThreadPool.class) {
+
+            if (threadPool == null) {
+
+                threadPool = new ThreadPool();
+            }
+        }
+
         return threadPool;
     }
 

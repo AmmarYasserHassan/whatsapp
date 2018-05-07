@@ -89,6 +89,11 @@
             <artifactId>netty-all</artifactId>
             <version>4.1.19.Final</version>
         </dependency>
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver-async</artifactId>
+            <version>3.6.3</version>
+        </dependency>
     </dependencies>
 
 

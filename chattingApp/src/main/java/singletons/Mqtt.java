@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 public class Mqtt {
-    private static Mqtt mqtt;
+    private static volatile Mqtt mqtt;
     private final String HOST_IP = ApplicationProperties.getRabbitMqHost();
     private final String QUEUE_NAME = "chattingApp";
 
@@ -59,7 +59,7 @@ public class Mqtt {
                         channel.basicPublish("", properties.getReplyTo(), replyProps, result.getBytes());
                         channel.basicAck(envelope.getDeliveryTag(), false);
 
-                    }else {
+                    } else {
                         JSONObject jsonObject = new JSONObject();
                         jsonObject.put("state", "app is now freezed");
                         channel.basicPublish("", properties.getReplyTo(), replyProps, jsonObject.toString().getBytes());
@@ -80,8 +80,16 @@ public class Mqtt {
     }
 
     public static Mqtt getInstance() throws Exception {
-        if (mqtt == null)
-            mqtt = new Mqtt();
+        if (mqtt != null) return mqtt;
+
+        synchronized (Mqtt.class) {
+
+            if (mqtt == null) {
+
+                mqtt = new Mqtt();
+            }
+        }
+
         return mqtt;
     }
 
