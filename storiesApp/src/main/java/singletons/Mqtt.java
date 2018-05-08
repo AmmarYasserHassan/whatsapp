@@ -8,10 +8,12 @@ import invoker.Invoker;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 public class Mqtt {
-    private static Mqtt mqtt;
+    private static volatile Mqtt mqtt;
     private final String HOST_IP = ApplicationProperties.getRabbitMqHost();
     private final String QUEUE_NAME = "storiesApp";
 
@@ -28,8 +30,10 @@ public class Mqtt {
         factory.setHost(HOST_IP);
         connection = factory.newConnection();
         channel = connection.createChannel();
-        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-        channel.basicQos(1);
+        Map<String, Object> args = new HashMap<String, Object>();
+        args.put("x-max-length", 524288);
+        channel.queueDeclare(QUEUE_NAME, true, false, false, args);
+        channel.basicQos(Integer.parseInt(ApplicationProperties.getProperty("threadPoolMaxSize")));
         Consumer consumerChattingApp = getConsumer();
 
         channel.basicConsume(QUEUE_NAME, false, consumerChattingApp);
@@ -55,14 +59,14 @@ public class Mqtt {
                         channel.basicPublish("", properties.getReplyTo(), replyProps, result.getBytes());
                         channel.basicAck(envelope.getDeliveryTag(), false);
 
-                        synchronized (this) {
-                            this.notify();
-                        }
-                    }else {
+                    } else {
                         JSONObject jsonObject = new JSONObject();
                         jsonObject.put("state", "app is now freezed");
                         channel.basicPublish("", properties.getReplyTo(), replyProps, jsonObject.toString().getBytes());
                         channel.basicAck(envelope.getDeliveryTag(), false);
+                    }
+                    synchronized (this) {
+                        this.notify();
                     }
                 } catch (Exception e) {
                     JSONObject error = new JSONObject();
@@ -76,8 +80,16 @@ public class Mqtt {
     }
 
     public static Mqtt getInstance() throws Exception {
-        if (mqtt == null)
-            mqtt = new Mqtt();
+        if (mqtt != null) return mqtt;
+
+        synchronized (Mqtt.class) {
+
+            if (mqtt == null) {
+
+                mqtt = new Mqtt();
+            }
+        }
+
         return mqtt;
     }
 

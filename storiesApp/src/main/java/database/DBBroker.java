@@ -32,11 +32,11 @@ public class DBBroker {
     static String mongoPort = "27017";
     static String mongoDbName = "whatsapp";
     protected Connection postgresqlDBConnection;
-    protected DB mongoDBConnection ;
+    protected DB mongoDBConnection;
     private MongoDatabase mongodb;
     private DBCollection stories;
 
-    public DBBroker(Connection postgresqlDBConnection,DB mongoDBConnection) {
+    public DBBroker(Connection postgresqlDBConnection, DB mongoDBConnection) {
         this.mongoDBConnection = mongoDBConnection;
         this.postgresqlDBConnection = postgresqlDBConnection;
         this.stories = mongoDBConnection.getCollection("stories");
@@ -57,7 +57,7 @@ public class DBBroker {
         DBObject ob = new BasicDBObject();
         ob.put("_id", new ObjectId(id));
         System.out.println(ob);
-        DBObject document =  stories.findOne(ob);
+        DBObject document = stories.findOne(ob);
         return createStory(document);
     }
 
@@ -69,9 +69,9 @@ public class DBBroker {
 
             int duration = (Integer) document.get("duration");
             Date expirationDate = (Date) document.get("expiration_date");
-            String mobile = (String)document.get("owner_mobile_number");
-            String type = (String)document.get("type");
-            String source = (String)document.get("link");
+            String mobile = (String) document.get("owner_mobile_number");
+            String type = (String) document.get("type");
+            String source = (String) document.get("link");
             ArrayList viewedBy = (ArrayList) document.get("viewed_by");
             story = new Story(mobile, type, source, duration, expirationDate, viewedBy);
         }
@@ -114,7 +114,6 @@ public class DBBroker {
             for (int i = 0; i < friends.size(); i++) {
                 String friend = friends.get(i);
                 DBObject ob = new BasicDBObject();
-                ob.put("owner_mobile", friend);
                 DBCursor foundStories = stories.find(ob);
                 for (DBObject d : foundStories) {
                     Story s = createStory(d);
@@ -146,15 +145,32 @@ public class DBBroker {
      * @return
      */
     public Story createNewStory(JsonObject request, Date expiryDate) {
-        DBObject doc = new BasicDBObject();
+        Document doc = new Document();
         doc.put("owner_mobile", request.get("owner_mobile").getAsString());
         doc.put("type", request.get("type").getAsString());
         doc.put("link", request.get("link").getAsString());
         doc.put("duration", request.get("duration").getAsInt());
         doc.put("expiration_date", expiryDate);
         doc.put("viewed_by", new ArrayList());
-        stories.insert(doc);
-        return this.createStory(doc);
+        MongoDBConnectionNonBlocking.getInstance().database.getCollection("stories").insertOne(doc, (result, t) -> System.out.println("Inserted"));
+        return this.createStoryAsync(doc);
+    }
+
+    private Story createStoryAsync(Document document) {
+        Story story = null;
+
+        if (document != null) {
+
+            int duration = (Integer) document.get("duration");
+            Date expirationDate = (Date) document.get("expiration_date");
+            String mobile = (String) document.get("owner_mobile_number");
+            String type = (String) document.get("type");
+            String source = (String) document.get("link");
+            ArrayList viewedBy = (ArrayList) document.get("viewed_by");
+            story = new Story(mobile, type, source, duration, expirationDate, viewedBy);
+        }
+
+        return story;
     }
 
     /**

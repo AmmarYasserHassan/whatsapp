@@ -49,7 +49,15 @@ services:
       timeout: 30s
       retries: 3
     networks:
-      - backend   
+      - backend 
+
+  # redis 
+  redis:
+      build: ./redis
+      ports:
+        - "6379:6379"
+      networks:
+        - backend
 
   # mfs master
   mfsmaster:
@@ -129,6 +137,9 @@ services:
       - RABBITMQ_HOST=rabbitmq
       - MONGO_HOST=mongo
       - POSTGRES_HOST=postgres
+      - REDIS_HOST1=redis
+      - REDIS_HOST2=redis
+      - REDIS_HOST3=redis
     depends_on:
       - mongo 
       - rabbitmq
@@ -146,6 +157,9 @@ services:
       - RABBITMQ_HOST=rabbitmq
       - MONGO_HOST=mongo
       - POSTGRES_HOST=postgres
+      - REDIS_HOST1=redis
+      - REDIS_HOST2=redis
+      - REDIS_HOST3=redis
     depends_on:
       - mongo 
       - rabbitmq

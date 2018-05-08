@@ -8,7 +8,7 @@ import java.sql.SQLException;
 
 public class DbThreadPool {
 
-    private static DbThreadPool dbThreadPool = null;
+    private static volatile DbThreadPool dbThreadPool = null;
     protected PGPoolingDataSource postgresqlDBConnectionsPool;
 
     private DbThreadPool() {
@@ -29,8 +29,16 @@ public class DbThreadPool {
     }
 
     public static DbThreadPool getInstance() {
-        if (dbThreadPool == null)
-            dbThreadPool = new DbThreadPool();
+        if (dbThreadPool != null) return dbThreadPool;
+
+        synchronized (DbThreadPool.class) {
+
+            if (dbThreadPool == null) {
+
+                dbThreadPool = new DbThreadPool();
+            }
+        }
+
         return dbThreadPool;
     }
 

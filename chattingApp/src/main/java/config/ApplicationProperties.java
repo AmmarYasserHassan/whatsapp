@@ -61,4 +61,16 @@ public class ApplicationProperties {
        return System.getenv("MONGO_HOST") == null ? "localhost" : System.getenv("MONGO_HOST");
     }
 
+    public static String getRedisHost1() {
+        return System.getenv("REDIS_HOST1") == null ? "localhost" : System.getenv("REDIS_HOST1");
+    }
+
+    public static String getRedisHost2() {
+        return System.getenv("REDIS_HOST2") == null ? "localhost" : System.getenv("REDIS_HOST2");
+    }
+
+    public static String getRedisHost3() {
+        return System.getenv("REDIS_HOST3") == null ? "localhost" : System.getenv("REDIS_HOST3");
+    }
+
 }

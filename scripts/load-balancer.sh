@@ -1,0 +1,1 @@
+docker run -it --rm --name haproxy-syntax-check my-haproxy haproxy -c -f ../loadBalancerConf/haproxy.cfg

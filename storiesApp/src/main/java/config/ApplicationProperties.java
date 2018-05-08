@@ -49,7 +49,7 @@ public class ApplicationProperties {
      * @return
      */
     public static String getPostgresHost() {
-        return System.getenv("POSTGRES_HOST") == null ? "localhost" : System.getenv("POSTGRES_HOST");
+        return System.getenv("POSTGRES_HOST") == null ? "loaclhsot" : System.getenv("POSTGRES_HOST");
     }
 
     /**
@@ -59,6 +59,18 @@ public class ApplicationProperties {
      */
     public static String getMongoHost() {
         return System.getenv("MONGO_HOST") == null ? "localhost" : System.getenv("MONGO_HOST");
+    }
+
+    public static String getRedisHost1() {
+        return System.getenv("REDIS_HOST1") == null ? "localhost" : System.getenv("REDIS_HOST1");
+    }
+
+    public static String getRedisHost2() {
+        return System.getenv("REDIS_HOST2") == null ? "localhost" : System.getenv("REDIS_HOST2");
+    }
+
+    public static String getRedisHost3() {
+        return System.getenv("REDIS_HOST3") == null ? "localhost" : System.getenv("REDIS_HOST3");
     }
 
 }

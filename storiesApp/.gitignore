@@ -39,7 +39,7 @@ gen/
 
 # Local configuration file (sdk path, etc)
 local.properties
-
+.settings/
 # Eclipse project files
 .classpath
 .project

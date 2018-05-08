@@ -1,0 +1,117 @@
+version: '3'
+
+networks:
+  # establish a default network using the bridge adapter
+  backend:
+    driver: bridge
+
+services:
+
+  # rabbitmq service 
+  rabbitmq:
+    build: ./rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      - "15671:15671"
+    privileged: true
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:15672"]
+      interval: 30s
+      timeout: 10s
+      retries: 5  
+    networks:
+      - backend            
+
+  # authApp 
+  auth-app: 
+    build: 
+      context: ./authApp
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - MONGO_HOST=${MONGO_HOST}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+    ports:
+      - "8002:8002"  
+    depends_on:
+      - mongo 
+      - rabbitmq
+      - postgres
+
+    networks:
+      - backend   
+
+  # chattingApp service 
+  chatting-app: 
+    build: 
+      context: ./chattingApp
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - MONGO_HOST=${MONGO_HOST}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - REDIS_HOST1=${REDIS_HOST1}
+      - REDIS_HOST2=${REDIS_HOST2}
+      - REDIS_HOST3=${REDIS_HOST3}
+      
+    depends_on:
+      - mongo 
+      - rabbitmq
+      - postgres
+    ports:
+      - "8001:8001"  
+    networks:
+      - backend   
+
+  # storiesApp service
+  stories-app: 
+    build: 
+      context: ./storiesApp
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - MONGO_HOST=${MONGO_HOST}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - REDIS_HOST1=${REDIS_HOST1}
+      - REDIS_HOST2=${REDIS_HOST2}
+      - REDIS_HOST3=${REDIS_HOST3}
+    depends_on:
+      - mongo 
+      - rabbitmq
+      - postgres
+    ports:
+      - "8004:8004"  
+    networks:
+      - backend   
+
+  # userApp service
+  user-app: 
+    build: 
+      context: ./userApp
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - MONGO_HOST=${MONGO_HOST}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+    depends_on:
+      - mongo 
+      - rabbitmq
+      - postgres 
+    ports:
+      - "8003:8003"  
+    networks:
+      - backend
+
+  # mainServer service
+  main-server: 
+    build: 
+      context: ./mainServer
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+    ports:
+      - "8080:8080"  
+    depends_on:
+      - rabbitmq
+    networks:
+      - backend 
+                    

@@ -9,7 +9,9 @@ import org.json.JSONObject;
 import database.MongoDBConnection;
 import database.PostgreSqlDBConnection;
 import org.postgresql.ds.PGPoolingDataSource;
+import redis.clients.jedis.*;
 import singletons.DbThreadPool;
+import singletons.Redis;
 import singletons.ThreadPool;
 
 import java.io.InputStream;
@@ -17,18 +19,18 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.io.*;
 
 public class Invoker {
     protected Hashtable htblCommands;
     protected PGPoolingDataSource postgresqlDBConnectionsPool;
     protected DB mongoDBConnection;
+    protected Jedis jedis;
 
 
     public Invoker() throws Exception {
@@ -36,12 +38,27 @@ public class Invoker {
     }
 
     public String invoke(String cmdName, JsonObject request) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ExecutionException, InterruptedException, SQLException {
+        // Check if cached
+        RedisEntry key = new RedisEntry(cmdName, request);
+        if (cmdName.equals("getAllStoriesCommand")) {
+            String res = Redis.getInstance().jedisCluster.get(key.serialize());
+            if (res != null)
+                return res;
+        }
+
         Command cmd;
         Class<?> cmdClass = (Class<?>) htblCommands.get(cmdName);
         Constructor constructor = cmdClass.getConstructor(DBBroker.class, JsonObject.class);
         Object cmdInstance = constructor.newInstance(new DBBroker(getPostgresConnection(), mongoDBConnection), request);
         cmd = (Command) cmdInstance;
         Future<JSONObject> result = ThreadPool.getInstance().getThreadPoolCmds().submit(cmd);
+
+        // Cache the result
+        if (cmdName.equals("getAllStoriesCommand")) {
+            Redis.getInstance().jedisCluster.set(key.serialize(), result.get().toString());
+            Redis.getInstance().jedisCluster.expire(key.serialize(), 20);
+        }
+
         return result.get().toString();
     }
 
@@ -70,5 +87,6 @@ public class Invoker {
     public void init() throws Exception {
         loadCommands();
         this.mongoDBConnection = new MongoDBConnection().connect();
+
     }
 }

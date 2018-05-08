@@ -1,0 +1,1 @@
+MONGO_HOST=$1 POSTGRES_HOST=$2 REDIS_HOST1=$3 REDIS_HOST2=$4 REDIS_HOST3=$5 docker-compose -f ../docker-compose-backend.yml up 
