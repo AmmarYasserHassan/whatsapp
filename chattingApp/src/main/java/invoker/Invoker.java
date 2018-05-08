@@ -10,6 +10,7 @@ import database.MongoDBConnection;
 import database.PostgreSqlDBConnection;
 import org.postgresql.ds.PGPoolingDataSource;
 import singletons.DbThreadPool;
+import singletons.Redis;
 import singletons.ThreadPool;
 
 import java.io.InputStream;
@@ -25,23 +26,42 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import java.io.*;
+import java.util.Base64;
+
+import redis.clients.jedis.Jedis;
+
+
 public class Invoker {
     protected Hashtable htblCommands;
-    protected PGPoolingDataSource postgresqlDBConnectionsPool;
     protected DB mongoDBConnection;
-
 
     public Invoker() throws Exception {
         this.init();
     }
 
     public String invoke(String cmdName, JsonObject request) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ExecutionException, InterruptedException, SQLException {
+        // Check if cached
+        RedisEntry key = new RedisEntry(cmdName, request);
+        if (cmdName.equals("getAllChatsForAUserCommand")) {
+            String res = Redis.getInstance().jedisCluster.get(key.serialize());
+            if (res != null)
+                return res;
+        }
+
         Command cmd;
         Class<?> cmdClass = (Class<?>) htblCommands.get(cmdName);
         Constructor constructor = cmdClass.getConstructor(DBBroker.class, JsonObject.class);
         Object cmdInstance = constructor.newInstance(new DBBroker(getPostgresConnection(), mongoDBConnection), request);
         cmd = (Command) cmdInstance;
         Future<JSONObject> result = ThreadPool.getInstance().getThreadPoolCmds().submit(cmd);
+
+        // Cache the result
+        if (cmdName.equals("getAllChatsForAUserCommand")) {
+            Redis.getInstance().jedisCluster.set(key.serialize(), result.get().toString());
+            Redis.getInstance().jedisCluster.expire(key.serialize(), 10);
+        }
+
         return result.get().toString();
     }
 
