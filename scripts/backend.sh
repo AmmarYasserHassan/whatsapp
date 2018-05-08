@@ -1,0 +1,1 @@
+MONGO_HOST=$1 POSTGRES_HOST=$2 docker-compose -f ../docker-compose-backend.yml up
