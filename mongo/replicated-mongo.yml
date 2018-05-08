@@ -1,0 +1,8 @@
+version: "2"
+services:
+  replicated-mongo:
+     image: rollymaduk/mongo-replica:local
+     environment:
+       REPLICA_NAME: "replicated-mongo"
+     volumes:
+     -  .:/var/config
