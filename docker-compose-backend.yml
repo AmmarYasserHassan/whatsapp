@@ -37,9 +37,7 @@ services:
     ports:
       - "8002:8002"  
     depends_on:
-      - mongo 
       - rabbitmq
-      - postgres
 
     networks:
       - backend   
@@ -55,9 +53,7 @@ services:
       - REDIS_HOST=${REDIS_HOST}
       
     depends_on:
-      - mongo 
       - rabbitmq
-      - postgres
     ports:
       - "8001:8001"  
     networks:
@@ -73,9 +69,7 @@ services:
       - POSTGRES_HOST=${POSTGRES_HOST}
       - REDIS_HOST=${REDIS_HOST}
     depends_on:
-      - mongo 
       - rabbitmq
-      - postgres
     ports:
       - "8004:8004"  
     networks:
@@ -90,9 +84,7 @@ services:
       - MONGO_HOST=${MONGO_HOST}
       - POSTGRES_HOST=${POSTGRES_HOST}
     depends_on:
-      - mongo 
       - rabbitmq
-      - postgres 
     ports:
       - "8003:8003"  
     networks:
