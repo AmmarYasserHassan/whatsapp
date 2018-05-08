@@ -52,9 +52,7 @@ services:
       - RABBITMQ_HOST=rabbitmq
       - MONGO_HOST=${MONGO_HOST}
       - POSTGRES_HOST=${POSTGRES_HOST}
-      - REDIS_HOST1=${REDIS_HOST1}
-      - REDIS_HOST2=${REDIS_HOST2}
-      - REDIS_HOST3=${REDIS_HOST3}
+      - REDIS_HOST=${REDIS_HOST}
       
     depends_on:
       - mongo 
@@ -73,9 +71,7 @@ services:
       - RABBITMQ_HOST=rabbitmq
       - MONGO_HOST=${MONGO_HOST}
       - POSTGRES_HOST=${POSTGRES_HOST}
-      - REDIS_HOST1=${REDIS_HOST1}
-      - REDIS_HOST2=${REDIS_HOST2}
-      - REDIS_HOST3=${REDIS_HOST3}
+      - REDIS_HOST=${REDIS_HOST}
     depends_on:
       - mongo 
       - rabbitmq
