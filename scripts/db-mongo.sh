@@ -1,1 +1,1 @@
-docker-compose up mongo -d
+docker-compose up mongo

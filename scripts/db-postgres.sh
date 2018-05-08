@@ -1,1 +1,1 @@
-docker-compose up postgres -d
+docker-compose up postgres
