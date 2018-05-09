@@ -7,7 +7,7 @@ networks:
 
 services:
 
-  # rabbitmq service 
+  # rabbitmq service
   rabbitmq:
     build: ./rabbitmq
     ports:
@@ -22,9 +22,9 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:15672"]
       interval: 30s
       timeout: 10s
-      retries: 5  
+      retries: 5
     networks:
-      - backend  
+      - backend
 
   # mongo service
   mongo:
@@ -32,7 +32,7 @@ services:
     ports:
       - "27017:27017"
     networks:
-      - backend  
+      - backend
 
   # postgres service
   postgres:
@@ -49,9 +49,9 @@ services:
       timeout: 30s
       retries: 3
     networks:
-      - backend 
+      - backend
 
-  # redis 
+  # redis
   redis:
       build: ./redis
       ports:
@@ -90,48 +90,48 @@ services:
     links:
       - mfsmaster
 
-  # mfs chunk server2    
+  # mfs chunk server2
   mfschunkserver2:
     image: moosefs/chunkserver
     container_name: "mfschunkserver2"
     links:
       - mfsmaster
 
-  # mfs chunk server3    
+  # mfs chunk server3
   mfschunkserver3:
     image: moosefs/chunkserver
     container_name: "mfschunkserver3"
     links:
       - mfsmaster
 
-  # mfs chunk server4    
+  # mfs chunk server4
   mfschunkserver4:
     image: moosefs/chunkserver
     container_name: "mfschunkserver4"
     links:
-      - mfsmaster            
+      - mfsmaster
 
-  # authApp 
-  auth-app: 
-    build: 
+  # authApp
+  auth-app:
+    build:
       context: ./authApp
     environment:
       - RABBITMQ_HOST=rabbitmq
       - MONGO_HOST=mongo
       - POSTGRES_HOST=postgres
     ports:
-      - "8002:8002"  
+      - "8002:8002"
     depends_on:
-      - mongo 
+      - mongo
       - rabbitmq
       - postgres
 
     networks:
-      - backend   
+      - backend
 
-  # chattingApp service 
-  chatting-app: 
-    build: 
+  # chattingApp service
+  chatting-app:
+    build:
       context: ./chattingApp
     environment:
       - RABBITMQ_HOST=rabbitmq
@@ -141,17 +141,17 @@ services:
       - REDIS_HOST2=redis
       - REDIS_HOST3=redis
     depends_on:
-      - mongo 
+      - mongo
       - rabbitmq
       - postgres
     ports:
-      - "8001:8001"  
+      - "8001:8001"
     networks:
-      - backend   
+      - backend
 
   # storiesApp service
-  stories-app: 
-    build: 
+  stories-app:
+    build:
       context: ./storiesApp
     environment:
       - RABBITMQ_HOST=rabbitmq
@@ -161,51 +161,54 @@ services:
       - REDIS_HOST2=redis
       - REDIS_HOST3=redis
     depends_on:
-      - mongo 
+      - mongo
       - rabbitmq
       - postgres
     ports:
-      - "8004:8004"  
+      - "8004:8004"
     networks:
-      - backend   
+      - backend
 
   # userApp service
-  user-app: 
-    build: 
+  user-app:
+    build:
       context: ./userApp
     environment:
       - RABBITMQ_HOST=rabbitmq
       - MONGO_HOST=mongo
       - POSTGRES_HOST=postgres
     depends_on:
-      - mongo 
+      - mongo
       - rabbitmq
-      - postgres 
+      - postgres
     ports:
-      - "8003:8003"  
+      - "8003:8003"
     networks:
       - backend
 
   # mainServer service
-  main-server: 
-    build: 
+  main-server:
+    build:
       context: ./mainServer
     environment:
       - RABBITMQ_HOST=rabbitmq
     ports:
-      - "8080:8080"  
+      - "8080:8080"
     depends_on:
       - rabbitmq
     networks:
-      - backend 
+      - backend
 
   # media server service
   media-server:
-    build: 
+    build:
       context: ./mediaServer
-    environment: 
-      - FOLDER_DIR=./files 
-    ports: 
+    environment:
+      - FOLDER_DIR=./files
+    ports:
       - "5001:5001"
-    networks: 
-      - backend                      
+    networks:
+      - backend
+
+volumes:
+  portainer_data:
