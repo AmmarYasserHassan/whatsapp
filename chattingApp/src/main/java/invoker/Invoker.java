@@ -43,11 +43,11 @@ public class Invoker {
     public String invoke(String cmdName, JsonObject request) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ExecutionException, InterruptedException, SQLException {
         // Check if cached
         RedisEntry key = new RedisEntry(cmdName, request);
-        if (cmdName.equals("getAllChatsForAUserCommand")) {
-            String res = Redis.getInstance().jedisCluster.get(key.serialize());
-            if (res != null)
-                return res;
-        }
+//        if (cmdName.equals("getAllChatsForAUserCommand")) {
+//            String res = Redis.getInstance().jedisCluster.get(key.serialize());
+//            if (res != null)
+//                return res;
+//        }
 
         Command cmd;
         Class<?> cmdClass = (Class<?>) htblCommands.get(cmdName);
@@ -55,12 +55,11 @@ public class Invoker {
         Object cmdInstance = constructor.newInstance(new DBBroker(getPostgresConnection(), mongoDBConnection), request);
         cmd = (Command) cmdInstance;
         Future<JSONObject> result = ThreadPool.getInstance().getThreadPoolCmds().submit(cmd);
-
         // Cache the result
-        if (cmdName.equals("getAllChatsForAUserCommand")) {
-            Redis.getInstance().jedisCluster.set(key.serialize(), result.get().toString());
-            Redis.getInstance().jedisCluster.expire(key.serialize(), 10);
-        }
+//        if (cmdName.equals("getAllChatsForAUserCommand")) {
+//            Redis.getInstance().jedisCluster.set(key.serialize(), result.get().toString());
+//            Redis.getInstance().jedisCluster.expire(key.serialize(), 10);
+//        }
 
         return result.get().toString();
     }

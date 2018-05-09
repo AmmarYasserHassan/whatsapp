@@ -14,10 +14,8 @@ public class Redis {
     private Redis() {
         Set<HostAndPort> connectionPoints = new HashSet<HostAndPort>();
 
-        connectionPoints.add(new HostAndPort(ApplicationProperties.getRedisHost1(), 6379));
-        connectionPoints.add(new HostAndPort(ApplicationProperties.getRedisHost2(), 6379));
-        connectionPoints.add(new HostAndPort(ApplicationProperties.getRedisHost3(), 6379));
-
+        connectionPoints.add(new HostAndPort(ApplicationProperties.getRedisHost(), 32775));
+        
         jedisCluster = new JedisCluster(connectionPoints);
     }
 

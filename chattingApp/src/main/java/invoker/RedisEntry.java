@@ -8,12 +8,12 @@ import java.util.Base64;
 
 public class RedisEntry implements Serializable {
 
-    JsonObject request;
+    String request;
     String cmdName;
 
     public  RedisEntry(String cmd, JsonObject req){
 
-        this.request = req;
+        this.request = req.toString();
         this.cmdName = cmd;
     }
 
